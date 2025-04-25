@@ -1,0 +1,19 @@
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Virtual environment
+.venv/
+
+# IDE dosyaları (VSCode örneği)
+.vscode/
+
+# OS dosyaları
+.DS_Store
+Thumbs.db
+
+# Python paket dosyaları
+*.egg
+*.egg-info
+dist/
+build/
