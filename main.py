@@ -12,5 +12,3 @@ def root():
     return {"message": "Hello World"}
 
 models.Base.metadata.create_all(bind=engine)
-
-# Models kısmını foreign key ile güncelledim. Önce test et
