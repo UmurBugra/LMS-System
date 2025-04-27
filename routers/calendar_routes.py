@@ -10,8 +10,7 @@ router = APIRouter(prefix="/calendar", tags=["Calendar"])
 # Create a new calendar entry
 @router.post("/")
 def handle_create_calendar(request: CalendarBase, course: Courses, db: Session = Depends(get_db),
-                           create_auth: LoginBase = Depends(create_authentication_token)):
+                           current_user: LoginBase = Depends(create_authentication_token)):
     return {
-        "data": create_calendar(db, request, course),
-        "current_user": create_auth
+        "data": create_calendar(db, request, course, current_user)
     }

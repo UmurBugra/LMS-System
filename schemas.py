@@ -1,6 +1,5 @@
 from pydantic import BaseModel
 from enum import Enum
-from typing import List
 
 class UserType(Enum):
     student = "student"
@@ -15,7 +14,6 @@ class LoginDisplay(BaseModel):
     username: str
     email: str
     type: str
-    items: List["CalendarBase"] = []
     class Config:
         from_attributes = True
 
@@ -40,9 +38,3 @@ class Courses(BaseModel):
     t_14_15: str
     t_15_16: str
     t_16_17: str
-
-# username inside LoginDisplay
-class CalendarDisplay(BaseModel):
-    user_name: str
-    class Config:
-        from_attributes = True

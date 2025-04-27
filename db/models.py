@@ -29,4 +29,3 @@ class CalendarData(Base):
     t_16_17 = Column(String)
     user_name = Column(String, ForeignKey("login_data.username"))
     user = relationship("LoginData", back_populates="items")
-
