@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Query
 from schemas import LoginDisplay, LoginBase, AuthUserType, UserType
 from crud import auth
 from sqlalchemy.orm import Session
@@ -15,4 +15,3 @@ def user_type_request(request: AuthUserType, db: Session = Depends(get_db)):
 @router.post("/login")
 def user_login(request: LoginBase, user_type: UserType ,db: Session = Depends(get_db)):
     return auth.user_login(db, request, user_type)
-
