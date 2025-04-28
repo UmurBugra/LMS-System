@@ -29,8 +29,8 @@ def process_login(request: Request,
                 db: Session = Depends(get_db)):
 
     login_data = LoginBase(username=username, password=password, email=email)
-    result = auth.user_login(db, login_data, user_type)
-    if result == "Giriş yapıldı":
+    result = auth.user_login(db, login_data, user_type) # Kullanıcının bilgileri doğru girip girmediğini kontrol et
+    if result == "Giriş yapıldı":   # Fonksiyonun döndürdüğü değer "Giriş yapıldı" ise
         return templates.TemplateResponse(
             "home.html",
             {"request": request, "username": username, "email": email, "user_type": user_type}
