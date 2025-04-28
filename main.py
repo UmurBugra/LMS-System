@@ -8,7 +8,7 @@ from fastapi.staticfiles import StaticFiles
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates")
+templates = Jinja2Templates(directory="templates") # Jinja2 şablonları için dizin
 
 app.include_router(login_routes.router)
 app.include_router(login_auth_routes.router)
@@ -17,6 +17,6 @@ app.include_router(oauth2_routes.router)
 
 @app.get("/")
 def root(request: Request):
-    return templates.TemplateResponse("index.html", {"request": request})
+    return templates.TemplateResponse("index.html", {"request": request}) # şablonu render eder
 
 models.Base.metadata.create_all(bind=engine)
