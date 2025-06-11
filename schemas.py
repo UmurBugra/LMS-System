@@ -1,9 +1,14 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, EmailStr
 from enum import Enum
 
 class UserType(Enum):
     student = "student"
     teacher = "teacher"
+
+# Giriş ekranı için gerekli olan modeller
+class LoginEmailPassword(BaseModel):
+    email: EmailStr
+    password: str
 
 class LoginBase(BaseModel):
     username: str

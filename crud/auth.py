@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from schemas import LoginBase, AuthUserType, UserType
+from schemas import LoginBase, AuthUserType, UserType, LoginEmailPassword
 from db.models import LoginData
 from fastapi import HTTPException, status
 
@@ -22,11 +22,18 @@ def user_type_request(db: Session, request: AuthUserType):
         return "Unknown user type"
 
 # User Login Control
-def user_login(db: Session, request: LoginBase, user_type: UserType):
+def user_login(db: Session, request: LoginEmailPassword): # Parametreler güncellendi
     user = db.query(LoginData).filter(
-        LoginData.username == request.username, LoginData.password == request.password, LoginData.email == request.email,
-    LoginData.type == user_type).first()
+        LoginData.email == request.email,
+        LoginData.password == request.password # Şifre karşılaştırması düz metin olarak varsayılıyor
+    ).first()
     if not user:
         return "Hatalı giriş bilgileri. Lütfen tekrar deneyin."
     else:
-        return "Giriş yapıldı"
+        # Başarılı giriş durumunda kullanıcı bilgilerini döndür
+        return {
+            "message": "Giriş yapıldı",
+            "username": user.username,
+            "email": user.email,
+            "user_type": user.type.value # Veritabanından kullanıcı tipini al
+        }
