@@ -7,14 +7,24 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div class="logout-button">
+        <a href="/auth/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+    </div>
     <div class="home-container">
-        <div class="header-content">
-            <h1>Ana Sayfa</h1>
-            <p>{{ username }} [{{ user_type }}]</p>
-        </div>
-        <div class="logout-button">
-{#            title ile simge üstüne gelince açıklama gösterir#}
-            <a href="/auth/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+        <div class="header-content" style="display: flex; align-items: center;">
+            <div>
+                <h1>Ana Sayfa</h1>
+                <p>{{ username }} [{{ user_type }}]</p>
+            </div>
+            <div class="vertical-divider"></div>
+            <div></div>
+            {% if user_type == "Öğretmen" %}
+            <div class="navigation-buttons">
+                <div class="calendar-button">
+                    <a href="/calendar/create" class="button">Takvim Ekle</a>
+                </div>
+            </div>
+            {% endif %}
         </div>
     </div>
 </body>
