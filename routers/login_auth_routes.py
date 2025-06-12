@@ -49,3 +49,9 @@ def user_login_form(
             "home.html",
             {"request": request, "username": user.username, "user_type": display_user_type}
         )
+# Çıkış yapma işlemi
+@router.get("/logout")
+def logout(request: Request, db: Session = Depends(get_db)):
+    response = RedirectResponse(url="/", status_code=302) # oturum sonlandırma # HTTP 302 (Found/Redirect)
+    response.delete_cookie("session_id")                  # çerez silme
+    return response
