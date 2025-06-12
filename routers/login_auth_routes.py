@@ -40,7 +40,12 @@ def user_login_form(
             {"request": request, "error": "E-posta veya şifre yanlış"}
         )
     else:
+        display_user_type = ""
+        if user.type == UserType.student:
+            display_user_type = "Öğrenci"
+        elif user.type == UserType.teacher:
+            display_user_type = "Öğretmen"
         return templates.TemplateResponse(
             "home.html",
-            {"request": request, "username": user.username}
+            {"request": request, "username": user.username, "user_type": display_user_type}
         )
