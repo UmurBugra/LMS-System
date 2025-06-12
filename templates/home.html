@@ -3,11 +3,19 @@
 <head>
     <title>Ana Sayfa</title>
     <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
+{#    simgeleri çektiğim url#}
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="home-container">
-        <h1>Ana Sayfa</h1>
-        <p>{{ username }} [{{ user_type }}]</p>
+        <div class="header-content">
+            <h1>Ana Sayfa</h1>
+            <p>{{ username }} [{{ user_type }}]</p>
+        </div>
+        <div class="logout-button">
+{#            title ile simge üstüne gelince açıklama gösterir#}
+            <a href="/auth/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+        </div>
     </div>
 </body>
 </html>
