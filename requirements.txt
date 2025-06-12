@@ -5,3 +5,4 @@ pydantic
 python-multipart
 aiofiles
 python-jose[cryptography]
+jinja2>=3.0
