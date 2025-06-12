@@ -36,11 +36,11 @@ def user_login_form(
 
     if not user:
         return templates.TemplateResponse(
-            "login.html",
+            "index.html",
             {"request": request, "error": "E-posta veya şifre yanlış"}
         )
     else:
         return templates.TemplateResponse(
             "home.html",
-            {"request": request, "email": user.email}
+            {"request": request, "username": user.username}
         )
