@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request, Form
 from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
-from schemas import CalendarBase, Courses, LoginBase
+from schemas import CalendarBase, Courses, LoginBase, CalendarData
 from crud.calendar import create_calendar
 from db.database import get_db
 from authentication.oauth2 import create_authentication_token
@@ -41,7 +41,7 @@ def handle_create_calendar(
     current_user: LoginBase = Depends(create_authentication_token)
 ):
 
-    calendar_data = CalendarBase(
+    calendar_data = CalendarData(
         day=days,
         t_08_09=t_08_09,
         t_09_10=t_09_10,
@@ -56,6 +56,6 @@ def handle_create_calendar(
     result = create_calendar(db, calendar_data, current_user)
 
     return templates.TemplateResponse(
-        "calendar.html",
+        "create_calendar.html",
         {"request": request, "data": result}
     )
