@@ -34,6 +34,17 @@ class CalendarBase(Enum):
     Perşembe = "Perşembe"
     Cuma = "Cuma"
 
+class CalendarData(BaseModel):
+    day: CalendarBase
+    t_08_09: str
+    t_09_10: str
+    t_10_11: str
+    t_11_12: str
+    t_13_14: str
+    t_14_15: str
+    t_15_16: str
+    t_16_17: str
+
 class Courses(BaseModel):
     t_08_09: str
     t_09_10: str
