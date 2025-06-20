@@ -5,19 +5,19 @@ from fastapi import HTTPException
 
 # CRUD operations for Calendar
 
-def create_calendar(db: Session, request: CalendarBase, course: Courses, current_user: LoginBase):
+def create_calendar(db: Session, request: CalendarData, current_user: LoginBase):
     username = current_user.username
     calendar_entry = CalendarData(
-        days=request,
-        t_08_09=course.t_08_09,
-        t_09_10=course.t_09_10,
-        t_10_11=course.t_10_11,
-        t_11_12=course.t_11_12,
-        t_13_14=course.t_13_14,
-        t_14_15=course.t_14_15,
-        t_15_16=course.t_15_16,
-        t_16_17=course.t_16_17,
-        user_name=username
+        days=request.day,
+        t_08_09=request.t_08_09,
+        t_09_10=request.t_09_10,
+        t_10_11=request.t_10_11,
+        t_11_12=request.t_11_12,
+        t_13_14=request.t_13_14,
+        t_14_15=request.t_14_15,
+        t_15_16=request.t_15_16,
+        t_16_17=request.t_16_17,
+        user_name=current_user.username
     )
     db.add(calendar_entry)
     db.commit()
