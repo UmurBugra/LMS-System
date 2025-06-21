@@ -18,7 +18,7 @@ class LoginData(Base):
 class CalendarData(Base):
     __tablename__ = "calendar_data"
     id = Column(Integer, primary_key=True, index=True)
-    days = Column(SQLAlchemyEnum(CalendarBase), unique=True)
+    days = Column(SQLAlchemyEnum(CalendarBase), unique=False)
     t_08_09 = Column(String)
     t_09_10 = Column(String)
     t_10_11 = Column(String)
