@@ -30,3 +30,31 @@ def create_calendar_by_auth(db: Session, username: str, user_type: UserType):
     if not user:
         raise HTTPException(status_code=404, detail="Takvim oluşturma sadece öğretmen yetkisindedir.")
     return user
+
+# Takvim silme işlemi
+def delete_calendar(db: Session, calendar_id: int, current_user: LoginBase):
+    calendar_entry = db.query(CalendarData).filter(CalendarData.id == calendar_id, CalendarData.user_name == current_user.username).first()
+    if not calendar_entry:
+        raise HTTPException(status_code=404, detail="Takvim bulunamadı.")
+
+    if calendar_entry.user_name != current_user.username:
+        raise HTTPException(status_code=403, detail="Bu takvimi silme yetkiniz yok.")
+
+    db.delete(calendar_entry)
+    db.commit()
+    return {"detail": "Takvim başarıyla silindi."}
+
+def get_calendar(db: Session):
+    calendars = db.query(CalendarData).all()
+    for calendar in calendars:
+        if calendar.days == CalendarBase.Pazartesi:
+            calendar.days = "Pazartesi"
+        elif calendar.days == CalendarBase.Salı:
+            calendar.days = "Salı"
+        elif calendar.days  == CalendarBase.Çarşamba:
+            calendar.days = "Çarşamba"
+        elif calendar.days  == CalendarBase.Perşembe:
+            calendar.days = "Perşembe"
+        elif calendar.days  == CalendarBase.Cuma:
+            calendar.days = "Cuma"
+    return calendars

@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, Request, Form
+from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
-from schemas import CalendarBase, Courses, LoginBase, CalendarData
-from crud.calendar import create_calendar
+from schemas import LoginBase, CalendarData
+from crud.calendar import create_calendar, get_calendar, delete_calendar as delete_calendar_func
 from db.database import get_db
 from authentication.oauth2 import create_authentication_token
 from fastapi.responses import HTMLResponse
@@ -69,5 +69,46 @@ def handle_create_calendar(
             {"request": request,
              "username": current_user.username,
              "error_message": f"Takvim oluşturulurken bir hata oluştu: {str(e)}"
+             }
+        )
+
+# Takvim listeleme
+@router.get("/list", response_class=HTMLResponse)
+def show_calendar_list(request: Request,
+                       db: Session = Depends(get_db),
+                       current_user: LoginBase = Depends(create_authentication_token)
+):
+    calendars = get_calendar(db)
+    return templates.TemplateResponse(
+        "list_calendars.html",
+        {"request": request, "username": current_user.username, "calendars": calendars}
+    )
+# Takvim silme işlemi
+@router.post("/delete/{calendar_id}", response_class=HTMLResponse)
+def delete_calendar(
+    request: Request,
+    calendar_id: int,
+    db: Session = Depends(get_db),
+    current_user: LoginBase = Depends(create_authentication_token)
+):
+    try:
+        delete_calendar_func(db, calendar_id, current_user)
+        calendars = get_calendar(db)
+        return templates.TemplateResponse(
+            "list_calendars.html",
+            {"request": request,
+             "username": current_user.username,
+             "calendars": calendars,
+             "success_message": "Takvim başarıyla silindi"
+             }
+        )
+    except HTTPException as e:
+        calendars = get_calendar(db)
+        return templates.TemplateResponse(
+            "list_calendars.html",
+            {"request": request,
+             "username": current_user.username,
+             "calendars": calendars,
+             "error_message": e.detail
              }
         )
