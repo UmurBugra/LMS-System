@@ -3,26 +3,34 @@
 <head>
     <title>Ana Sayfa</title>
     <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
-{#    simgeleri çektiğim url#}
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
     <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
     </div>
+
     <div class="home-container">
         <div class="header-content" style="display: flex; align-items: center;">
             <div>
                 <h1>Ana Sayfa</h1>
                 <p>{{ username }} [{{ user_type }}]</p>
             </div>
+
             <div class="vertical-divider"></div>
             <div></div>
+
             {% if user_type == "Öğretmen" %}
             <div class="navigation-buttons">
                 <div class="calendar-button">
                     <a href="/calendar/create" class="button">Takvim Ekle</a>
                     <a href="/calendar/list" class="menu-item">Takvimleri Görüntüle</a>
+                </div>
+            </div>
+            {% elif user_type == "Öğrenci" %}
+            <div class="navigation-buttons">
+                <div class="calendar-button">
+                    <a href="/calendar/student/calendar" class="button">Takvimleri Görüntüle</a>
                 </div>
             </div>
             {% endif %}

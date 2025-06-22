@@ -51,10 +51,10 @@ def get_calendar(db: Session):
             calendar.days = "Pazartesi"
         elif calendar.days == CalendarBase.Salı:
             calendar.days = "Salı"
-        elif calendar.days  == CalendarBase.Çarşamba:
+        elif calendar.days == CalendarBase.Çarşamba:
             calendar.days = "Çarşamba"
-        elif calendar.days  == CalendarBase.Perşembe:
+        elif calendar.days == CalendarBase.Perşembe:
             calendar.days = "Perşembe"
-        elif calendar.days  == CalendarBase.Cuma:
+        elif calendar.days == CalendarBase.Cuma:
             calendar.days = "Cuma"
     return calendars
