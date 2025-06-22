@@ -94,3 +94,23 @@ def create_user_authentication_token(
     if user is None:
         raise credentials_exception
     return user
+
+def student_authentication_token(
+    access_token: Optional[str] = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if access_token is None:
+        raise credentials_exception
+    try:
+        token = access_token.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        if username is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+
+    user = get_user_by_username(db, username)
+    if user is None or user.type != UserType.student:
+        raise credentials_exception
+    return user
