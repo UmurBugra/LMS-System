@@ -52,17 +52,16 @@
     </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Dropdown toggle butonunu ve dropdown içeriğini seç
+        // Dropdown menü elemanlarını seç
         const dropdownToggle = document.querySelector('.dropdown-toggle');
         const dropdownContent = document.querySelector('.dropdown-content');
 
-        // Toggle düğmesine tıklandığında dropdown'ı aç/kapat
+        // Dropdown açma işlemi
         dropdownToggle.addEventListener('click', function(e) {
             e.preventDefault();
             dropdownContent.classList.toggle('show');
         });
-
-        // Sayfa üzerinde herhangi bir yere tıklandığında dropdown'ı kapat
+        // dropdown kapatma işlemi
         window.addEventListener('click', function(e) {
             if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
                 if (dropdownContent.classList.contains('show')) {
