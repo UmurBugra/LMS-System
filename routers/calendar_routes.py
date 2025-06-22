@@ -40,22 +40,34 @@ def handle_create_calendar(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(create_authentication_token)
 ):
+    try:
+        calendar_data = CalendarData(
+            day=days,
+            t_08_09=t_08_09,
+            t_09_10=t_09_10,
+            t_10_11=t_10_11,
+            t_11_12=t_11_12,
+            t_13_14=t_13_14,
+            t_14_15=t_14_15,
+            t_15_16=t_15_16,
+            t_16_17=t_16_17
+        )
 
-    calendar_data = CalendarData(
-        day=days,
-        t_08_09=t_08_09,
-        t_09_10=t_09_10,
-        t_10_11=t_10_11,
-        t_11_12=t_11_12,
-        t_13_14=t_13_14,
-        t_14_15=t_14_15,
-        t_15_16=t_15_16,
-        t_16_17=t_16_17
-    )
+        result = create_calendar(db, calendar_data, current_user)
 
-    result = create_calendar(db, calendar_data, current_user)
-
-    return templates.TemplateResponse(
-        "create_calendar.html",
-        {"request": request, "data": result}
-    )
+        return templates.TemplateResponse(
+            "create_calendar.html",
+            {"request": request,
+             "username": current_user.username,
+             "success_message": "Takvim başarıyla oluşturuldu.",
+             "data": result
+             }
+        )
+    except Exception as e:
+        return templates.TemplateResponse(
+            "create_calendar.html",
+            {"request": request,
+             "username": current_user.username,
+             "error_message": f"Takvim oluşturulurken bir hata oluştu: {str(e)}"
+             }
+        )

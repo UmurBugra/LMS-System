@@ -14,7 +14,12 @@
     <div class="container">
         <h1>Takvim Oluştur</h1>
         <p>Kullanıcı: {{ username }}</p>
-
+        {% if success_message %}
+        <div class="success-message">{{ success_message }}</div>
+        {% endif %}
+        {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+        {% endif %}
         <form id="calendarForm" action="/calendar/create" method="post">
             <div class="form-group">
                 <label for="days">Günler:</label>
@@ -76,5 +81,23 @@
             </div>
         </form>
     </div>
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+    let successMessage = document.querySelector(".success-message");
+    if (successMessage) {
+        successMessage.style.display = "none";
+
+        // 2 saniye sonra mesajı göster
+        setTimeout(function(){
+            successMessage.style.display = "block";
+
+            // Mesajı 5 saniye sonra otomatik kapat
+            setTimeout(function(){
+                successMessage.style.display = "none";
+            }, 2000);
+        }, 500);
+    }
+});
+</script>
 </body>
 </html>
