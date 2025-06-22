@@ -6,9 +6,23 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
+    <div class="top-buttons">
+    <div class="notification-button dropdown">
+    <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
+    <div class="dropdown-content">
+        <h3>Bildirimler</h3>
+        <!-- Örnek bildirimler -->
+        <div class="notification-item">
+            <p>Yeni bir ders takvimi eklendi</p>
+            <small>2 saat önce</small>
+        </div>
+        <a href="/nav/notifications" class="see-all">Tümünü gör</a>
+    </div>
+</div>
     <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
     </div>
+</div>
 
     <div class="home-container">
         <div class="header-content" style="display: flex; align-items: center;">
@@ -36,5 +50,27 @@
             {% endif %}
         </div>
     </div>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Dropdown toggle butonunu ve dropdown içeriğini seç
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        // Toggle düğmesine tıklandığında dropdown'ı aç/kapat
+        dropdownToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            dropdownContent.classList.toggle('show');
+        });
+
+        // Sayfa üzerinde herhangi bir yere tıklandığında dropdown'ı kapat
+        window.addEventListener('click', function(e) {
+            if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
+                if (dropdownContent.classList.contains('show')) {
+                    dropdownContent.classList.remove('show');
+                }
+            }
+        });
+    });
+</script>
 </body>
 </html>
