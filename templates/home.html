@@ -106,6 +106,26 @@
         });
     }
 });
+    // Duyuru formunu gönderme işlemi
+    document.getElementById('duyuruForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+
+    fetch('/notification/create', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message);
+        document.getElementById('duyuruModal').style.display = 'none';
+        document.getElementById('duyuruForm').reset();
+    })
+    .catch(error => {
+        console.error('Hata:', error);
+        alert('Duyuru gönderilirken bir hata oluştu.');
+    });
+});
 </script>
 <div id="duyuruModal" class="modal">
   <div class="modal-content">
