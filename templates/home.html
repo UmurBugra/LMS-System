@@ -23,22 +23,22 @@
             <p>Henüz bildiriminiz bulunmamaktadır.</p>
         </div>
     {% endif %}
-
     {% if user_type == "Öğretmen" %}
-    <div class="notification-buttons">
-        <a href="/notification/create" class="notification-btn">Bildirim Oluştur</a>
-        <a href="/notification" class="notification-btn">Tümünü Gör</a>
-    </div>
-    {% else %}
-    <a href="/notification" class="see-all">Tümünü gör</a>
-    {% endif %}
+<div class="notification-buttons">
+    <a href="/notification/create" class="notification-btn">Duyuru Yap</a>
+    <a href="/notification" class="notification-btn">Tümünü Gör</a>
+</div>
+{% else %}
+<div class="notification-buttons">
+    <a href="/notification" class="notification-btn">Tümünü Gör</a>
+</div>
+{% endif %}
 </div>
 </div>
     <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
     </div>
 </div>
-
     <div class="home-container">
         <div class="header-content" style="display: flex; align-items: center;">
             <div>
@@ -67,24 +67,64 @@
     </div>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Dropdown menü elemanlarını seç
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        const dropdownContent = document.querySelector('.dropdown-content');
+    // Dropdown menü elemanlarını seç
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdownContent = document.querySelector('.dropdown-content');
 
-        // Dropdown açma işlemi
-        dropdownToggle.addEventListener('click', function(e) {
+    // Dropdown açma işlemi
+    dropdownToggle.addEventListener('click', function(e) {
+        e.preventDefault();
+        dropdownContent.classList.toggle('show');
+    });
+
+    // dropdown kapatma işlemi
+    window.addEventListener('click', function(e) {
+        if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
+            if (dropdownContent.classList.contains('show')) {
+                dropdownContent.classList.remove('show');
+            }
+        }
+    });
+    const duyuruLink = document.querySelector('a[href="/notification/create"]');
+    const duyuruModal = document.getElementById('duyuruModal');
+    const closeBtn = document.querySelector('.modal .close');
+
+    if (duyuruLink && duyuruModal) {
+        duyuruLink.addEventListener('click', function(e) {
             e.preventDefault();
-            dropdownContent.classList.toggle('show');
+            duyuruModal.style.display = 'block';
         });
-        // dropdown kapatma işlemi
+
+        closeBtn.addEventListener('click', function() {
+            duyuruModal.style.display = 'none';
+        });
+
         window.addEventListener('click', function(e) {
-            if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
-                if (dropdownContent.classList.contains('show')) {
-                    dropdownContent.classList.remove('show');
-                }
+            if (e.target === duyuruModal) {
+                duyuruModal.style.display = 'none';
             }
         });
-    });
+    }
+});
 </script>
+<div id="duyuruModal" class="modal">
+  <div class="modal-content">
+    <span class="close">&times;</span>
+    <h2>Yeni Duyuru Oluştur</h2>
+    <form id="duyuruForm">
+      <div class="form-group">
+        <label for="duyuruIcerik">Duyuru İçeriği</label>
+        <textarea id="duyuruIcerik" name="content" rows="4" required></textarea>
+      </div>
+      <div class="form-group">
+        <label for="alicilar">Alıcılar</label>
+        <select id="alicilar" name="recipients" multiple required>
+          <option value="all">Tüm Öğrenciler</option>
+        </select>
+      </div>
+      <button type="submit" class="btn">Duyuru Gönder</button>
+    </form>
+  </div>
+</div>
 </body>
 </html>
