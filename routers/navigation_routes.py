@@ -14,7 +14,7 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/logout")
 def logout(request: Request, db: Session = Depends(get_db)):
     response = RedirectResponse(url="/", status_code=302) # oturum sonlandırma # HTTP 302 (Found/Redirect)
-    response.delete_cookie("access_token")                  # çerez silme
+    response.delete_cookie("access_token")                # çerez silme
     return response
 
 @router.get("/home")
