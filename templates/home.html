@@ -10,14 +10,29 @@
     <div class="notification-button dropdown">
     <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
     <div class="dropdown-content">
-        <h3>Bildirimler</h3>
-        <!-- Örnek bildirimler -->
+    <h3>Bildirimler</h3>
+    {% if notifications %}
+        {% for notification in notifications %}
         <div class="notification-item">
-            <p>Yeni bir ders takvimi eklendi</p>
-            <small>2 saat önce</small>
+            <p>{{ notification.content }}</p>
+            <small>{{ notification.created_at.strftime('%d-%m-%Y %H:%M') }}</small>
         </div>
-        <a href="/nav/notifications" class="see-all">Tümünü gör</a>
+        {% endfor %}
+    {% else %}
+        <div class="notification-item">
+            <p>Henüz bildiriminiz bulunmamaktadır.</p>
+        </div>
+    {% endif %}
+
+    {% if user_type == "Öğretmen" %}
+    <div class="notification-buttons">
+        <a href="/notification/create" class="notification-btn">Bildirim Oluştur</a>
+        <a href="/notification" class="notification-btn">Tümünü Gör</a>
     </div>
+    {% else %}
+    <a href="/notification" class="see-all">Tümünü gör</a>
+    {% endif %}
+</div>
 </div>
     <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>

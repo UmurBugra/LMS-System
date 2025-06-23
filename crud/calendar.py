@@ -1,4 +1,6 @@
 from sqlalchemy.orm import Session
+
+from crud.notification import create_notification_for_all_students
 from db.models import CalendarData, LoginData
 from schemas import CalendarBase, Courses, UserType, LoginBase
 from fastapi import HTTPException
@@ -22,6 +24,11 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
     db.add(calendar_entry)
     db.commit()
     db.refresh(calendar_entry)
+
+    #Öğrencilere bildirim gönderme
+    message = f"{username} kullanıcısı {request.day} günü için yeni bir takvim oluşturdu."
+    create_notification_for_all_students(db, content=message)
+
     return calendar_entry
 
 # token fonksiyonu
@@ -46,15 +53,15 @@ def delete_calendar(db: Session, calendar_id: int, current_user: LoginBase):
 
 def get_calendar(db: Session):
     calendars = db.query(CalendarData).all()
-    for calendar in calendars:
-        if calendar.days == CalendarBase.Pazartesi:
-            calendar.days = "Pazartesi"
-        elif calendar.days == CalendarBase.Salı:
-            calendar.days = "Salı"
-        elif calendar.days == CalendarBase.Çarşamba:
-            calendar.days = "Çarşamba"
-        elif calendar.days == CalendarBase.Perşembe:
-            calendar.days = "Perşembe"
-        elif calendar.days == CalendarBase.Cuma:
-            calendar.days = "Cuma"
+    for i in calendars:
+        if i.days == CalendarBase.Pazartesi:
+            i.days = "Pazartesi"
+        elif i.days == CalendarBase.Salı:
+            i.days = "Salı"
+        elif i.days == CalendarBase.Çarşamba:
+            i.days = "Çarşamba"
+        elif i.days == CalendarBase.Perşembe:
+            i.days = "Perşembe"
+        elif i.days == CalendarBase.Cuma:
+            i.days = "Cuma"
     return calendars

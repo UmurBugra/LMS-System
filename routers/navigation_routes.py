@@ -5,6 +5,7 @@ from db.database import get_db
 from fastapi.templating import Jinja2Templates
 from authentication.oauth2 import get_current_user_from_cookie
 from schemas import UserType
+from db.models import NotificationData
 
 router = APIRouter(prefix="/nav", tags=["navigation"])
 templates = Jinja2Templates(directory="templates")
@@ -17,7 +18,7 @@ def logout(request: Request, db: Session = Depends(get_db)):
     return response
 
 @router.get("/home")
-def go_to_home(request: Request, current_user = Depends(get_current_user_from_cookie)):
+def go_to_home(request: Request, db: Session = Depends(get_db), current_user = Depends(get_current_user_from_cookie)):
 
     if current_user.type == UserType.student:
         display_user_type = "Öğrenci"
@@ -26,8 +27,11 @@ def go_to_home(request: Request, current_user = Depends(get_current_user_from_co
     else:
         display_user_type = "Bilinmiyor"
 
+    notifications = db.query(NotificationData).filter(NotificationData.user_name == current_user.username).all()
+
     return templates.TemplateResponse( "home.html",
                                        {"request": request,
                                         "username": current_user.username,
-                                        "user_type": display_user_type
+                                        "user_type": display_user_type,
+                                        "notifications": notifications
                                         })

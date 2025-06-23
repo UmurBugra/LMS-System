@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request
-from routers import login_routes, login_auth_routes, calendar_routes, oauth2_routes, navigation_routes
+from routers import login_routes, login_auth_routes, calendar_routes, oauth2_routes, navigation_routes, notification_routes
 from db.database import engine
 from db import models
 from fastapi.templating import Jinja2Templates
@@ -15,6 +15,7 @@ app.include_router(login_auth_routes.router)
 app.include_router(calendar_routes.router)
 app.include_router(oauth2_routes.router)
 app.include_router(navigation_routes.router)
+app.include_router(notification_routes.router)
 
 @app.get("/")
 def root(request: Request):
