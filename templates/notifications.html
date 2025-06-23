@@ -19,7 +19,7 @@
                 {% for notification in notifications %}
                 <div class="notification-item">
                     <p>{{ notification.content }}</p>
-                    <small>{{ notification.created_at.strftime('%d-%m-%Y %H:%M') }}</small>
+                    <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
                 </div>
                 {% endfor %}
             {% else %}

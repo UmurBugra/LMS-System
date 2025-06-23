@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from authentication.oauth2 import get_current_user_from_cookie
 from schemas import UserType
 from db.models import NotificationData
+from crud.notification import get_notifications
 
 router = APIRouter(prefix="/nav", tags=["navigation"])
 templates = Jinja2Templates(directory="templates")
@@ -27,7 +28,8 @@ def go_to_home(request: Request, db: Session = Depends(get_db), current_user = D
     else:
         display_user_type = "Bilinmiyor"
 
-    notifications = db.query(NotificationData).filter(NotificationData.user_name == current_user.username).all()
+    # UTC+3
+    notifications = get_notifications(db, current_user.username)
 
     return templates.TemplateResponse( "home.html",
                                        {"request": request,
