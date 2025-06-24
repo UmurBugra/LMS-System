@@ -26,7 +26,7 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
     db.refresh(calendar_entry)
 
     #Öğrencilere bildirim gönderme
-    message = f"{username} kullanıcısı {request.day} günü için yeni bir takvim oluşturdu."
+    message = f"{username} kullanıcısı {request.day.value} günü için yeni bir takvim oluşturdu."
     create_notification_for_all_students(db, content=message)
 
     return calendar_entry
