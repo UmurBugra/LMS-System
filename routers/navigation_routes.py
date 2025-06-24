@@ -5,7 +5,6 @@ from db.database import get_db
 from fastapi.templating import Jinja2Templates
 from authentication.oauth2 import get_current_user_from_cookie
 from schemas import UserType
-from db.models import NotificationData
 from crud.notification import get_notifications
 
 router = APIRouter(prefix="/nav", tags=["navigation"])
