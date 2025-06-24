@@ -1,10 +1,17 @@
 from db.database import Base
 from sqlalchemy.sql.sqltypes import Integer, String, Boolean
-from sqlalchemy import Column, DateTime, func
+from sqlalchemy import Column, DateTime, func, Table
 from sqlalchemy import Enum as SQLAlchemyEnum
 from schemas import UserType, CalendarBase
 from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.orm import relationship
+
+notification_receivers = Table(
+    "notification_receivers",
+    Base.metadata,
+    Column("notification_id", Integer, ForeignKey("notification_data.id")),
+    Column("user_name", String, ForeignKey("login_data.username"))
+)
 
 # Kullanıcı bilgileri
 class LoginData(Base):
@@ -15,6 +22,7 @@ class LoginData(Base):
     email = Column(String)
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
     items = relationship("CalendarData", back_populates="user")
+    notifications = relationship("NotificationData", secondary=notification_receivers, back_populates="receiver")
 
 # Takvim verileri
 class CalendarData(Base):
@@ -36,6 +44,6 @@ class NotificationData(Base):
     __tablename__ = "notification_data"
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String)
-    is_read = Column(Boolean, default=False)
     created_time = Column(DateTime(timezone=True), default=func.now())
-    user_name = Column(String, ForeignKey("login_data.username"))
+    # many-to-many relationship LoginData
+    receiver = relationship("LoginData", secondary=notification_receivers, back_populates="notifications")
