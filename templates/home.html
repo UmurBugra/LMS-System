@@ -20,21 +20,22 @@
         {% endfor %}
     {% else %}
         <div class="notification-item">
-            <p>Henüz bildiriminiz bulunmamaktadır.</p>
+            <p>Henüz bildirim bulunmamaktadır.</p>
         </div>
     {% endif %}
+
     {% if user_type == "Öğretmen" %}
-<div class="notification-buttons">
-    <a href="/notification/create" class="notification-btn">Duyuru Yap</a>
-    <a href="/notification" class="notification-btn">Tümünü Gör</a>
+    <div class="notification-buttons">
+        <a href="/notification/create" class="notification-btn">Duyuru Yap</a>
+        <a href="/notification" class="notification-btn">Tümünü Gör</a>
+    </div>
+    {% else %}
+    <div class="notification-buttons">
+        <a href="/notification" class="notification-btn">Tümünü Gör</a>
+    </div>
+    {% endif %}
 </div>
-{% else %}
-<div class="notification-buttons">
-    <a href="/notification" class="notification-btn">Tümünü Gör</a>
-</div>
-{% endif %}
-</div>
-</div>
+        </div>
     <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
     </div>

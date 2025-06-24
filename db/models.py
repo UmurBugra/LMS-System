@@ -45,5 +45,8 @@ class NotificationData(Base):
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String)
     created_time = Column(DateTime(timezone=True), default=func.now())
+    sender_username = Column(String, ForeignKey("login_data.username"))
+    # Birden fazla ilişki olabilir, bu yüzden foreign_keys ile belirtiliyor
+    sender = relationship("LoginData", foreign_keys=[sender_username])
     # many-to-many relationship LoginData
     receiver = relationship("LoginData", secondary=notification_receivers, back_populates="notifications")

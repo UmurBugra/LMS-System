@@ -28,7 +28,7 @@ def create_notification_route(
     try:
         if recipients == "all":
             from crud.notification import create_notification_for_all_students
-            create_notification_for_all_students(db, content)
+            create_notification_for_all_students(db, content, sender_username=current_user.username)
         else:
             from crud.notification import create_notification
             create_notification(db, content, current_user.username)
