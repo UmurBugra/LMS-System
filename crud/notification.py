@@ -27,13 +27,12 @@ def create_notification_for_all_students(db: Session, content: str, sender_usern
         content=content,
         sender_username=sender_username
     )
-    db.add(notification)
-
     notification.receiver = students
 
+    db.add(notification)
     db.commit()
     db.refresh(notification)
-    return notification
+    return notification 
 
 def get_notifications(db: Session, username: str):
     user = db.query(LoginData).filter(LoginData.username == username).first()
