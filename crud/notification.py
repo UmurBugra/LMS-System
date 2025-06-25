@@ -4,12 +4,12 @@ from datetime import datetime, timedelta, timezone
 from schemas import UserType
 
 def create_notification(db: Session, content: str, receiver=None):
-    turkey_tz = timezone(timedelta(hours=3))
-    current_time = datetime.now(turkey_tz)
+    utc_now = datetime.now(timezone.utc)
+    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
 
     notification_entry = NotificationData(
         content=content,
-        created_time=current_time
+        created_time=turkey_time
     )
 
     if receiver:
@@ -21,10 +21,14 @@ def create_notification(db: Session, content: str, receiver=None):
     return notification_entry
 
 def create_notification_for_all_students(db: Session, content: str, sender_username: str):
+    utc_now = datetime.now(timezone.utc)
+    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
     students = db.query(LoginData).filter(LoginData.type == UserType.student).all()
 
     notification = NotificationData(
         content=content,
+        created_time=turkey_time,
         sender_username=sender_username
     )
     notification.receiver = students
