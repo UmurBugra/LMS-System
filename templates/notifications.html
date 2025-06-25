@@ -15,23 +15,23 @@
         <h1>Bildirimler</h1>
 
         <div class="notifications-list">
-            {% if notifications %}
-                {% for notification in notifications %}
-                    <div class="notification-item">
-                        <p>{{ notification.content }}</p>
-                        {% if notification.sender_username %}
-                        <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-                        {% else %}
-                        <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-            {% else %}
-                <div class="notification-item">
-                    <p>Henüz bildirim bulunmamaktadır.</p>
-                </div>
-            {% endif %}
+    {% if notifications %}
+        {% for notification in notifications %}
+            <div class="notification-item">
+                <p>{{ notification.content }}</p>
+                {% if notification.sender_username %}
+                <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% else %}
+                <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% endif %}
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="notification-item">
+            <p>Henüz bildirim bulunmamaktadır.</p>
         </div>
+    {% endif %}
+</div>
     </div>
     </div>
     </body>
