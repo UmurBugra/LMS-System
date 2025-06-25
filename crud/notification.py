@@ -38,6 +38,29 @@ def create_notification_for_all_students(db: Session, content: str, sender_usern
     db.refresh(notification)
     return notification 
 
+def create_notification_for_all_teachers(db: Session, content: str, sender_id: int):
+    utc_now = datetime.now(timezone.utc)
+    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
+    sender = db.query(LoginData).filter(LoginData.id == sender_id).first()
+    if not sender:
+        raise ValueError("Geçersiz kullanıcı ID'si")
+
+    teachers = db.query(LoginData).filter(LoginData.type == UserType.teacher,
+                                          LoginData.id != sender_id).all()
+
+    notification = NotificationData(
+        content=content,
+        created_time=turkey_time,
+        sender_username=sender.username
+    )
+    notification.receiver = teachers
+
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+    return notification
+
 def get_notifications(db: Session, username: str):
     user = db.query(LoginData).filter(LoginData.username == username).first()
     if user:
