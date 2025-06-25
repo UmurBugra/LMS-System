@@ -18,7 +18,7 @@ def get_notifications_route(request: Request, db: Session = Depends(get_db), cur
 @router.post("/create")
 def create_notification_route(
     content: str = Form(...),
-    recipients: str = Form(None),
+    receiver: str = Form(None),
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(get_current_user_from_cookie)
 ):
@@ -26,7 +26,7 @@ def create_notification_route(
         raise HTTPException(status_code=400, detail="boş duyuru içeriği")
 
     try:
-        if recipients == "all":
+        if receiver == "all_students":
             create_notification_for_all_students(db, content, sender_username=current_user.username)
         else:
             create_notification(db, content, current_user.username)
