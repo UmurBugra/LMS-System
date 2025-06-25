@@ -7,149 +7,167 @@
 </head>
 <body>
     <div class="top-buttons">
-    <div class="notification-button dropdown">
-    <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
-    <div class="dropdown-content">
-    <h3>Bildirimler</h3>
-    {% if notifications %}
-        {% for notification in notifications %}
-    <div class="notification-item">
-        <p>{{ notification.content }}</p>
-        {% if notification.sender_username %}
-        <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-        {% else %}
-        <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-        {% endif %}
-</div>
-{% endfor %}
-    {% else %}
-        <div class="notification-item">
-            <p>Henüz bildirim bulunmamaktadır.</p>
-        </div>
-    {% endif %}
+      <div class="notification-button dropdown">
+        <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
+        <div class="dropdown-content">
+          <h3>Bildirimler</h3>
+          {% if notifications %}
+            {% for notification in notifications %}
+              <div class="notification-item">
+                <p>{{ notification.content }}</p>
+                {% if notification.sender_username %}
+                  <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% else %}
+                  <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="notification-item">
+              <p>Henüz bildirim bulunmamaktadır.</p>
+            </div>
+          {% endif %}
 
-    {% if user_type == "Öğretmen" %}
-    <div class="notification-buttons">
-        <a href="/notification/create" class="notification-btn">Duyuru Yap</a>
-        <a href="/notification" class="notification-btn">Tümünü Gör</a>
-    </div>
-    {% else %}
-    <div class="notification-buttons">
-        <a href="/notification" class="notification-btn">Tümünü Gör</a>
-    </div>
-    {% endif %}
-</div>
+          {% if user_type == "Öğretmen" %}
+            <div class="notification-buttons">
+              <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
+              <a href="/notification" class="notification-btn">Tümünü Gör</a>
+            </div>
+          {% else %}
+            <div class="notification-buttons">
+              <a href="/notification" class="notification-btn">Tümünü Gör</a>
+            </div>
+          {% endif %}
         </div>
-    <div class="logout-button">
+      </div>
+      <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+      </div>
     </div>
-</div>
+
     <div class="home-container">
-        <div class="header-content" style="display: flex; align-items: center;">
-            <div>
-                <h1>Ana Sayfa</h1>
-                <p>{{ username }} [{{ user_type }}]</p>
-            </div>
-
-            <div class="vertical-divider"></div>
-            <div></div>
-
-            {% if user_type == "Öğretmen" %}
-            <div class="navigation-buttons">
-                <div class="calendar-button">
-                    <a href="/calendar/create" class="button">Takvim Ekle</a>
-                    <a href="/calendar/list" class="menu-item">Takvimleri Görüntüle</a>
-                </div>
-            </div>
-            {% elif user_type == "Öğrenci" %}
-            <div class="navigation-buttons">
-                <div class="calendar-button">
-                    <a href="/calendar/student/calendar" class="button">Takvimleri Görüntüle</a>
-                </div>
-            </div>
-            {% endif %}
+      <div class="header-content" style="display: flex; align-items: center;">
+        <div>
+          <h1>Ana Sayfa</h1>
+          <p>{{ username }} [{{ user_type }}]</p>
         </div>
+
+        <div class="vertical-divider"></div>
+        <div></div>
+
+        {% if user_type == "Öğretmen" %}
+          <div class="navigation-buttons">
+            <div class="calendar-button">
+              <a href="/calendar/create" class="button">Takvim Ekle</a>
+              <a href="/calendar/list" class="menu-item">Takvimleri Görüntüle</a>
+            </div>
+          </div>
+        {% elif user_type == "Öğrenci" %}
+          <div class="navigation-buttons">
+            <div class="calendar-button">
+              <a href="/calendar/student/calendar" class="button">Takvimleri Görüntüle</a>
+            </div>
+          </div>
+        {% endif %}
+      </div>
     </div>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-    // Dropdown menü elemanlarını seç
-    const dropdownToggle = document.querySelector('.dropdown-toggle');
-    const dropdownContent = document.querySelector('.dropdown-content');
 
-    // Dropdown açma işlemi
-    dropdownToggle.addEventListener('click', function(e) {
-        e.preventDefault();
-        dropdownContent.classList.toggle('show');
-    });
+    <!-- Toast bildirimi için div -->
+    <div id="toast" class="toast"></div>
 
-    // dropdown kapatma işlemi
-    window.addEventListener('click', function(e) {
-        if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
-            if (dropdownContent.classList.contains('show')) {
-                dropdownContent.classList.remove('show');
-            }
+    <!-- Duyuru Modal -->
+    <div id="duyuruModal" class="modal">
+      <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Yeni Duyuru Oluştur</h2>
+        <!-- action ve method kaldırıldı, AJAX ile gönderilecek -->
+        <form id="duyuruForm">
+          <div class="form-group">
+            <label for="duyuruIcerik">Duyuru İçeriği</label>
+            <textarea id="duyuruIcerik" name="content" rows="4" required></textarea>
+          </div>
+          <div class="form-group">
+            <label for="alicilar">Alıcılar</label>
+            <select id="alicilar" name="recipients" required>
+              <option value="all">Tüm Öğrenciler</option>
+            </select>
+          </div>
+          <button type="submit" class="btn">Duyuru Gönder</button>
+        </form>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', () => {
+        // Toast fonksiyonu
+        function showToast(message) {
+          const toast = document.getElementById('toast');
+          toast.textContent = message;
+          toast.classList.add('show');
+          setTimeout(() => {
+            toast.classList.remove('show');
+          }, 2000);
         }
-    });
-    const duyuruLink = document.querySelector('a[href="/notification/create"]');
-    const duyuruModal = document.getElementById('duyuruModal');
-    const closeBtn = document.querySelector('.modal .close');
 
-    if (duyuruLink && duyuruModal) {
-        duyuruLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            duyuruModal.style.display = 'block';
+        // Dropdown açma-kapama
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropdownToggle.addEventListener('click', e => {
+          e.preventDefault();
+          dropdownContent.classList.toggle('show');
         });
 
-        closeBtn.addEventListener('click', function() {
+        window.addEventListener('click', e => {
+          if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
+            dropdownContent.classList.remove('show');
+          }
+        });
+
+        // Modal açma-kapama
+        const duyuruModal = document.getElementById('duyuruModal');
+        const openModalBtn = document.getElementById('openDuyuruModal');
+        const closeBtn = duyuruModal.querySelector('.close');
+
+        openModalBtn.addEventListener('click', e => {
+          e.preventDefault();
+          duyuruModal.style.display = 'block';
+        });
+
+        closeBtn.addEventListener('click', () => {
+          duyuruModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', e => {
+          if (e.target === duyuruModal) {
             duyuruModal.style.display = 'none';
+          }
         });
 
-        window.addEventListener('click', function(e) {
-            if (e.target === duyuruModal) {
-                duyuruModal.style.display = 'none';
-            }
-        });
-    }
-});
-    // Duyuru formunu gönderme işlemi
-    document.getElementById('duyuruForm').addEventListener('submit', function(e) {
-    e.preventDefault();
-    const formData = new FormData(this);
+        // Form submit işlemi (AJAX)
+        const duyuruForm = document.getElementById('duyuruForm');
 
-    fetch('/notification/create', {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => response.json())
-    .then(data => {
-        alert(data.message);
-        document.getElementById('duyuruModal').style.display = 'none';
-        document.getElementById('duyuruForm').reset();
-    })
-    .catch(error => {
-        console.error('Hata:', error);
-        alert('Duyuru gönderilirken bir hata oluştu.');
-    });
-});
-</script>
-<div id="duyuruModal" class="modal">
-  <div class="modal-content">
-    <span class="close">&times;</span>
-    <h2>Yeni Duyuru Oluştur</h2>
-    <form id="duyuruForm" action="/notification/create" method="post">
-  <div class="form-group">
-    <label for="duyuruIcerik">Duyuru İçeriği</label>
-    <textarea id="duyuruIcerik" name="content" rows="4" required></textarea>
-  </div>
-  <div class="form-group">
-    <label for="alicilar">Alıcılar</label>
-    <select id="alicilar" name="recipients" multiple required>
-  <option value="all">Tüm Öğrenciler</option>
-</select>
-  </div>
-  <button type="submit" class="btn">Duyuru Gönder</button>
-</form>
-  </div>
-</div>
+        duyuruForm.addEventListener('submit', e => {
+          e.preventDefault();
+
+          const formData = new FormData(duyuruForm);
+
+          fetch('/notification/create', {
+            method: 'POST',
+            body: formData
+          })
+          .then(res => res.json())
+          .then(data => {
+            showToast(data.message);        // Toast göster
+            duyuruModal.style.display = 'none';  // Modal kapat
+            duyuruForm.reset();             // Formu temizle
+          })
+          .catch(err => {
+            console.error(err);
+            showToast('Duyuru gönderilirken bir hata oluştu.');
+          });
+        });
+      });
+    </script>
 </body>
 </html>
