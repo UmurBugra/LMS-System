@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
-from crud.notification import create_notification, get_notifications
+from crud.notification import create_notification, get_notifications, create_notification_for_all_students
 from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
 
@@ -27,10 +27,8 @@ def create_notification_route(
 
     try:
         if recipients == "all":
-            from crud.notification import create_notification_for_all_students
             create_notification_for_all_students(db, content, sender_username=current_user.username)
         else:
-            from crud.notification import create_notification
             create_notification(db, content, current_user.username)
         return JSONResponse(status_code=201, content={"message": "Duyuru yapıldı."})
     except Exception as e:
