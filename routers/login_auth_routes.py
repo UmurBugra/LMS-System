@@ -7,6 +7,7 @@ from fastapi.templating import Jinja2Templates
 from db.models import LoginData
 from fastapi.responses import RedirectResponse
 from authentication import oauth2
+
 router = APIRouter(prefix="/auth", tags=["auth"])
 templates = Jinja2Templates(directory="templates")
 
@@ -25,33 +26,21 @@ def user_login(request: LoginBase, user_type: UserType ,db: Session = Depends(ge
 @router.post("/login/form")
 def user_login_form(
         request: Request,
-        response: Response,  # Response parametresini ekleyin
         email: str = Form(...),
         password: str = Form(...),
         db: Session = Depends(get_db)
 ):
-    user = db.query(LoginData).filter(
-        LoginData.email == email,
-        LoginData.password == password
-    ).first()
+    login_request = LoginEmailPassword(email=email, password=password)
+    result = auth.user_login(db, login_request)
 
-    if not user:
+    if isinstance(result, str):
         return templates.TemplateResponse(
             "index.html",
-            {"request": request, "error": "E-posta veya şifre yanlış"}
+            {"request": request, "error": result}
         )
     else:
-        display_user_type = ""
-        if user.type == UserType.student:
-            display_user_type = "Öğrenci"
-        elif user.type == UserType.teacher:
-            display_user_type = "Öğretmen"
-
-        # Token oluştur ve cookie'ye ekle
-        access_token = oauth2.create_access_token(data={"sub": user.username})
-        response = templates.TemplateResponse(
-            "home.html",
-            {"request": request, "username": user.username, "user_type": display_user_type}
-        )
+        # Token oluşturma ve cookie ayarlama
+        access_token = oauth2.create_access_token(data={"sub": result["username"]})
+        response = RedirectResponse(url="/nav/home", status_code=303)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
         return response
