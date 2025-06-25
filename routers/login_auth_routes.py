@@ -55,9 +55,3 @@ def user_login_form(
         )
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
         return response
-# Çıkış yapma işlemi
-# @router.get("/logout")
-# def logout(request: Request, db: Session = Depends(get_db)):
-#     response = RedirectResponse(url="/", status_code=302) # oturum sonlandırma # HTTP 302 (Found/Redirect)
-#     response.delete_cookie("access_token")                  # çerez silme
-#     return response
