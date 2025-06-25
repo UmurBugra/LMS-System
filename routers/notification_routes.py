@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from sqlalchemy.orm import Session
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
 from crud.notification import create_notification, get_notifications, create_notification_for_all_students
@@ -28,8 +28,9 @@ def create_notification_route(
     try:
         if recipients == "all":
             create_notification_for_all_students(db, content, sender_username=current_user.username)
+            response = RedirectResponse(url="/nav/home", status_code=303) # 303 sonucu başka url üzerine yönlendirir
+            return response
         else:
             create_notification(db, content, current_user.username)
-        return JSONResponse(status_code=201, content={"message": "Duyuru yapıldı."})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
