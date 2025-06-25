@@ -1,5 +1,4 @@
 from sqlalchemy.orm import Session
-
 from crud.notification import create_notification_for_all_students
 from db.models import CalendarData, LoginData
 from schemas import CalendarBase, Courses, UserType, LoginBase
