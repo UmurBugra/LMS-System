@@ -28,9 +28,8 @@ def create_notification_route(
     try:
         if recipients == "all":
             create_notification_for_all_students(db, content, sender_username=current_user.username)
-            response = RedirectResponse(url="/nav/home", status_code=303) # 303 sonucu başka url üzerine yönlendirir
-            return response
         else:
             create_notification(db, content, current_user.username)
+        return JSONResponse({"message": "Duyuru başarıyla gönderildi."})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
