@@ -554,3 +554,25 @@ body {
 .modal .btn:hover {
     background-color: #555;
 }
+
+.notification-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  border-bottom: 1px solid #eee;
+}
+
+.notification-header h3 {
+  margin: 0;
+  padding: 0;
+}
+
+.clear-notifications {
+  color: #dc3545;
+  font-size: 14px;
+}
+
+.clear-notifications:hover {
+  color: #c82333;
+}

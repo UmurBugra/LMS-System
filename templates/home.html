@@ -10,35 +10,38 @@
       <div class="notification-button dropdown">
         <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
         <div class="dropdown-content">
-          <h3>Bildirimler</h3>
-          {% if notifications %}
-            {% for notification in notifications %}
-              <div class="notification-item">
-                <p>{{ notification.content }}</p>
-                {% if notification.sender_username %}
-                  <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-                {% else %}
-                  <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-                {% endif %}
-              </div>
-            {% endfor %}
-          {% else %}
-            <div class="notification-item">
-              <p>Henüz bildirim bulunmamaktadır.</p>
-            </div>
-          {% endif %}
+  <div class="notification-header">
+    <h3>Bildirimler</h3>
+    <a href="#" class="clear-notifications" title="Tüm bildirimleri sil"><i class="fas fa-trash"></i></a>
+  </div>
+  {% if notifications %}
+    {% for notification in notifications %}
+      <div class="notification-item">
+        <p>{{ notification.content }}</p>
+        {% if notification.sender_username %}
+          <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+        {% else %}
+          <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+        {% endif %}
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="notification-item">
+      <p>Henüz bildirim bulunmamaktadır.</p>
+    </div>
+  {% endif %}
 
-          {% if user_type == "Öğretmen" %}
-            <div class="notification-buttons">
-              <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
-              <a href="/notification" class="notification-btn">Tümünü Gör</a>
-            </div>
-          {% else %}
-            <div class="notification-buttons">
-              <a href="/notification" class="notification-btn">Tümünü Gör</a>
-            </div>
-          {% endif %}
-        </div>
+  {% if user_type == "Öğretmen" %}
+    <div class="notification-buttons">
+      <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
+      <a href="/notification" class="notification-btn">Tümünü Gör</a>
+    </div>
+  {% else %}
+    <div class="notification-buttons">
+      <a href="/notification" class="notification-btn">Tümünü Gör</a>
+    </div>
+  {% endif %}
+</div>
       </div>
       <div class="logout-button">
         <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
