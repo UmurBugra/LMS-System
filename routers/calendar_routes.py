@@ -80,7 +80,7 @@ def show_calendar_list(request: Request,
 ):
     calendars = get_calendar(db)
     return templates.TemplateResponse(
-        "list_calendars.html",
+        "teacher_calendars.html",
         {"request": request, "username": current_user.username, "calendars": calendars}
     )
 # Takvim silme işlemi
@@ -95,7 +95,7 @@ def delete_calendar(
         delete_calendar_func(db, calendar_id, current_user)
         calendars = get_calendar(db)
         return templates.TemplateResponse(
-            "list_calendars.html",
+            "teacher_calendars.html",
             {"request": request,
              "username": current_user.username,
              "calendars": calendars,
@@ -105,7 +105,7 @@ def delete_calendar(
     except HTTPException as e:
         calendars = get_calendar(db)
         return templates.TemplateResponse(
-            "list_calendars.html",
+            "teacher_calendars.html",
             {"request": request,
              "username": current_user.username,
              "calendars": calendars,
