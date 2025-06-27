@@ -7,7 +7,7 @@ class UserType(Enum):
 
 # Giriş ekranı için gerekli olan modeller
 class LoginEmailPassword(BaseModel):
-    email: str
+    email: EmailStr
     password: str
 
 class LoginBase(BaseModel):
