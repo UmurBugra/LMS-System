@@ -100,7 +100,6 @@
         </form>
       </div>
     </div>
-
     <script>
       document.addEventListener('DOMContentLoaded', () => {
         // Toast fonksiyonu
@@ -172,6 +171,29 @@
           });
         });
       });
+      const clearNotificationsBtn = document.querySelector('.clear-notifications');
+if (clearNotificationsBtn) {
+  clearNotificationsBtn.addEventListener('click', e => {
+    e.preventDefault();
+
+    const notificationItems = document.querySelectorAll('.notification-item');
+
+    if (notificationItems.length > 0) {
+      notificationItems.forEach(item => item.remove());
+
+      const notificationContainer = document.querySelector('.dropdown-content');
+      const noNotificationMsg = document.createElement('div');
+      noNotificationMsg.className = 'notification-item';
+      noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
+
+      const notificationButtons = document.querySelector('.notification-buttons');
+      notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
+
+      // İşlem başarılı mesajı göster
+      showToast('Tüm bildirimler silindi');
+    }
+  });
+}
     </script>
 </body>
 </html>
