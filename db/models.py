@@ -9,8 +9,8 @@ from sqlalchemy.orm import relationship
 notification_receivers = Table(
     "notification_receivers",
     Base.metadata,
+Column("user_id", String, ForeignKey("login_data.id", primary_key=True)),
     Column("notification_id", Integer, ForeignKey("notification_data.id")),
-    Column("user_name", String, ForeignKey("login_data.username")),
     Column("is_removed", Boolean, default=False, nullable=False)
 )
 
@@ -23,7 +23,9 @@ class LoginData(Base):
     email = Column(String)
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
     items = relationship("CalendarData", back_populates="user")
-    notifications = relationship("NotificationData", secondary=notification_receivers, back_populates="receiver")
+    notifications = relationship("NotificationData",
+    primaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
+    secondaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id)
 
 # Takvim verileri
 class CalendarData(Base):
@@ -50,4 +52,10 @@ class NotificationData(Base):
     # Birden fazla ilişki olabilir, bu yüzden foreign_keys ile belirtiliyor
     sender = relationship("LoginData", foreign_keys=[sender_username])
     # many-to-many relationship LoginData
-    receiver = relationship("LoginData", secondary=notification_receivers, back_populates="notifications")
+    receiver = relationship(
+        "LoginData",
+        secondary=notification_receivers,
+        back_populates="notifications",
+        primaryjoin=lambda: notification_receivers.c.notification_id,
+        secondaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
+    )

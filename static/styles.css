@@ -568,11 +568,29 @@ body {
   padding: 0;
 }
 
-.clear-notifications {
-  color: #dc3545;
-  font-size: 14px;
+button.clear-notifications {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f5f5f5;
+    color: #333;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 5px;
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-left: auto;
 }
 
-.clear-notifications:hover {
-  color: #c82333;
+button.clear-notifications:hover {
+  background-color: #dc3545;
+  color: white;
+  border-color: #dc3545;
+}
+
+button.clear-notifications i {
+  font-size: 14px;
 }

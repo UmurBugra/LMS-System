@@ -11,9 +11,11 @@
         <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
         <div class="dropdown-content">
   <div class="notification-header">
-    <h3>Bildirimler</h3>
-    <a href="#" class="clear-notifications" title="Tüm bildirimleri sil"><i class="fas fa-trash"></i></a>
-  </div>
+  <h3>Bildirimler</h3>
+  <button type="button" class="clear-notifications" title="Bildirimleri temizle">
+    <i class="fas fa-trash"></i>
+  </button>
+</div>
   {% if notifications %}
     {% for notification in notifications %}
       <div class="notification-item">
@@ -174,24 +176,38 @@
       const clearNotificationsBtn = document.querySelector('.clear-notifications');
 if (clearNotificationsBtn) {
   clearNotificationsBtn.addEventListener('click', e => {
-    e.preventDefault();
+    e.preventDefault(); // Form submit'i engelle
 
-    const notificationItems = document.querySelectorAll('.notification-item');
+    // AJAX ile sunucuya silme isteği gönder
+    fetch('/notification/s-delete', {
+      method: 'PUT'
+    })
+    .then(response => {
+      if (response.ok) {
+        // UI'da bildirimleri temizle
+        const notificationItems = document.querySelectorAll('.notification-item');
 
-    if (notificationItems.length > 0) {
-      notificationItems.forEach(item => item.remove());
+        if (notificationItems.length > 0) {
+          notificationItems.forEach(item => item.remove());
 
-      const notificationContainer = document.querySelector('.dropdown-content');
-      const noNotificationMsg = document.createElement('div');
-      noNotificationMsg.className = 'notification-item';
-      noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
+          const notificationContainer = document.querySelector('.dropdown-content');
+          const noNotificationMsg = document.createElement('div');
+          noNotificationMsg.className = 'notification-item';
+          noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
 
-      const notificationButtons = document.querySelector('.notification-buttons');
-      notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
+          const notificationButtons = document.querySelector('.notification-buttons');
+          notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
 
-      // İşlem başarılı mesajı göster
-      showToast('Tüm bildirimler silindi');
-    }
+          showToast('Tüm bildirimler silindi');
+        }
+      } else {
+        showToast('Bildirimler silinirken bir hata oluştu');
+      }
+    })
+    .catch(error => {
+      console.error('Hata:', error);
+      showToast('Bildirimler silinirken bir hata oluştu');
+    });
   });
 }
     </script>
