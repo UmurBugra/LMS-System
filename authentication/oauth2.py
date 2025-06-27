@@ -5,7 +5,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from db.database import get_db
-from crud.login import get_user_by_username, create_user_with_auth
+from crud.login import get_user_by_email, create_user_with_auth
 from crud.calendar import create_calendar_by_auth
 from schemas import UserType
 
@@ -40,13 +40,13 @@ def get_current_user_from_cookie(
     try:
         token = access_token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        if email is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = get_user_by_username(db, username)
+    user = get_user_by_email(db, email)
     if user is None:
         raise credentials_exception
     return user
