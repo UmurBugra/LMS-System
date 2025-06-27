@@ -66,23 +66,6 @@ def get_notifications(db: Session, username: str):
     if user:
         return user.notifications
     return []
-#
-# def delete_notifications(db: Session, notification_id: int, current_user: str):
-#     user = db.query(LoginData).filter(LoginData.username == current_user).first()
-#     if not user:
-#         raise ValueError("Kullanıcı bulunamadı")
-#
-#     notification = db.query(notification_receivers, LoginData).filter(LoginData.id ==).first()
-#
-#
-#
-#
-#
-#     db.commit()
-#     return notification
-#
-#
-
 
 
 
