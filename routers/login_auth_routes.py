@@ -40,7 +40,7 @@ def user_login_form(
         )
     else:
         # Token oluşturma ve cookie ayarlama
-        access_token = oauth2.create_access_token(data={"sub": result["username"]})
+        access_token = oauth2.create_access_token(data={"sub": result["email"]})
         response = RedirectResponse(url="/nav/home", status_code=303)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True)
         return response
