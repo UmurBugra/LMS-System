@@ -10,7 +10,8 @@ notification_receivers = Table(
     "notification_receivers",
     Base.metadata,
     Column("notification_id", Integer, ForeignKey("notification_data.id")),
-    Column("user_name", String, ForeignKey("login_data.username"))
+    Column("user_name", String, ForeignKey("login_data.username")),
+    Column("is_removed", Boolean, default=False, nullable=False)
 )
 
 # Kullanıcı bilgileri
