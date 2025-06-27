@@ -36,19 +36,25 @@ def create_notification_route(
         return JSONResponse({"message": "Duyuru başarıyla gönderildi."})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-#
-# @router.put("/s-delete")
-# def soft_delete(
-#     notification_id: int ,
-#     db: Session = Depends(get_db),
-#     current_user: LoginBase = Depends(get_current_user_from_cookie)
-# ):
-#     try:
-#         if notification_id is None:
-#             raise HTTPException(status_code=400, detail="Geçersiz duyuru ID'si")
-#         delete_notifications(db, notification_id, current_user.username)
-#         return JSONResponse({"message": "Duyuru başarıyla silindi."})
-#     except ValueError as e:
-#         raise HTTPException(status_code=404, detail=str(e))
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail=str(e))
+
+
+@router.put("/clear-all")
+def clear_all_notifications(
+        db: Session = Depends(get_db),
+        current_user: LoginBase = Depends(get_current_user_from_cookie)
+):
+    try:
+        user = db.query(LoginData).filter(LoginData.username == current_user.username,
+                                          LoginData.id == current_user.id
+                                          ).first()
+        if not user:
+            raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
+        db.execute(
+            notification_receivers.update().where(
+                notification_receivers.c.user_id == user.id
+            ).values(is_removed=True)
+        )
+        db.commit()
+        return JSONResponse({"message": "Tüm bildirimler başarıyla silindi."})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
