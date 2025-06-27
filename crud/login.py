@@ -52,9 +52,8 @@ def delete_user(db: Session, id: int):
     db.commit()
     return "User deleted successfully"
 
-# Geçici auth işlemi
-def get_user_by_username(db: Session, username: str):
-    user = db.query(LoginData).filter(LoginData.username == username).first()
+def get_user_by_email(db: Session, email: str):
+    user = db.query(LoginData).filter(LoginData.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
