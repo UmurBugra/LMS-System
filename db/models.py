@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 notification_receivers = Table(
     "notification_receivers",
     Base.metadata,
-Column("user_id", String, ForeignKey("login_data.id", primary_key=True)),
+Column("user_id", String, ForeignKey("login_data.id"), primary_key=True),
     Column("notification_id", Integer, ForeignKey("notification_data.id")),
     Column("is_removed", Boolean, default=False, nullable=False)
 )
@@ -24,6 +24,7 @@ class LoginData(Base):
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
     items = relationship("CalendarData", back_populates="user")
     notifications = relationship("NotificationData",
+    secondary=notification_receivers,
     primaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
     secondaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id)
 
@@ -56,6 +57,6 @@ class NotificationData(Base):
         "LoginData",
         secondary=notification_receivers,
         back_populates="notifications",
-        primaryjoin=lambda: notification_receivers.c.notification_id,
+        primaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id,
         secondaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
     )
