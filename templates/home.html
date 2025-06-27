@@ -179,7 +179,7 @@ if (clearNotificationsBtn) {
     e.preventDefault(); // Form submit'i engelle
 
     // AJAX ile sunucuya silme isteği gönder
-    fetch('/notification/s-delete', {
+    fetch('/notification/clear-all', {
       method: 'PUT'
     })
     .then(response => {
