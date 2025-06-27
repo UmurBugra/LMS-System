@@ -23,17 +23,16 @@ def user_type_request(db: Session, request: AuthUserType):
 
 # User Login Control
 def user_login(db: Session, request: LoginEmailPassword): # Parametreler güncellendi
-    user = db.query(LoginData).filter(
-        LoginData.email == request.email,
-        LoginData.password == request.password # Şifre karşılaştırması düz metin olarak varsayılıyor
-    ).first()
+    user = db.query(LoginData).filter(LoginData.email == request.email).first()
     if not user:
         return "Hatalı giriş bilgileri. Lütfen tekrar deneyin."
-    else:
+
+    if user.password != request.password:
+        return "Hatalı giriş bilgileri. Lütfen tekrar deneyin."
         # Başarılı giriş durumunda kullanıcı bilgilerini döndür
-        return {
-            "message": "Giriş yapıldı",
-            "username": user.username,
-            "email": user.email,
-            "user_type": user.type.value # Veritabanından kullanıcı tipini al
+    return {
+        "message": "Giriş yapıldı",
+        "username": user.username,
+        "email": user.email,
+        "user_type": user.type.value # Veritabanından kullanıcı tipini al
         }
