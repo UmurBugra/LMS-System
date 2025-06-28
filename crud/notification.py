@@ -1,18 +1,18 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from starlette.responses import JSONResponse
-
+from fastapi.responses import JSONResponse
 from db.models import NotificationData, LoginData, notification_receivers
 from datetime import datetime, timedelta, timezone
 from schemas import UserType
 
-def create_notification(db: Session, content: str, receiver=None):
+def create_notification(db: Session, content: str, sender_username=None, receiver=None):
     utc_now = datetime.now(timezone.utc)
     turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
 
     notification_entry = NotificationData(
         content=content,
-        created_time=turkey_time
+        created_time=turkey_time,
+        sender_username=sender_username
     )
 
     if receiver:
@@ -34,6 +34,7 @@ def create_notification_for_all_students(db: Session, content: str, sender_usern
         created_time=turkey_time,
         sender_username=sender_username
     )
+
     notification.receiver = students
 
     db.add(notification)
@@ -64,6 +65,8 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
     db.refresh(notification)
     return notification
 
+
+# Kullanıcıya ait bildirimleri getir
 def get_notifications(db: Session, username: str):
     user = db.query(LoginData).filter(LoginData.username == username).first()
     if user:
@@ -78,21 +81,54 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
         ).first()
 
         if not user:
-            raise ValueError("Kullanıcı bulunamadı.")
+                raise ValueError("Kullanıcı bulunamadı.")
 
-        else:
-            db.execute(
-                notification_receivers.update().where(
-                    notification_receivers.c.user_id == user.id
-                ).values(is_removed=True)
+        utc_now = datetime.now(timezone.utc)
+        turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
+
+        db.execute(
+            notification_receivers.update().where(
+                notification_receivers.c.user_id == user.id
+            ).values(is_removed=True, is_removed_time=turkey_time)
+        )
+        db.commit()
+
+        deadline = turkey_time - timedelta(minutes=1)
+        db.execute(
+            notification_receivers.delete().where(
+                (notification_receivers.c.user_id == user.id) &
+                (notification_receivers.c.is_removed == True) &
+                (notification_receivers.c.is_removed_time <= deadline)
             )
-            db.commit()
-            return JSONResponse({"message": "Tüm bildirimler başarıyla silindi."})
+        )
+        db.commit()
+        return JSONResponse(status_code=200, content={"message": "Bildirimler silindi."})
+
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-
+# def hard_delete_notifications(db: Session, current_user: LoginData):
+#
+#     time_now = datetime.now()
+#     deadline = time_now + timedelta(minutes=1)
+#     hard_delete = time_now + deadline
+#
+#     try:
+#         user = db.query(LoginData).filter(
+#             LoginData.username == current_user.username,
+#             LoginData.id == current_user.id
+#         ).first()
+#
+#         if not user:
+#             raise ValueError("Kullanıcı bulunamadı.")
+#
+#         if datetime.now() <= hard_delete:
+#             db.execute(
+#                 notification_receivers.delete().where(
+#                     notification_receivers.c.user_id == user.id
+#                 ).values(is_removed=True)
+#             )
 
 
 
