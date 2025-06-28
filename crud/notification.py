@@ -1,4 +1,7 @@
+from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from starlette.responses import JSONResponse
+
 from db.models import NotificationData, LoginData, notification_receivers
 from datetime import datetime, timedelta, timezone
 from schemas import UserType
@@ -67,8 +70,26 @@ def get_notifications(db: Session, username: str):
         return user.notifications
     return []
 
+def clear_notifications(db: Session, current_user: LoginData):
+    try:
+        user = db.query(LoginData).filter(
+            LoginData.username == current_user.username,
+            LoginData.id == current_user.id
+        ).first()
 
+        if not user:
+            raise ValueError("Kullanıcı bulunamadı.")
 
+        else:
+            db.execute(
+                notification_receivers.update().where(
+                    notification_receivers.c.user_id == user.id
+                ).values(is_removed=True)
+            )
+            db.commit()
+            return JSONResponse({"message": "Tüm bildirimler başarıyla silindi."})
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
 
 
