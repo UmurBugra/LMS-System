@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
-from crud.notification import create_notification, get_notifications,create_notification_for_all_students, create_notification_for_all_teachers, clear_notifications
+from crud.notification import create_notification, get_notifications,create_notification_for_all_students, create_notification_for_all_teachers, soft_delete_notifications
 from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
 
@@ -38,8 +38,8 @@ def create_notification_route(
 
 
 @router.put("/clear-all")
-def clear_all_notifications(
+def soft_delete_all_notifications(
         db: Session = Depends(get_db),
         current_user: LoginBase = Depends(get_current_user_from_cookie)
 ):
-    clear_notifications(db, current_user)
+    soft_delete_notifications(db, current_user)

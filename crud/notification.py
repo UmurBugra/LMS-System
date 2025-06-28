@@ -70,7 +70,7 @@ def get_notifications(db: Session, username: str):
         return user.notifications
     return []
 
-def clear_notifications(db: Session, current_user: LoginData):
+def soft_delete_notifications(db: Session, current_user: LoginData):
     try:
         user = db.query(LoginData).filter(
             LoginData.username == current_user.username,
