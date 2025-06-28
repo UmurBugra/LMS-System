@@ -74,8 +74,8 @@ def get_notifications(db: Session, username: str):
             notification_receivers,
             (NotificationData.id == notification_receivers.c.notification_id)
         ).filter(
-            notification_receivers.c.user_id == user.id,
-            notification_receivers.c.is_removed.is_(False)
+            notification_receivers.c.user_id == (user.id),
+            notification_receivers.c.is_removed == False
         ).all()
         return notifications
     return []
