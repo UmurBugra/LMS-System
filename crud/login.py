@@ -52,8 +52,8 @@ def delete_user(db: Session, id: int):
     db.commit()
     return "User deleted successfully"
 
-def get_user_by_email(db: Session, email: str):
-    user = db.query(LoginData).filter(LoginData.email == email).first()
+def get_user_by_email_and_id(db: Session, email: str, user_id: int):
+    user = db.query(LoginData).filter(LoginData.email == email, LoginData.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
