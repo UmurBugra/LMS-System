@@ -9,7 +9,7 @@ from sqlalchemy.orm import relationship
 notification_receivers = Table(
     "notification_receivers",
     Base.metadata,
-Column("user_id", String, ForeignKey("login_data.id"), primary_key=True),
+Column("user_id", Integer, ForeignKey("login_data.id"), primary_key=True),
     Column("notification_id", Integer, ForeignKey("notification_data.id"), primary_key=True),
     Column("is_removed", Boolean, default=False, nullable=False),
     Column("is_removed_time", DateTime, nullable=True)
