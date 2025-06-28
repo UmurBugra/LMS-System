@@ -11,7 +11,8 @@ notification_receivers = Table(
     Base.metadata,
 Column("user_id", String, ForeignKey("login_data.id"), primary_key=True),
     Column("notification_id", Integer, ForeignKey("notification_data.id")),
-    Column("is_removed", Boolean, default=False, nullable=False)
+    Column("is_removed", Boolean, default=False, nullable=False),
+    Column("is_removed_time", DateTime(timezone=True), default=func.now())
 )
 
 # Kullanıcı bilgileri
