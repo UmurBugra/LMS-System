@@ -3,10 +3,9 @@ from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
-from crud.notification import create_notification, get_notifications,create_notification_for_all_students, create_notification_for_all_teachers
+from crud.notification import create_notification, get_notifications,create_notification_for_all_students, create_notification_for_all_teachers, clear_notifications
 from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
-from db.models import LoginData, notification_receivers
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
 templates = Jinja2Templates(directory="templates")
@@ -43,18 +42,4 @@ def clear_all_notifications(
         db: Session = Depends(get_db),
         current_user: LoginBase = Depends(get_current_user_from_cookie)
 ):
-    try:
-        user = db.query(LoginData).filter(LoginData.username == current_user.username,
-                                          LoginData.id == current_user.id
-                                          ).first()
-        if not user:
-            raise HTTPException(status_code=404, detail="Kullanıcı bulunamadı.")
-        db.execute(
-            notification_receivers.update().where(
-                notification_receivers.c.user_id == user.id
-            ).values(is_removed=True)
-        )
-        db.commit()
-        return JSONResponse({"message": "Tüm bildirimler başarıyla silindi."})
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    clear_notifications(db, current_user)
