@@ -30,5 +30,5 @@ def update_user(id: int, request: LoginBase, db: Session = Depends(get_db), type
 
 # Delete user
 @router.delete("/{id}")
-def delete_user(id: int, db: Session = Depends(get_db)):
+def delete_user(id: int, db: Session = Depends(get_db), delete_user_by_auth: LoginBase = Depends(create_user_authentication_token)):
     return login.delete_user(db, id)
