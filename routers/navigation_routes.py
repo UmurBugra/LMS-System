@@ -28,7 +28,7 @@ def go_to_home(request: Request, db: Session = Depends(get_db), current_user = D
         display_user_type = "Bilinmiyor"
 
     # UTC+3
-    notifications = get_notifications(db, current_user.username)
+    notifications = get_notifications(db, current_user.username, current_user.id)
 
     return templates.TemplateResponse( "home.html",
                                        {"request": request,
