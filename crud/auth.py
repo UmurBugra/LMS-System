@@ -34,5 +34,6 @@ def user_login(db: Session, request: LoginEmailPassword): # Parametreler güncel
         "message": "Giriş yapıldı",
         "username": user.username,
         "email": user.email,
-        "user_type": user.type.value # Veritabanından kullanıcı tipini al
+        "user_type": user.type.value, # Veritabanından kullanıcı tipini al
+        "id": user.id
         }
