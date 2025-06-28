@@ -101,15 +101,6 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
         )
         db.commit()
 
-        deadline = turkey_time - timedelta(minutes=1)
-        db.execute(
-            notification_receivers.delete().where(
-                (notification_receivers.c.user_id == user.id) &
-                (notification_receivers.c.is_removed == True) &
-                (notification_receivers.c.is_removed_time <= deadline)
-            )
-        )
-        db.commit()
         return JSONResponse(status_code=200, content={"message": "Bildirimler silindi."})
 
     except Exception as e:
