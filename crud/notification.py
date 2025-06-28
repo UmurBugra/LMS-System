@@ -107,29 +107,3 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
-
-# def hard_delete_notifications(db: Session, current_user: LoginData):
-#
-#     time_now = datetime.now()
-#     deadline = time_now + timedelta(minutes=1)
-#     hard_delete = time_now + deadline
-#
-#     try:
-#         user = db.query(LoginData).filter(
-#             LoginData.username == current_user.username,
-#             LoginData.id == current_user.id
-#         ).first()
-#
-#         if not user:
-#             raise ValueError("Kullanıcı bulunamadı.")
-#
-#         if datetime.now() <= hard_delete:
-#             db.execute(
-#                 notification_receivers.delete().where(
-#                     notification_receivers.c.user_id == user.id
-#                 ).values(is_removed=True)
-#             )
-
-
-
-
