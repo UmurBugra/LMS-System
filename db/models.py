@@ -10,9 +10,9 @@ notification_receivers = Table(
     "notification_receivers",
     Base.metadata,
 Column("user_id", String, ForeignKey("login_data.id"), primary_key=True),
-    Column("notification_id", Integer, ForeignKey("notification_data.id")),
+    Column("notification_id", Integer, ForeignKey("notification_data.id"), primary_key=True),
     Column("is_removed", Boolean, default=False, nullable=False),
-    Column("is_removed_time", DateTime(timezone=True), default=func.now())
+    Column("is_removed_time", DateTime, nullable=True)
 )
 
 # Kullanıcı bilgileri
