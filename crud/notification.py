@@ -67,8 +67,10 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
 
 
 # Kullanıcıya ait bildirimleri getir
-def get_notifications(db: Session, username: str):
-    user = db.query(LoginData).filter(LoginData.username == username).first()
+def get_notifications(db: Session, username: str, user_id: int):
+    user = db.query(LoginData).filter(
+        LoginData.username == username,
+        LoginData.id == user_id).first()
     if user:
         notifications = db.query(NotificationData).join(
             notification_receivers,
