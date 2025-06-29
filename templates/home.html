@@ -23,6 +23,7 @@
     {% for notification in notifications %}
       <div class="notification-item {{ 'read' if notification.is_read else 'unread' }}"
            data-notification-id="{{ notification.id }}"
+           data-is-read="{{ 'true' if notification.is_read else 'false' }}"
            onclick="markAsRead('{{ notification.id }}', this)">
         <p>{{ notification.content }}</p>
         {% if notification.sender_username %}
@@ -114,7 +115,9 @@
       // Bildirimi okundu olarak işaretle
       function markAsRead(notificationId, element) {
         // Eğer zaten okunmuşsa, işlem yapma
-        if (element.classList.contains('read')) {
+        const isRead = element.getAttribute('data-is-read') === 'true';
+        if (isRead || element.classList.contains('read')) {
+          console.log('Bu bildirim zaten okunmuş.');
           return;
         }
 
@@ -137,6 +140,7 @@
             // Görsel olarak okundu olarak işaretle
             element.classList.remove('unread');
             element.classList.add('read');
+            element.setAttribute('data-is-read', 'true');
 
             // Okunmamış göstergesini kaldır
             const unreadIndicator = element.querySelector('.unread-indicator');
@@ -146,6 +150,8 @@
 
             // Bildirim sayısını güncelle
             updateNotificationCount();
+
+            console.log('Bildirim başarıyla okundu olarak işaretlendi');
 
           } else {
             showToast(data.message || 'Bildirim işaretlenirken bir hata oluştu');
@@ -166,7 +172,8 @@
         const realUnreadNotifications = Array.from(unreadNotifications).filter(item => {
           const hasDataId = item.hasAttribute('data-notification-id');
           const text = item.textContent.trim();
-          return hasDataId && text && !text.includes('Henüz bildirim bulunmamaktadır.');
+          const isRead = item.getAttribute('data-is-read') === 'true';
+          return hasDataId && text && !text.includes('Henüz bildirim bulunmamaktadır.') && !isRead;
         });
 
         console.log('Unread notifications count:', realUnreadNotifications.length); // Debug için
