@@ -4,7 +4,7 @@ from db.models import LoginData
 
 #CRUD operations for admin
 # Create user
-def create_user_by_admin(db: Session, request: LoginBase, user_type: UserType):
+def create_user_by_admin(db: Session, request, user_type: UserType):
     new_user = LoginData(
         username=request.username,
         password=request.password,
