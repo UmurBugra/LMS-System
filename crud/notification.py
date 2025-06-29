@@ -85,8 +85,9 @@ def get_notifications(db: Session, username: str, user_id: int):
         bildirimler = []
 
         for i, j in notifications:
-            i.is_read = j
+            i.is_read = j # Dinamik olarak is_read değerini ekleme
             bildirimler.append(i)
+
         return bildirimler
 
 def soft_delete_notifications(db: Session, current_user: LoginData):
