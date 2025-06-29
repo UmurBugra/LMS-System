@@ -38,7 +38,15 @@ def user_login_form(
             {"request": request, "error": result}
         )
     else:
-        access_token = oauth2.create_access_token(data={"sub": result["email"], "user_id": result["id"]})
+        access_token = oauth2.create_access_token(
+            data={
+                "sub": result["email"],
+                "user_id": result["id"],
+                "user_type": result["user_type"],
+                "email": result["email"],
+                "username": result["username"]  # Eğer varsa
+            }
+        )
         if result["user_type"] == "admin":
             redirect_url = "/nav/admin-home"
         else:
