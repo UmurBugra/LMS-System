@@ -36,3 +36,14 @@ def go_to_home(request: Request, db: Session = Depends(get_db), current_user = D
                                         "user_type": display_user_type,
                                         "notifications": notifications
                                         })
+
+# admin sayfası
+@router.get("/admin-home")
+def go_to_admin_home(request: Request, db: Session = Depends(get_db), current_user = Depends(get_current_user_from_cookie)):
+    if current_user.type != UserType.admin:
+        return RedirectResponse(url="/nav/home", status_code=302)
+    else:
+     return templates.TemplateResponse("admin_home.html",
+                                       {"request": request,
+                                        "username": current_user.username,
+                                        })
