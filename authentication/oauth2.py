@@ -5,7 +5,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from db.database import get_db
-from crud.login import get_user_by_email_and_id, create_user_with_auth
+from crud.login import get_user_by_email_and_id, create_user_with_auth, get_user_student
 from crud.calendar import create_calendar_by_auth
 from schemas import UserType
 
@@ -105,13 +105,15 @@ def student_authentication_token(
     try:
         token = access_token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        user_id: int = payload.get("user_id")
+        user_type: str = payload.get("user_type")
+        if email is None or user_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = get_user_by_username(db, username)
+    user = get_user_student(db, email, user_id, user_type=UserType.student)
     if user is None or user.type != UserType.student:
         raise credentials_exception
     return user
