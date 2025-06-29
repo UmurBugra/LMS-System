@@ -21,12 +21,17 @@
 </div>
   {% if notifications %}
     {% for notification in notifications %}
-      <div class="notification-item">
+      <div class="notification-item {{ 'read' if notification.is_read else 'unread' }}"
+           data-notification-id="{{ notification.id }}"
+           onclick="markAsRead('{{ notification.id }}', this)">
         <p>{{ notification.content }}</p>
         {% if notification.sender_username %}
           <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
         {% else %}
           <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+        {% endif %}
+        {% if not notification.is_read %}
+          <span class="unread-indicator">•</span>
         {% endif %}
       </div>
     {% endfor %}
@@ -88,7 +93,6 @@
       <div class="modal-content">
         <span class="close">&times;</span>
         <h2>Yeni Duyuru Oluştur</h2>
-        <!-- action ve method kaldırıldı, AJAX ile gönderilecek -->
         <form id="duyuruForm">
           <div class="form-group">
             <label for="duyuruIcerik">Duyuru İçeriği</label>
@@ -105,133 +109,184 @@
         </form>
       </div>
     </div>
+
     <script>
-  // Bildirim sayısını güncelleyen fonksiyon
-  function updateNotificationCount() {
-    const notificationItems = document.querySelectorAll('.notification-item');
-    const notificationCount = document.getElementById('notification-count');
+      // Bildirimi okundu olarak işaretle
+      function markAsRead(notificationId, element) {
+        // Eğer zaten okunmuşsa, işlem yapma
+        if (element.classList.contains('read')) {
+          return;
+        }
 
-    const realNotifications = Array.from(notificationItems).filter(item => {
-      const text = item.textContent.trim();
-      return text && !text.includes('Henüz bildirim bulunmamaktadır.');
-    });
+        // FormData oluştur (Form parametresi beklediği için)
+        const formData = new FormData();
+        formData.append('notification_id', notificationId);
 
-    if (realNotifications.length === 0) {
-      notificationCount.textContent = '0';
-      notificationCount.style.display = 'none';
-    } else {
-      notificationCount.textContent = realNotifications.length;
-      notificationCount.style.display = 'flex';
-    }
-  }
-
-  // Toast mesaj fonksiyonu
-  function showToast(message) {
-    const toast = document.getElementById('toast');
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => {
-      toast.classList.remove('show');
-    }, 2000);
-  }
-
-  document.addEventListener('DOMContentLoaded', () => {
-    updateNotificationCount(); // Sayfa yüklendiğinde badge güncelle
-
-    // Bildirim dropdown'ı açma-kapama
-    const dropdownToggle = document.querySelector('.dropdown-toggle');
-    const dropdownContent = document.querySelector('.dropdown-content');
-
-    dropdownToggle.addEventListener('click', e => {
-      e.preventDefault();
-      dropdownContent.classList.toggle('show');
-    });
-
-    window.addEventListener('click', e => {
-      if (!e.target.closest('.dropdown')) {
-        dropdownContent.classList.remove('show');
-      }
-    });
-
-    // Modal açma-kapama
-    const duyuruModal = document.getElementById('duyuruModal');
-    const openModalBtn = document.getElementById('openDuyuruModal');
-    const closeBtn = duyuruModal.querySelector('.close');
-
-    if (openModalBtn) {
-      openModalBtn.addEventListener('click', e => {
-        e.preventDefault();
-        duyuruModal.style.display = 'block';
-      });
-    }
-
-    closeBtn.addEventListener('click', () => {
-      duyuruModal.style.display = 'none';
-    });
-
-    window.addEventListener('click', e => {
-      if (e.target === duyuruModal) {
-        duyuruModal.style.display = 'none';
-      }
-    });
-
-    // Bildirim silme butonu
-    const clearNotificationsBtn = document.querySelector('.clear-notifications');
-    if (clearNotificationsBtn) {
-      clearNotificationsBtn.addEventListener('click', e => {
-        e.preventDefault();
-        fetch('/notification/clear-all', { method: 'PUT' })
-          .then(response => {
-            if (response.ok) {
-              const notificationItems = document.querySelectorAll('.notification-item');
-              notificationItems.forEach(item => item.remove());
-
-              const notificationContainer = document.querySelector('.dropdown-content');
-              const noNotificationMsg = document.createElement('div');
-              noNotificationMsg.className = 'notification-item';
-              noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
-
-              const notificationButtons = document.querySelector('.notification-buttons');
-              notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
-
-              updateNotificationCount();
-              showToast('Tüm bildirimler silindi');
-            } else {
-              showToast('Bildirimler silinirken bir hata oluştu');
-            }
-          })
-          .catch(error => {
-            console.error('Hata:', error);
-            showToast('Bildirimler silinirken bir hata oluştu');
-          });
-      });
-    }
-
-    // Duyuru formu gönderimi
-    const duyuruForm = document.getElementById('duyuruForm');
-    if (duyuruForm) {
-      duyuruForm.addEventListener('submit', e => {
-        e.preventDefault();
-
-        const formData = new FormData(duyuruForm);
-
-        fetch('/notification/create', {
-          method: 'POST',
+        fetch('/notification/mark-read', {
+          method: 'PUT',
           body: formData
         })
-          .then(res => res.json())
-          .then(data => {
-            showToast(data.message);            // Toast göster
-            duyuruModal.style.display = 'none'; // Modal kapat
-            duyuruForm.reset();                 // Formu temizle
-          })
-          .catch(err => {
-            console.error(err);
-            showToast('Duyuru gönderilirken bir hata oluştu.');
+        .then(response => {
+          if (!response.ok) {
+            throw new Error('Network response was not ok');
+          }
+          return response.json();
+        })
+        .then(data => {
+          if (data.success) {
+            // Görsel olarak okundu olarak işaretle
+            element.classList.remove('unread');
+            element.classList.add('read');
+
+            // Okunmamış göstergesini kaldır
+            const unreadIndicator = element.querySelector('.unread-indicator');
+            if (unreadIndicator) {
+              unreadIndicator.remove();
+            }
+
+            // Bildirim sayısını güncelle
+            updateNotificationCount();
+
+          } else {
+            showToast(data.message || 'Bildirim işaretlenirken bir hata oluştu');
+          }
+        })
+        .catch(error => {
+          console.error('Hata:', error);
+          showToast('Bildirim işaretlenirken bir hata oluştu');
+        });
+      }
+
+      // Bildirim sayısını güncelleyen fonksiyon (sadece okunmamış bildirimleri say)
+      function updateNotificationCount() {
+        const unreadNotifications = document.querySelectorAll('.notification-item.unread');
+        const notificationCount = document.getElementById('notification-count');
+
+        // Sadece gerçek bildirimları say (boş mesaj içermeyenleri)
+        const realUnreadNotifications = Array.from(unreadNotifications).filter(item => {
+          const hasDataId = item.hasAttribute('data-notification-id');
+          const text = item.textContent.trim();
+          return hasDataId && text && !text.includes('Henüz bildirim bulunmamaktadır.');
+        });
+
+        console.log('Unread notifications count:', realUnreadNotifications.length); // Debug için
+
+        if (realUnreadNotifications.length === 0) {
+          notificationCount.textContent = '0';
+          notificationCount.style.display = 'none';
+        } else {
+          notificationCount.textContent = realUnreadNotifications.length;
+          notificationCount.style.display = 'flex';
+        }
+      }
+
+      // Toast mesaj fonksiyonu
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => {
+          toast.classList.remove('show');
+        }, 2000);
+      }
+
+      document.addEventListener('DOMContentLoaded', () => {
+        updateNotificationCount(); // Sayfa yüklendiğinde badge güncelle
+
+        // Bildirim dropdown'ı açma-kapama
+        const dropdownToggle = document.querySelector('.dropdown-toggle');
+        const dropdownContent = document.querySelector('.dropdown-content');
+
+        dropdownToggle.addEventListener('click', e => {
+          e.preventDefault();
+          dropdownContent.classList.toggle('show');
+        });
+
+        window.addEventListener('click', e => {
+          if (!e.target.closest('.dropdown')) {
+            dropdownContent.classList.remove('show');
+          }
+        });
+
+        // Modal açma-kapama
+        const duyuruModal = document.getElementById('duyuruModal');
+        const openModalBtn = document.getElementById('openDuyuruModal');
+        const closeBtn = duyuruModal.querySelector('.close');
+
+        if (openModalBtn) {
+          openModalBtn.addEventListener('click', e => {
+            e.preventDefault();
+            duyuruModal.style.display = 'block';
           });
+        }
+
+        closeBtn.addEventListener('click', () => {
+          duyuruModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', e => {
+          if (e.target === duyuruModal) {
+            duyuruModal.style.display = 'none';
+          }
+        });
+
+        // Bildirim silme butonu
+        const clearNotificationsBtn = document.querySelector('.clear-notifications');
+        if (clearNotificationsBtn) {
+          clearNotificationsBtn.addEventListener('click', e => {
+            e.preventDefault();
+            fetch('/notification/clear-all', { method: 'PUT' })
+              .then(response => {
+                if (response.ok) {
+                  const notificationItems = document.querySelectorAll('.notification-item');
+                  notificationItems.forEach(item => item.remove());
+
+                  const notificationContainer = document.querySelector('.dropdown-content');
+                  const noNotificationMsg = document.createElement('div');
+                  noNotificationMsg.className = 'notification-item';
+                  noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
+
+                  const notificationButtons = document.querySelector('.notification-buttons');
+                  notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
+
+                  updateNotificationCount();
+                  showToast('Tüm bildirimler silindi');
+                } else {
+                  showToast('Bildirimler silinirken bir hata oluştu');
+                }
+              })
+              .catch(error => {
+                console.error('Hata:', error);
+                showToast('Bildirimler silinirken bir hata oluştu');
+              });
+          });
+        }
+
+        // Duyuru formu gönderimi
+        const duyuruForm = document.getElementById('duyuruForm');
+        if (duyuruForm) {
+          duyuruForm.addEventListener('submit', e => {
+            e.preventDefault();
+
+            const formData = new FormData(duyuruForm);
+
+            fetch('/notification/create', {
+              method: 'POST',
+              body: formData
+            })
+              .then(res => res.json())
+              .then(data => {
+                showToast(data.message);
+                duyuruModal.style.display = 'none';
+                duyuruForm.reset();
+              })
+              .catch(err => {
+                console.error(err);
+                showToast('Duyuru gönderilirken bir hata oluştu.');
+              });
+          });
+        }
       });
-    }
-  });
-</script>
+    </script>
 </body>
 </html>
