@@ -131,7 +131,7 @@ def admin_authentication_token(
     try:
         token = access_token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
+        username = payload.get("username")
         email: str = payload.get("email")
         user_type: str = payload.get("user_type")
         if username is None or email is None:
