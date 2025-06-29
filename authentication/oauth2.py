@@ -63,17 +63,18 @@ def create_authentication_token(
     try:
         token = access_token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username: str = payload.get("sub")
-        if username is None:
+        email: str = payload.get("sub")
+        user_id: int = payload.get("user_id")
+        user_type: str = payload.get("user_type")
+        if email is None or user_id is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = create_calendar_by_auth(db, username, user_type=UserType.teacher)
-    if user is None:
+    user = create_calendar_by_auth(db, email, user_id, user_type=UserType.teacher)
+    if user is None or user.type != UserType.teacher:
         raise credentials_exception
     return user
-
 
 # Kullanıcı oluşturma (cookie üzerinden)
 def create_user_authentication_token(
