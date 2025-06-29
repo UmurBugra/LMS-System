@@ -70,19 +70,24 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
 def get_notifications(db: Session, username: str, user_id: int):
     user = db.query(LoginData).filter(
         LoginData.username == username,
-        LoginData.id == user_id).first()
-    if user:
-        notifications = db.query(NotificationData).join(
-            notification_receivers,
-            (NotificationData.id == notification_receivers.c.notification_id)
-        ).filter(
-            notification_receivers.c.user_id == (user.id),
-            notification_receivers.c.is_removed == False,
-            notification_receivers.c.is_read == False
-        ).all()
-        return notifications
-    return []
+    LoginData.id == user_id).first()
 
+    if user:
+
+        notifications = db.query(NotificationData, notification_receivers.c.is_read).join(
+            notification_receivers,
+            NotificationData.id == notification_receivers.c.notification_id
+        ).filter(
+            notification_receivers.c.user_id == user.id,
+            notification_receivers.c.is_removed == False
+        )
+
+        result = []
+
+        for i, j in notifications:
+            i.is_read = j
+            result.append(i)
+        return result
 def soft_delete_notifications(db: Session, current_user: LoginData):
     try:
         user = db.query(LoginData).filter(
