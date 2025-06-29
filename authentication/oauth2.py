@@ -7,7 +7,8 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 from crud.login import get_user_by_email_and_id, create_user_with_auth, get_user_student
 from crud.calendar import create_calendar_by_auth
-from schemas import UserType
+from crud.admin import create_user_by_admin
+from schemas import UserType, LoginBase
 
 SECRET_KEY = 'd68209ffa66480a47408acdc06f3d35016a7e3dfbbec769592ccd9e56d97ba7e'
 ALGORITHM = 'HS256'
@@ -87,12 +88,13 @@ def create_user_authentication_token(
         token = access_token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
+        user_type: str = payload.get("user_type")
         if username is None:
             raise credentials_exception
     except JWTError:
         raise credentials_exception
 
-    user = create_user_with_auth(db, username, user_type=UserType.teacher)
+    user = create_user_with_auth(db, username, user_type=UserType.admin)
     if user is None:
         raise credentials_exception
     return user
@@ -116,5 +118,27 @@ def student_authentication_token(
 
     user = get_user_student(db, email, user_id, user_type=UserType.student)
     if user is None or user.type != UserType.student:
+        raise credentials_exception
+    return user
+
+def admin_authentication_token(
+    access_token: Optional[str] = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if access_token is None:
+        raise credentials_exception
+    try:
+        token = access_token.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        username = payload.get("sub")
+        email: str = payload.get("email")
+        user_type: str = payload.get("user_type")
+        if username is None or email is None:
+            raise credentials_exception
+    except JWTError:
+        raise credentials_exception
+    request = LoginBase(username=username, email=email, password="")
+    user = create_user_by_admin(db, request=request, user_type=UserType.admin)
+    if user is None or user.type != UserType.admin:
         raise credentials_exception
     return user
