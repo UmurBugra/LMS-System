@@ -22,7 +22,7 @@ def create_user(db: Session, request: LoginBase, user_type: UserType):
 def create_user_with_auth(db: Session, username: str, user_type: UserType):
     user = db.query(LoginData).filter(LoginData.username == username, LoginData.type == user_type).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Kullanıcı oluşturma öğretmen yetkisindedir.")
+        raise HTTPException(status_code=404, detail="Kullanıcı oluşturma admin yetkisindedir.")
     return user
 
 # Read all users
