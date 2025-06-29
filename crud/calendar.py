@@ -31,10 +31,10 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
     return calendar_entry
 
 # token fonksiyonu
-def create_calendar_by_auth(db: Session, username: str, user_type: UserType):
-    user = db.query(LoginData).filter(LoginData.username == username, LoginData.type == user_type).first()
+def create_calendar_by_auth(db: Session, email: str, user_id: int, user_type: UserType):
+    user = db.query(LoginData).filter(LoginData.email == email, LoginData.id == user_id,LoginData.type == user_type).first()
     if not user:
-        raise HTTPException(status_code=404, detail="Takvim oluşturma sadece öğretmen yetkisindedir.")
+        raise HTTPException(status_code=404, detail="User not found or not a teacher")
     return user
 
 # Takvim silme işlemi
