@@ -4,6 +4,7 @@ from enum import Enum
 class UserType(Enum):
     student = "student"
     teacher = "teacher"
+    admin = "admin"
 
 # Giriş ekranı için gerekli olan modeller
 class LoginEmailPassword(BaseModel):
