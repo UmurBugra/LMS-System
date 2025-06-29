@@ -8,7 +8,10 @@
 <body>
     <div class="top-buttons">
       <div class="notification-button dropdown">
-        <a href="#" class="dropdown-toggle" title="Bildirimler"><i class="fas fa-bell"></i></a>
+        <a href="#" class="dropdown-toggle" title="Bildirimler">
+          <i class="fas fa-bell"></i>
+        <span class="notification-badge" id="notification-count">0</span>
+        </a>
         <div class="dropdown-content">
   <div class="notification-header">
   <h3>Bildirimler</h3>
@@ -161,55 +164,73 @@
             method: 'POST',
             body: formData
           })
-          .then(res => res.json())
-          .then(data => {
-            showToast(data.message);        // Toast göster
-            duyuruModal.style.display = 'none';  // Modal kapat
-            duyuruForm.reset();             // Formu temizle
-          })
-          .catch(err => {
-            console.error(err);
-            showToast('Duyuru gönderilirken bir hata oluştu.');
-          });
+                  .then(res => res.json())
+                  .then(data => {
+                    showToast(data.message);        // Toast göster
+                    duyuruModal.style.display = 'none';  // Modal kapat
+                    duyuruForm.reset();             // Formu temizle
+                  })
+                  .catch(err => {
+                    console.error(err);
+                    showToast('Duyuru gönderilirken bir hata oluştu.');
+                  });
+
+          function updateNotificationCount() {
+            const NotificationItems = document.querySelectorAll('.notification-item');
+            const NotificationCount = document.getElementById('notification-count');
+            const noNotificationMsg = Array.from(NotificationItems).find(
+                    item => item.textContent.includes('Henüz bildirim bulunmamaktadır.')
+            );
+            if (noNotificationMsg || NotificationItems.length == 0) {
+              NotificationCount.textContent = '0';
+              NotificationCount.style.display = 'none';
+            } else {
+              NotificationCount.textContent = NotificationItems.length;
+              NotificationCount.style.display = 'flex';
+            }
+          }
+
+          updateNotificationCount();
+          // Bildirimler temizlendiğinde sayıyı güncelle
+          const clearNotificationsBtn = document.querySelector('.clear-notifications');
+          if (clearNotificationsBtn) {
+            clearNotificationsBtn.addEventListener('click', e => {
+              e.preventDefault(); // Form submit'i engelle
+
+              // AJAX ile sunucuya silme isteği gönder
+              fetch('/notification/clear-all', {
+                method: 'PUT'
+              })
+                      .then(response => {
+                        if (response.ok) {
+                          // UI'da bildirimleri temizle
+                          const notificationItems = document.querySelectorAll('.notification-item');
+
+                          if (notificationItems.length > 0) {
+                            notificationItems.forEach(item => item.remove());
+
+                            const notificationContainer = document.querySelector('.dropdown-content');
+                            const noNotificationMsg = document.createElement('div');
+                            noNotificationMsg.className = 'notification-item';
+                            noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
+
+                            const notificationButtons = document.querySelector('.notification-buttons');
+                            notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
+                            updateNotificationCount()
+                            showToast('Tüm bildirimler silindi');
+                          }
+                        } else {
+                          showToast('Bildirimler silinirken bir hata oluştu');
+                        }
+                      })
+                      .catch(error => {
+                        console.error('Hata:', error);
+                        showToast('Bildirimler silinirken bir hata oluştu');
+                      });
+            });
+          }
         });
       });
-      const clearNotificationsBtn = document.querySelector('.clear-notifications');
-if (clearNotificationsBtn) {
-  clearNotificationsBtn.addEventListener('click', e => {
-    e.preventDefault(); // Form submit'i engelle
-
-    // AJAX ile sunucuya silme isteği gönder
-    fetch('/notification/clear-all', {
-      method: 'PUT'
-    })
-    .then(response => {
-      if (response.ok) {
-        // UI'da bildirimleri temizle
-        const notificationItems = document.querySelectorAll('.notification-item');
-
-        if (notificationItems.length > 0) {
-          notificationItems.forEach(item => item.remove());
-
-          const notificationContainer = document.querySelector('.dropdown-content');
-          const noNotificationMsg = document.createElement('div');
-          noNotificationMsg.className = 'notification-item';
-          noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
-
-          const notificationButtons = document.querySelector('.notification-buttons');
-          notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
-
-          showToast('Tüm bildirimler silindi');
-        }
-      } else {
-        showToast('Bildirimler silinirken bir hata oluştu');
-      }
-    })
-    .catch(error => {
-      console.error('Hata:', error);
-      showToast('Bildirimler silinirken bir hata oluştu');
-    });
-  });
-}
     </script>
 </body>
 </html>

@@ -594,3 +594,29 @@ button.clear-notifications:hover {
 button.clear-notifications i {
   font-size: 14px;
 }
+
+.notification-button {
+  position: relative;
+}
+
+.notification-badge {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: #ff4d4d;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 6px;
+  font-size: 12px;
+  min-width: 15px;
+  height: 15px;
+  text-align: center;
+  line-height: 15px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.notification-badge:empty {
+  display: none;
+}
