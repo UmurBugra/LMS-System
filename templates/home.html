@@ -106,131 +106,132 @@
       </div>
     </div>
     <script>
-      document.addEventListener('DOMContentLoaded', () => {
-        // Toast fonksiyonu
-        function showToast(message) {
-          const toast = document.getElementById('toast');
-          toast.textContent = message;
-          toast.classList.add('show');
-          setTimeout(() => {
-            toast.classList.remove('show');
-          }, 2000);
-        }
+  // Bildirim sayısını güncelleyen fonksiyon
+  function updateNotificationCount() {
+    const notificationItems = document.querySelectorAll('.notification-item');
+    const notificationCount = document.getElementById('notification-count');
 
-        // Dropdown açma-kapama
-        const dropdownToggle = document.querySelector('.dropdown-toggle');
-        const dropdownContent = document.querySelector('.dropdown-content');
+    const realNotifications = Array.from(notificationItems).filter(item => {
+      const text = item.textContent.trim();
+      return text && !text.includes('Henüz bildirim bulunmamaktadır.');
+    });
 
-        dropdownToggle.addEventListener('click', e => {
-          e.preventDefault();
-          dropdownContent.classList.toggle('show');
-        });
+    if (realNotifications.length === 0) {
+      notificationCount.textContent = '0';
+      notificationCount.style.display = 'none';
+    } else {
+      notificationCount.textContent = realNotifications.length;
+      notificationCount.style.display = 'flex';
+    }
+  }
 
-        window.addEventListener('click', e => {
-          if (!e.target.matches('.dropdown-toggle') && !dropdownContent.contains(e.target)) {
-            dropdownContent.classList.remove('show');
-          }
-        });
+  // Toast mesaj fonksiyonu
+  function showToast(message) {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => {
+      toast.classList.remove('show');
+    }, 2000);
+  }
 
-        // Modal açma-kapama
-        const duyuruModal = document.getElementById('duyuruModal');
-        const openModalBtn = document.getElementById('openDuyuruModal');
-        const closeBtn = duyuruModal.querySelector('.close');
+  document.addEventListener('DOMContentLoaded', () => {
+    updateNotificationCount(); // Sayfa yüklendiğinde badge güncelle
 
-        openModalBtn.addEventListener('click', e => {
-          e.preventDefault();
-          duyuruModal.style.display = 'block';
-        });
+    // Bildirim dropdown'ı açma-kapama
+    const dropdownToggle = document.querySelector('.dropdown-toggle');
+    const dropdownContent = document.querySelector('.dropdown-content');
 
-        closeBtn.addEventListener('click', () => {
-          duyuruModal.style.display = 'none';
-        });
+    dropdownToggle.addEventListener('click', e => {
+      e.preventDefault();
+      dropdownContent.classList.toggle('show');
+    });
 
-        window.addEventListener('click', e => {
-          if (e.target === duyuruModal) {
-            duyuruModal.style.display = 'none';
-          }
-        });
+    window.addEventListener('click', e => {
+      if (!e.target.closest('.dropdown')) {
+        dropdownContent.classList.remove('show');
+      }
+    });
 
-        // Form submit işlemi (AJAX)
-        const duyuruForm = document.getElementById('duyuruForm');
+    // Modal açma-kapama
+    const duyuruModal = document.getElementById('duyuruModal');
+    const openModalBtn = document.getElementById('openDuyuruModal');
+    const closeBtn = duyuruModal.querySelector('.close');
 
-        duyuruForm.addEventListener('submit', e => {
-          e.preventDefault();
-
-          const formData = new FormData(duyuruForm);
-
-          fetch('/notification/create', {
-            method: 'POST',
-            body: formData
-          })
-                  .then(res => res.json())
-                  .then(data => {
-                    showToast(data.message);        // Toast göster
-                    duyuruModal.style.display = 'none';  // Modal kapat
-                    duyuruForm.reset();             // Formu temizle
-                  })
-                  .catch(err => {
-                    console.error(err);
-                    showToast('Duyuru gönderilirken bir hata oluştu.');
-                  });
-
-          function updateNotificationCount() {
-            const NotificationItems = document.querySelectorAll('.notification-item');
-            const NotificationCount = document.getElementById('notification-count');
-            const noNotificationMsg = Array.from(NotificationItems).find(
-                    item => item.textContent.includes('Henüz bildirim bulunmamaktadır.')
-            );
-            if (noNotificationMsg || NotificationItems.length == 0) {
-              NotificationCount.textContent = '0';
-              NotificationCount.style.display = 'none';
-            } else {
-              NotificationCount.textContent = NotificationItems.length;
-              NotificationCount.style.display = 'flex';
-            }
-          }
-
-          updateNotificationCount();
-          // Bildirimler temizlendiğinde sayıyı güncelle
-          const clearNotificationsBtn = document.querySelector('.clear-notifications');
-          if (clearNotificationsBtn) {
-            clearNotificationsBtn.addEventListener('click', e => {
-              e.preventDefault(); // Form submit'i engelle
-
-              // AJAX ile sunucuya silme isteği gönder
-              fetch('/notification/clear-all', {
-                method: 'PUT'
-              })
-                      .then(response => {
-                        if (response.ok) {
-                          // UI'da bildirimleri temizle
-                          const notificationItems = document.querySelectorAll('.notification-item');
-
-                          if (notificationItems.length > 0) {
-                            notificationItems.forEach(item => item.remove());
-
-                            const notificationContainer = document.querySelector('.dropdown-content');
-                            const noNotificationMsg = document.createElement('div');
-                            noNotificationMsg.className = 'notification-item';
-                            noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
-
-                            const notificationButtons = document.querySelector('.notification-buttons');
-                            notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
-                            updateNotificationCount()
-                            showToast('Tüm bildirimler silindi');
-                          }
-                        } else {
-                          showToast('Bildirimler silinirken bir hata oluştu');
-                        }
-                      })
-                      .catch(error => {
-                        console.error('Hata:', error);
-                        showToast('Bildirimler silinirken bir hata oluştu');
-                      });
-            });
-          }
-        });
+    if (openModalBtn) {
+      openModalBtn.addEventListener('click', e => {
+        e.preventDefault();
+        duyuruModal.style.display = 'block';
       });
-    </script>
+    }
+
+    closeBtn.addEventListener('click', () => {
+      duyuruModal.style.display = 'none';
+    });
+
+    window.addEventListener('click', e => {
+      if (e.target === duyuruModal) {
+        duyuruModal.style.display = 'none';
+      }
+    });
+
+    // Bildirim silme butonu
+    const clearNotificationsBtn = document.querySelector('.clear-notifications');
+    if (clearNotificationsBtn) {
+      clearNotificationsBtn.addEventListener('click', e => {
+        e.preventDefault();
+        fetch('/notification/clear-all', { method: 'PUT' })
+          .then(response => {
+            if (response.ok) {
+              const notificationItems = document.querySelectorAll('.notification-item');
+              notificationItems.forEach(item => item.remove());
+
+              const notificationContainer = document.querySelector('.dropdown-content');
+              const noNotificationMsg = document.createElement('div');
+              noNotificationMsg.className = 'notification-item';
+              noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
+
+              const notificationButtons = document.querySelector('.notification-buttons');
+              notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
+
+              updateNotificationCount();
+              showToast('Tüm bildirimler silindi');
+            } else {
+              showToast('Bildirimler silinirken bir hata oluştu');
+            }
+          })
+          .catch(error => {
+            console.error('Hata:', error);
+            showToast('Bildirimler silinirken bir hata oluştu');
+          });
+      });
+    }
+
+    // Duyuru formu gönderimi
+    const duyuruForm = document.getElementById('duyuruForm');
+    if (duyuruForm) {
+      duyuruForm.addEventListener('submit', e => {
+        e.preventDefault();
+
+        const formData = new FormData(duyuruForm);
+
+        fetch('/notification/create', {
+          method: 'POST',
+          body: formData
+        })
+          .then(res => res.json())
+          .then(data => {
+            showToast(data.message);            // Toast göster
+            duyuruModal.style.display = 'none'; // Modal kapat
+            duyuruForm.reset();                 // Formu temizle
+          })
+          .catch(err => {
+            console.error(err);
+            showToast('Duyuru gönderilirken bir hata oluştu.');
+          });
+      });
+    }
+  });
+</script>
 </body>
 </html>
