@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Ana Sayfa</title>
+    <meta charset="UTF-8">
+</head>
+<body>
+    <h1>{{ username }} (Admin)</h1>
+
+    <h2>Kullanıcı Ekle</h2>
+    <form method="post" action="/admin-page/create">
+        <label>Kullanıcı Adı:</label>
+        <input type="text" name="username" required><br>
+        <label>E-posta:</label>
+        <input type="email" name="email" required><br>
+        <label>Şifre:</label>
+        <input type="password" name="password" required><br>
+        <label>Tip:</label>
+        <select name="type" required>
+            <option value="student">Öğrenci</option>
+            <option value="teacher">Öğretmen</option>
+            <option value="admin">Admin</option>
+        </select><br>
+        <button type="submit">Ekle</button>
+    </form>
+
+    <h2>Kullanıcı Listesi</h2>
+    <table border="1">
+        <tr>
+            <th>ID</th>
+            <th>Kullanıcı Adı</th>
+            <th>E-posta</th>
+            <th>Tip</th>
+            <th>İşlemler</th>
+        </tr>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+            <td>{{ user.type }}</td>
+            <td>
+                <form method="post" action="/admin-page/update-user-{{ user.id }}" style="display:inline;">
+                    <input type="text" name="username" value="{{ user.username }}" required>
+                    <input type="email" name="email" value="{{ user.email }}" required>
+                    <input type="password" name="password" placeholder="Yeni Şifre">
+                    <select name="type" required>
+                        <option value="student" {% if user.type == "student" %}selected{% endif %}>Öğrenci</option>
+                        <option value="teacher" {% if user.type == "teacher" %}selected{% endif %}>Öğretmen</option>
+                        <option value="admin" {% if user.type == "admin" %}selected{% endif %}>Admin</option>
+                    </select>
+                    <button type="submit">Güncelle</button>
+                </form>
+                <form method="post" action="/admin-page/delete-user-{{ user.id }}" style="display:inline;">
+                    <button type="submit">Sil</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+</body>
+</html>
