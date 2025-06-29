@@ -107,3 +107,37 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+def is_read_notification(db: Session, notification_id: int, current_user: LoginData):
+    try:
+        user = db.query(LoginData).filter(
+            LoginData.username == current_user.username,
+            LoginData.id == current_user.id
+        ).first()
+
+        if user:
+            notification = db.query(NotificationData).join(
+                notification_receivers,
+                (NotificationData.id == notification_receivers.c.notification_id)
+            ).filter(
+                notification_receivers.c.user_id == user.id,
+                NotificationData.id == notification_id,
+                notification_receivers.c.is_removed == False,
+                notification_receivers.c.is_read == False
+            ).first()
+
+            if not notification:
+                return {"success": False, "message": "Bildirim bulunamadı veya zaten okunmuş."}
+
+            db.execute(
+                notification_receivers.update().where(
+                    notification_receivers.c.notification_id == notification_id,
+                    notification_receivers.c.user_id == user.id
+                ).values(is_read=True)
+            )
+            db.commit()
+            return {"success": True, "notification_id": notification_id, "is_read": True}
+
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
