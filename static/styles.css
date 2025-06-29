@@ -661,3 +661,37 @@ button.clear-notifications i {
   background: #f39c12;
   border-color: #ffffff;
 }
+
+/* Bildirim durumları için CSS */
+.notification-item.unread {
+    background-color: #f0f8ff;
+    border-left: 3px solid #007bff;
+    font-weight: 500;
+}
+
+.notification-item.read {
+    background-color: #f8f9fa;
+    opacity: 0.8;
+}
+
+.notification-item {
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    position: relative;
+    padding: 10px;
+    margin: 5px 0;
+    border-radius: 5px;
+}
+
+.notification-item:hover {
+    background-color: #e9ecef;
+}
+
+.unread-indicator {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #007bff;
+    font-size: 16px;
+    font-weight: bold;
+}
