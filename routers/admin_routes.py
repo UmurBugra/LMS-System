@@ -1,18 +1,25 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, Query, Form
 from sqlalchemy.orm import Session
 from fastapi.templating import Jinja2Templates
 from db.database import get_db
 from schemas import LoginBase,UserType
 from crud import admin
-from authentication.oauth2 import create_user_authentication_token
+from authentication.oauth2 import create_user_authentication_token, admin_authentication_token
 from schemas import LoginDisplay
 
 router = APIRouter(prefix="/admin-page", tags=["setup"])
 templates = Jinja2Templates(directory="templates")
 
 @router.post("/create", response_model=LoginDisplay)
-def create_user(request: LoginBase, db: Session = Depends(get_db), type: UserType = Query(...),
-                create_user_by_auth: LoginBase = Depends(create_user_authentication_token)):
+def create_user(
+    username: str = Form(...),
+    email: str = Form(...),
+    password: str = Form(...),
+    type: UserType = Form(...),
+    db: Session = Depends(get_db),
+    create_user_by_auth: LoginBase = Depends(admin_authentication_token)
+):
+    request = LoginBase(username=username, email=email, password=password)
     return admin.create_user_by_admin(db, request, type)
 
 # Read all users
