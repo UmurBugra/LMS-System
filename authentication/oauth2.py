@@ -5,6 +5,7 @@ from typing import Optional
 from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from db.database import get_db
+from db.models import LoginData
 from crud.login import get_user_by_email_and_id, create_user_with_auth, get_user_student
 from crud.calendar import create_calendar_by_auth
 from crud.admin import create_user_by_admin
@@ -137,8 +138,8 @@ def admin_authentication_token(
             raise credentials_exception
     except JWTError:
         raise credentials_exception
-    request = LoginBase(username=username, email=email, password="")
-    user = create_user_by_admin(db, request=request, user_type=UserType.admin)
+
+    user = db.query(LoginData).filter_by(username=username, email=email, type=UserType.admin).first()
     if user is None or user.type != UserType.admin:
         raise credentials_exception
     return user
