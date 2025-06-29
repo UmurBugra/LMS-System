@@ -40,7 +40,8 @@
             <td>{{ user.email }}</td>
             <td>{{ user.type }}</td>
             <td>
-                <form method="post" action="/admin-page/update-user-{{ user.id }}" style="display:inline;">
+                <!-- Güncelleme Formu (PUT) -->
+                <form id="update-form-{{ user.id }}" onsubmit="submitUpdate(event, {{ user.id }})" style="display:inline;">
                     <input type="text" name="username" value="{{ user.username }}" required>
                     <input type="email" name="email" value="{{ user.email }}" required>
                     <input type="password" name="password" placeholder="Yeni Şifre">
@@ -51,12 +52,56 @@
                     </select>
                     <button type="submit">Güncelle</button>
                 </form>
-                <form method="post" action="/admin-page/delete-user-{{ user.id }}" style="display:inline;">
-                    <button type="submit">Sil</button>
-                </form>
+
+                <!-- Silme Butonu (DELETE ile JS) -->
+                <button onclick="deleteUser({{ user.id }})">Sil</button>
             </td>
         </tr>
         {% endfor %}
     </table>
+
+    <!-- JS: PUT güncelleme -->
+    <script>
+        function submitUpdate(event, userId) {
+            event.preventDefault();
+            const form = event.target;
+            const formData = new FormData(form);
+            const data = Object.fromEntries(formData.entries());
+
+            fetch(`/admin-page/update-user-${userId}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(data)
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert("Güncelleme başarısız.");
+                }
+            }).catch(error => {
+                console.error("İstek hatası:", error);
+                alert("Sunucuya ulaşılamadı.");
+            });
+        }
+
+        function deleteUser(userId) {
+            if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
+
+            fetch(`/admin-page/delete-user-${userId}`, {
+                method: "DELETE"
+            }).then(response => {
+                if (response.ok) {
+                    location.reload();
+                } else {
+                    alert("Silme işlemi başarısız.");
+                }
+            }).catch(error => {
+                console.error("Silme hatası:", error);
+                alert("Sunucuya ulaşılamadı.");
+            });
+        }
+    </script>
 </body>
 </html>
