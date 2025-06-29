@@ -20,10 +20,6 @@ def create_user_by_admin(db: Session, request, user_type: UserType):
 def get_read_users_by_admin(db: Session):
     return db.query(LoginData).all()
 
-# Read user by id
-def read_user_by_admin(db: Session, id: int):
-    return db.query(LoginData).filter(LoginData.id == id).first()
-
 # Update user
 def update_user_by_admin(db: Session, id: int, request: LoginBase, user_type: UserType):
     user = db.query(LoginData).filter(LoginData.id == id)
@@ -39,6 +35,7 @@ def update_user_by_admin(db: Session, id: int, request: LoginBase, user_type: Us
 # Delete user
 def delete_user_by_admin(db: Session, id: int):
     user = db.query(LoginData).filter(LoginData.id == id).first()
-    db.delete(user)
-    db.commit()
-    return "User deleted successfully"
+    if user:
+        db.delete(user)
+        db.commit()
+    return "Kullanıcı silindi"
