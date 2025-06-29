@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request, Depends
-from routers import login_routes, login_auth_routes, calendar_routes, oauth2_routes, navigation_routes, notification_routes
+from routers import login_routes, login_auth_routes, calendar_routes, oauth2_routes, navigation_routes, \
+notification_routes, setup_routes
 from db.database import engine, get_db
 from db import models
 from db.models import LoginData
@@ -17,6 +18,7 @@ app.include_router(calendar_routes.router)
 app.include_router(oauth2_routes.router)
 app.include_router(navigation_routes.router)
 app.include_router(notification_routes.router)
+app.include_router(setup_routes.router)
 
 def is_admin_user(db):
     admin = db.query(LoginData).filter(LoginData.type == "admin").first()
