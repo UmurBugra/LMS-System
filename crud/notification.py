@@ -82,12 +82,13 @@ def get_notifications(db: Session, username: str, user_id: int):
             notification_receivers.c.is_removed == False
         )
 
-        result = []
+        bildirimler = []
 
         for i, j in notifications:
             i.is_read = j
-            result.append(i)
-        return result
+            bildirimler.append(i)
+        return bildirimler
+
 def soft_delete_notifications(db: Session, current_user: LoginData):
     try:
         user = db.query(LoginData).filter(
