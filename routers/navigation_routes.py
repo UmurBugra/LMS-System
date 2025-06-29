@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from authentication.oauth2 import get_current_user_from_cookie
 from schemas import UserType
 from crud.notification import get_notifications
+from crud.admin import get_read_users_by_admin
 
 router = APIRouter(prefix="/nav", tags=["navigation"])
 templates = Jinja2Templates(directory="templates")
@@ -43,7 +44,9 @@ def go_to_admin_home(request: Request, db: Session = Depends(get_db), current_us
     if current_user.type != UserType.admin:
         return RedirectResponse(url="/nav/home", status_code=302)
     else:
-     return templates.TemplateResponse("admin_home.html",
+        users = get_read_users_by_admin(db)
+        return templates.TemplateResponse("admin_home.html",
                                        {"request": request,
                                         "username": current_user.username,
+                                        "users": users
                                         })
