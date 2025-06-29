@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
-from crud.notification import create_notification, get_notifications,create_notification_for_all_students, create_notification_for_all_teachers, soft_delete_notifications
+from crud.notification import create_notification, get_notifications,create_notification_for_all_students, create_notification_for_all_teachers, soft_delete_notifications, is_read_notification
 from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
 
@@ -43,3 +43,11 @@ def soft_delete_all_notifications(
         current_user: LoginBase = Depends(get_current_user_from_cookie)
 ):
     soft_delete_notifications(db, current_user)
+
+@router.put("/mark-read")
+def mark_notification_read(
+        notification_id: int = Form(...),
+        db: Session = Depends(get_db),
+        current_user: LoginBase = Depends(get_current_user_from_cookie)
+):
+    return is_read_notification(db, notification_id, current_user)
