@@ -23,7 +23,7 @@ credentials_exception = HTTPException(
 )
 
 
-# Token oluşturucu
+# Giriş için Token oluşturucu
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=15))
