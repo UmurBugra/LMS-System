@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from sqlalchemy.orm import Session
 from db.database import get_db
 from db.models import LoginData
-from crud.login import get_user_by_email_and_id, create_user_with_auth, get_user_student
+from crud.login import get_user_by_email_and_id, get_user_student
 from crud.calendar import create_calendar_by_auth
 from schemas import UserType
 
