@@ -10,16 +10,6 @@ from authentication import oauth2
 router = APIRouter(prefix="/auth", tags=["auth"])
 templates = Jinja2Templates(directory="templates")
 
-# User student or teacher
-@router.post("/")
-def user_type_request(request: AuthUserType, db: Session = Depends(get_db)):
-    return auth.user_type_request(db, request)
-
-# User Login Control
-@router.post("/login")
-def user_login(request: LoginBase, user_type: UserType ,db: Session = Depends(get_db)):
-    return auth.user_login(db, request, user_type)
-
 # Form verilerini işlemek için yeni endpoint
 # Arayüz giriş kısmında form verisi gönderiyordum fakat benden query bekliyordu bu şekilde form body den veriyi alıyor.
 @router.post("/login/form")
@@ -47,6 +37,7 @@ def user_login_form(
                 "username": result["username"]  # Eğer varsa
             }
         )
+        print("TOKEN:", access_token)
         if result["user_type"] == "admin":
             redirect_url = "/nav/admin-home"
         else:
