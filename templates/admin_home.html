@@ -38,7 +38,7 @@
             <td>{{ user.id }}</td>
             <td>{{ user.username }}</td>
             <td>{{ user.email }}</td>
-            <td>{{ user.type }}</td>
+            <td>{{ user.type.value }}</td>
             <td>
                 <!-- Güncelleme Formu (PUT) -->
                 <form id="update-form-{{ user.id }}" onsubmit="submitUpdate(event, {{ user.id }})" style="display:inline;">
