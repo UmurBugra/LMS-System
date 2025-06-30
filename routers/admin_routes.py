@@ -22,11 +22,6 @@ def create_user(
     request = LoginBase(username=username, email=email, password=password)
     return admin.create_user_by_admin(db, request, type)
 
-# # Read all users
-# @router.get("/get-user-all", response_model=list[LoginDisplay])
-# def get_users(db: Session = Depends(get_db)):
-#     return admin.get_read_users_by_admin(db)
-
 # Update user
 @router.put("/update-user-{id}", response_model=LoginDisplay)
 def update_user(
