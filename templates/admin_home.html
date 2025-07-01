@@ -79,6 +79,7 @@
             <select id="alicilar" name="receiver" required>
               <option value="all_students">Tüm Öğrenciler</option>
               <option value="all_teachers">Tüm Öğretmenler</option>
+              <option value="everyone">Herkes</option>
             </select>
           </div>
           <button type="submit" class="btn">Duyuru Gönder</button>
@@ -147,7 +148,29 @@
             duyuruModal.style.display = 'none';
           }
         });
+        const duyuruForm = document.getElementById('duyuruForm');
+        if (duyuruForm) {
+            duyuruForm.addEventListener('submit', e => {
+                e.preventDefault();
 
+                const formData = new FormData(duyuruForm);
+
+                fetch('/admin-page/create-notification', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(res => res.json())
+                    .then(data => {
+                        showToast(data.message);
+                        duyuruModal.style.display = 'none';
+                        duyuruForm.reset();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showToast('Duyuru gönderilirken bir hata oluştu.');
+                    });
+            });
+        }
     </script>
      </div>
      </div>
