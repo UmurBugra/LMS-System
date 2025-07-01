@@ -4,7 +4,7 @@ from starlette.templating import Jinja2Templates
 from schemas import LoginBase, CalendarData
 from crud.calendar import create_calendar, get_calendar, delete_calendar as delete_calendar_func
 from db.database import get_db
-from authentication.oauth2 import create_authentication_token, student_authentication_token
+from authentication.oauth2 import calendar_authentication_token, student_authentication_token
 from fastapi.responses import HTMLResponse
 
 router = APIRouter(prefix="/calendar", tags=["Calendar"])
@@ -16,7 +16,7 @@ templates = Jinja2Templates(directory="templates")
 def show_create_calendar_form(
     request: Request,
     db: Session = Depends(get_db),
-    current_user: LoginBase = Depends(create_authentication_token)
+    current_user: LoginBase = Depends(calendar_authentication_token)
 ):
     return templates.TemplateResponse(
         "create_calendar.html",
@@ -38,7 +38,7 @@ def handle_create_calendar(
     t_15_16: str = Form(...),
     t_16_17: str = Form(...),
     db: Session = Depends(get_db),
-    current_user: LoginBase = Depends(create_authentication_token)
+    current_user: LoginBase = Depends(calendar_authentication_token)
 ):
     try:
         calendar_data = CalendarData(
@@ -76,7 +76,7 @@ def handle_create_calendar(
 @router.get("/teacher", response_class=HTMLResponse)
 def show_teacher_calendar_list(request: Request,
                        db: Session = Depends(get_db),
-                       current_user: LoginBase = Depends(create_authentication_token)
+                       current_user: LoginBase = Depends(calendar_authentication_token)
 ):
     calendars = get_calendar(db)
     return templates.TemplateResponse(
@@ -89,7 +89,7 @@ def delete_calendar(
     request: Request,
     calendar_id: int,
     db: Session = Depends(get_db),
-    current_user: LoginBase = Depends(create_authentication_token)
+    current_user: LoginBase = Depends(calendar_authentication_token)
 ):
     try:
         delete_calendar_func(db, calendar_id, current_user)
