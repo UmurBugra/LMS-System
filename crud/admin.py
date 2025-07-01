@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from schemas import UserType, LoginBase
-from db.models import LoginData
+from db.models import LoginData, NotificationData
+from datetime import datetime, timezone, timedelta
 
 #CRUD operations for admin
 # Create user
@@ -39,3 +40,26 @@ def delete_user_by_admin(db: Session, id: int):
         db.delete(user)
         db.commit()
     return "Kullanıcı silindi"
+
+# Create notification for everyone
+def create_notification_for_everyone(db: Session, content: str, sender_id: int):
+    utc_now = datetime.now(timezone.utc)
+    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
+    admin = db.query(LoginData).filter(LoginData.id == sender_id).first()
+    if not admin:
+        raise ValueError("Geçersiz kullanıcı ID'si")
+
+    ignore_admin = db.query(LoginData).filter(LoginData.id != sender_id).all()
+
+    notification = NotificationData(
+        content=content,
+        created_time=turkey_time,
+        sender_username=admin.username
+    )
+    notification.receiver = ignore_admin
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+    return notification
+
