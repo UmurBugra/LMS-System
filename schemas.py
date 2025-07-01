@@ -1,3 +1,4 @@
+from fastapi import Form
 from pydantic import BaseModel, EmailStr
 from enum import Enum
 
@@ -15,6 +16,15 @@ class LoginBase(BaseModel):
     username: str
     password: str
     email: str
+
+    @classmethod
+    def form(
+        cls,
+        username: str = Form(...),
+        email: str = Form(...),
+        password: str = Form(...)
+    ):
+        return cls(username=username, email=email, password=password)
 
 class LoginDisplay(BaseModel):
     username: str
