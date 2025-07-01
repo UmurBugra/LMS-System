@@ -1,30 +1,27 @@
-from fastapi import APIRouter, Depends, Form, Body, HTTPException
-from fastapi.responses import JSONResponse
+from fastapi import APIRouter, Depends, Request ,Form, Body ,HTTPException
+from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
 from fastapi.templating import Jinja2Templates
 from db.database import get_db
-from schemas import LoginBase,UserType
+from schemas import LoginBase, UserType, LoginDisplay
 from crud import admin
-from crud.notification import create_notification,create_notification_for_all_students, \
-create_notification_for_all_teachers
+from crud.notification import create_notification_for_all_students, create_notification_for_all_teachers
 from authentication.oauth2 import admin_authentication_token
-from schemas import LoginDisplay
+
 
 router = APIRouter(prefix="/admin-page", tags=["setup"])
 templates = Jinja2Templates(directory="templates")
 
 # Create user
-@router.post("/create", response_model=LoginDisplay)
+@router.post("/create")
 def create_user(
-    username: str = Form(...),
-    email: str = Form(...),
-    password: str = Form(...),
+    form_data: LoginBase = Depends(LoginBase.form),
     type: UserType = Form(...),
     db: Session = Depends(get_db),
     create_user_by_auth: LoginBase = Depends(admin_authentication_token)
 ):
-    request = LoginBase(username=username, email=email, password=password)
-    return admin.create_user_by_admin(db, request, type)
+    user = admin.create_user_by_admin(db, form_data, type)
+    return RedirectResponse("/nav/admin-home", status_code=302)
 
 # Update user
 @router.put("/update-user-{id}", response_model=LoginDisplay)
