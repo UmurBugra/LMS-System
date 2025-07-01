@@ -55,7 +55,7 @@ def get_current_user_from_cookie(
 
 
 # Calendar yetkilendirme (cookie üzerinden)
-def create_authentication_token(
+def calendar_authentication_token(
     access_token: Optional[str] = Cookie(None),
     db: Session = Depends(get_db)
 ):
