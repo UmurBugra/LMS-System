@@ -3,91 +3,117 @@
 <head>
     <title>Admin Ana Sayfa</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/static/admin_panel.css">
 </head>
 <body>
-    <h1>{{ username }} (Admin)</h1>
-    <div class="logout-button">
-        <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i>
-        </a>
-
-    <div class="notification-button">
-        <a href="#" id="openDuyuruModal" class="notification-btn"><i class="fas fa-bell"></i></a>
-
-    <h2>Kullanıcı Ekle</h2>
-    <form method="post" action="/admin-page/create">
-        <label>Kullanıcı Adı:</label>
-        <input type="text" name="username" required><br>
-        <label>E-posta:</label>
-        <input type="email" name="email" required><br>
-        <label>Şifre:</label>
-        <input type="password" name="password" required><br>
-        <label>Tip:</label>
-        <select name="type" required>
-            <option value="student">Öğrenci</option>
-            <option value="teacher">Öğretmen</option>
-            <option value="admin">Admin</option>
-        </select><br>
-        <button type="submit">Ekle</button>
-    </form>
-
-    <h2>Kullanıcı Listesi</h2>
-    <table border="1">
-        <tr>
-            <th>ID</th>
-            <th>Kullanıcı Adı</th>
-            <th>E-posta</th>
-            <th>Tip</th>
-            <th>İşlemler</th>
-        </tr>
-        {% for user in users %}
-        <tr>
-            <td>{{ user.id }}</td>
-            <td>{{ user.username }}</td>
-            <td>{{ user.email }}</td>
-            <td>{{ user.type.value }}</td>
-            <td>
-                <!-- Güncelleme Formu (PUT) -->
-                <form id="update-form-{{ user.id }}" onsubmit="submitUpdate(event, {{ user.id }})" style="display:inline;">
-                    <input type="text" name="username" value="{{ user.username }}" required>
-                    <input type="email" name="email" value="{{ user.email }}" required>
-                    <input type="password" name="password" placeholder="Yeni Şifre">
-                    <select name="type" required>
-                        <option value="student" {% if user.type == "student" %}selected{% endif %}>Öğrenci</option>
-                        <option value="teacher" {% if user.type == "teacher" %}selected{% endif %}>Öğretmen</option>
-                        <option value="admin" {% if user.type == "admin" %}selected{% endif %}>Admin</option>
-                    </select>
-                    <button type="submit">Güncelle</button>
-                </form>
-
-                <!-- Silme Butonu (DELETE ile JS) -->
-                <button onclick="deleteUser({{ user.id }})">Sil</button>
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
-<div id="duyuruModal" class="modal" style="display:none;">
-      <div class="modal-content">
-        <span class="close">&times;</span>
-        <h2>Duyuru Oluştur</h2>
-        <form id="duyuruForm">
-          <div class="form-group">
-            <label for="duyuruIcerik">Duyuru İçeriği</label>
-            <textarea id="duyuruIcerik" name="content" rows="4" required></textarea>
-          </div>
-          <div class="form-group">
-            <label for="alicilar">Alıcılar</label>
-            <select id="alicilar" name="receiver" required>
-              <option value="all_students">dr</option>
-              <option value="all_teachers">Tüm Öğretmenler</option>
-              <option value="everyone">Herkes</option>
-            </select>
-          </div>
-          <button type="submit" class="btn">Duyuru Gönder</button>
-        </form>
-      </div>
+    <div class="header">
+        <h1>{{ username }} (Admin)</h1>
+        <div class="header-actions">
+            <div class="notification-button">
+                <a href="#" id="openDuyuruModal" title="Duyuru Oluştur"><i class="fas fa-bell"></i></a>
+            </div>
+            <div class="logout-button">
+                <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
     </div>
-    <!-- JS: PUT güncelleme -->
+
+    <div class="section">
+        <h2>Kullanıcı Ekle</h2>
+        <form method="post" action="/admin-page/create" class="user-form">
+            <div class="form-group">
+                <label>Kullanıcı Adı:</label>
+                <input type="text" name="username" required>
+            </div>
+            <div class="form-group">
+                <label>E-posta:</label>
+                <input type="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label>Şifre:</label>
+                <input type="password" name="password" required>
+            </div>
+            <div class="form-group">
+                <label>Tip:</label>
+                <select name="type" required>
+                    <option value="student">Öğrenci</option>
+                    <option value="teacher">Öğretmen</option>
+                    <option value="admin">Admin</option>
+                </select>
+            </div>
+            <button type="submit" class="btn-primary">Ekle</button>
+        </form>
+    </div>
+
+    <div class="section">
+        <h2>Kullanıcı Listesi</h2>
+        <table class="users-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Kullanıcı Adı</th>
+                    <th>E-posta</th>
+                    <th>Tip</th>
+                    <th>İşlemler</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.type.value }}</td>
+                    <td>
+                        <form id="update-form-{{ user.id }}" onsubmit="submitUpdate(event, {{ user.id }})" class="update-form">
+                            <input type="text" name="username" value="{{ user.username }}" required>
+                            <input type="email" name="email" value="{{ user.email }}" required>
+                            <input type="password" name="password" placeholder="Yeni Şifre">
+                            <select name="type" required>
+                                <option value="student" {% if user.type == "student" %}selected{% endif %}>Öğrenci</option>
+                                <option value="teacher" {% if user.type == "teacher" %}selected{% endif %}>Öğretmen</option>
+                                <option value="admin" {% if user.type == "admin" %}selected{% endif %}>Admin</option>
+                            </select>
+                            <div class="action-buttons">
+                                <button type="submit" class="btn-update">Güncelle</button>
+                                <button type="button" onclick="deleteUser({{ user.id }})" class="btn-delete">Sil</button>
+                            </div>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Duyuru Modal -->
+    <div id="duyuruModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Duyuru Oluştur</h2>
+            <form id="duyuruForm">
+                <div class="form-group">
+                    <label for="duyuruIcerik">Duyuru İçeriği</label>
+                    <textarea id="duyuruIcerik" name="content" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="alicilar">Alıcılar</label>
+                    <select id="alicilar" name="receiver" required>
+                        <option value="all_students">Tüm Öğrenciler</option>
+                        <option value="all_teachers">Tüm Öğretmenler</option>
+                        <option value="everyone">Herkes</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Duyuru Gönder</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
     <script>
+        // PUT güncelleme
         function submitUpdate(event, userId) {
             event.preventDefault();
             const form = event.target;
@@ -102,16 +128,18 @@
                 body: JSON.stringify(data)
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
+                    showToast('Kullanıcı başarıyla güncellendi');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert("Güncelleme başarısız.");
+                    showToast('Güncelleme başarısız');
                 }
             }).catch(error => {
                 console.error("İstek hatası:", error);
-                alert("Sunucuya ulaşılamadı.");
+                showToast('Sunucuya ulaşılamadı');
             });
         }
 
+        // DELETE kullanıcı
         function deleteUser(userId) {
             if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
 
@@ -119,35 +147,42 @@
                 method: "DELETE"
             }).then(response => {
                 if (response.ok) {
-                    location.reload();
+                    showToast('Kullanıcı başarıyla silindi');
+                    setTimeout(() => location.reload(), 1000);
                 } else {
-                    alert("Silme işlemi başarısız.");
+                    showToast('Silme işlemi başarısız');
                 }
             }).catch(error => {
                 console.error("Silme hatası:", error);
-                alert("Sunucuya ulaşılamadı.");
+                showToast('Sunucuya ulaşılamadı');
             });
         }
+
+        // Modal işlemleri
         const duyuruModal = document.getElementById('duyuruModal');
         const openModalBtn = document.getElementById('openDuyuruModal');
         const closeBtn = duyuruModal.querySelector('.close');
 
         if (openModalBtn) {
-          openModalBtn.addEventListener('click', e => {
-            e.preventDefault();
-            duyuruModal.style.display = 'block';
-          });
+            openModalBtn.addEventListener('click', e => {
+                e.preventDefault();
+                duyuruModal.style.display = 'block';
+            });
         }
 
-        closeBtn.addEventListener('click', () => {
-          duyuruModal.style.display = 'none';
-        });
+        if (closeBtn) {
+            closeBtn.addEventListener('click', () => {
+                duyuruModal.style.display = 'none';
+            });
+        }
 
         window.addEventListener('click', e => {
-          if (e.target === duyuruModal) {
-            duyuruModal.style.display = 'none';
-          }
+            if (e.target === duyuruModal) {
+                duyuruModal.style.display = 'none';
+            }
         });
+
+        // Duyuru gönderme
         const duyuruForm = document.getElementById('duyuruForm');
         if (duyuruForm) {
             duyuruForm.addEventListener('submit', e => {
@@ -159,20 +194,28 @@
                     method: 'POST',
                     body: formData
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        showToast(data.message);
-                        duyuruModal.style.display = 'none';
-                        duyuruForm.reset();
-                    })
-                    .catch(err => {
-                        console.error(err);
-                        showToast('Duyuru gönderilirken bir hata oluştu.');
-                    });
+                .then(res => res.json())
+                .then(data => {
+                    showToast(data.message);
+                    duyuruModal.style.display = 'none';
+                    duyuruForm.reset();
+                })
+                .catch(err => {
+                    console.error(err);
+                    showToast('Duyuru gönderilirken bir hata oluştu');
+                });
             });
         }
+
+        // Toast bildirimi
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.className = 'toast show';
+            setTimeout(() => {
+                toast.className = 'toast';
+            }, 3000);
+        }
     </script>
-     </div>
-     </div>
 </body>
 </html>
