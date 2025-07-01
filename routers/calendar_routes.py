@@ -73,8 +73,8 @@ def handle_create_calendar(
         )
 
 # Takvim listeleme
-@router.get("/list", response_class=HTMLResponse)
-def show_calendar_list(request: Request,
+@router.get("/teacher", response_class=HTMLResponse)
+def show_teacher_calendar_list(request: Request,
                        db: Session = Depends(get_db),
                        current_user: LoginBase = Depends(create_authentication_token)
 ):
@@ -93,12 +93,12 @@ def delete_calendar(
 ):
     try:
         delete_calendar_func(db, calendar_id, current_user)
-        calendars = get_calendar(db)
+        calendars = get_calendar(db)                            # <-- Takvimleri yeniden al
         return templates.TemplateResponse(
             "teacher_calendars.html",
             {"request": request,
              "username": current_user.username,
-             "calendars": calendars,
+             "calendars": calendars,                            # <-- Güncellenmiş takvimleri kullanıcıya gönder
              "success_message": "Takvim başarıyla silindi"
              }
         )
@@ -114,7 +114,7 @@ def delete_calendar(
         )
 
 # Öğrenci takvimi görüntüleme
-@router.get("/student/calendar", response_class=HTMLResponse)
+@router.get("/student", response_class=HTMLResponse)
 def show_student_calendar_list(
         request: Request,
         db: Session = Depends(get_db),
