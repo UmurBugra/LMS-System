@@ -22,7 +22,7 @@ class LoginData(Base):
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String)
     password = Column(String)
-    email = Column(String)
+    email = Column(String, unique=True, nullable=False)
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
     items = relationship("CalendarData", back_populates="user")
     notifications = relationship("NotificationData",
