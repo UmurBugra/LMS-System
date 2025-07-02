@@ -27,15 +27,15 @@ def create_user(
 @router.put("/update-user-{id}", response_model=LoginDisplay)
 def update_user(
     id: int,
-    data: dict = Body(...),
+    body_data: LoginBase = Depends(LoginBase.body),
+    type: UserType  = Body(...),
     db: Session = Depends(get_db)
 ):
-    request = LoginBase(
-        username=data["username"],
-        email=data["email"],
-        password=data["password"]
-    )
-    return admin.update_user_by_admin(db, id, request, data["type"])
+
+    if not body_data.username or not body_data.email or not body_data.password:
+        raise HTTPException(status_code=400, detail="boş alanlar")
+
+    return admin.update_user_by_admin(db, id, body_data, type)
 
 # Delete user
 @router.delete("/delete-user-{id}")
