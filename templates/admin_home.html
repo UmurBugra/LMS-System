@@ -223,6 +223,88 @@
                 toast.className = 'toast';
             }, 3000);
         }
+
+        // Arama kutusu işlevselliği
+const userSearchInput = document.getElementById('userSearch');
+const usersTableBody = document.querySelector('.users-table tbody');
+let originalTableContent = '';
+
+// Sayfa yüklendiğinde orijinal tabloyu kaydedelim
+document.addEventListener('DOMContentLoaded', () => {
+    originalTableContent = usersTableBody.innerHTML;
+});
+
+// Arama kutusu dinleyicisi
+if (userSearchInput) {
+    userSearchInput.addEventListener('input', debounce(function(e) {
+        const query = e.target.value.trim();
+
+        if (query === '') {
+            // Arama kutusu boşsa orijinal listeyi göster
+            usersTableBody.innerHTML = originalTableContent;
+            return;
+        }
+
+        // API'ye arama isteği gönder
+        fetch(`/admin-page/search-users?query=${encodeURIComponent(query)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.users && data.users.length > 0) {
+                    updateUserTable(data.users);
+                } else {
+                    usersTableBody.innerHTML = '<tr><td colspan="5">Kullanıcı bulunamadı</td></tr>';
+                }
+            })
+            .catch(error => {
+                console.error('Arama hatası:', error);
+                showToast('Arama sırasında bir hata oluştu');
+            });
+    }, 300));
+}
+
+// Tabloyu güncelleme fonksiyonu
+function updateUserTable(users) {
+    usersTableBody.innerHTML = '';
+
+    users.forEach(user => {
+        const row = document.createElement('tr');
+
+        row.innerHTML = `
+            <td>${user.id}</td>
+            <td>${user.username}</td>
+            <td>${user.email}</td>
+            <td>${user.type}</td>
+            <td>
+                <form id="update-form-${user.id}" onsubmit="submitUpdate(event, ${user.id})" class="update-form">
+                    <input type="text" name="username" value="${user.username}" required>
+                    <input type="email" name="email" value="${user.email}" required>
+                    <input type="password" name="password" placeholder="Yeni Şifre">
+                    <select name="type" required>
+                        <option value="student" ${user.type === "student" ? 'selected' : ''}>Öğrenci</option>
+                        <option value="teacher" ${user.type === "teacher" ? 'selected' : ''}>Öğretmen</option>
+                        <option value="admin" ${user.type === "admin" ? 'selected' : ''}>Admin</option>
+                    </select>
+                    <div class="action-buttons">
+                        <button type="submit" class="btn-update">Güncelle</button>
+                        <button type="button" onclick="deleteUser(${user.id})" class="btn-delete">Sil</button>
+                    </div>
+                </form>
+            </td>
+        `;
+
+        usersTableBody.appendChild(row);
+    });
+}
+
+// Debounce fonksiyonu - sürekli istek göndermemek için
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
     </script>
 </body>
 </html>
