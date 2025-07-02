@@ -1,5 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
+from sqlalchemy import and_
 from fastapi.responses import JSONResponse
 from db.models import NotificationData, LoginData, notification_receivers
 from datetime import datetime, timedelta, timezone
@@ -121,9 +122,9 @@ def is_read_notification(db: Session, notification_id: int, current_user: LoginD
     try:
         result = db.execute(
             notification_receivers.update().where(
-                notification_receivers.c.notification_id == notification_id,
+                and_(notification_receivers.c.notification_id == notification_id,
                 notification_receivers.c.user_id == current_user.id,
-                notification_receivers.c.is_removed == False
+                notification_receivers.c.is_removed == False)
             ).values(is_read=True)
         )
 
