@@ -15,12 +15,10 @@ templates = Jinja2Templates(directory="templates")
 @router.post("/login/form")
 def user_login_form(
         request: Request,
-        email: str = Form(...),
-        password: str = Form(...),
+        login_form: LoginEmailPassword = Depends(LoginEmailPassword.form),
         db: Session = Depends(get_db)
 ):
-    login_request = LoginEmailPassword(email=email, password=password)
-    result = auth.user_login(db, login_request)
+    result = auth.user_login(db, login_form)
 
     if isinstance(result, str):
         return templates.TemplateResponse(
