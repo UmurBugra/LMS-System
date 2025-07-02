@@ -12,6 +12,14 @@ class LoginEmailPassword(BaseModel):
     email: EmailStr
     password: str
 
+    @classmethod
+    def form(
+        cls,
+        email: EmailStr = Form(...),
+        password: str = Form(...)
+    ):
+        return cls(email=email, password=password)
+
 class LoginBase(BaseModel):
     username: str
     password: str
@@ -32,7 +40,6 @@ class LoginBase(BaseModel):
             username: str = Body(...),
             email: str = Body(...),
             password: str = Body(...),
-
     ):
         return cls(username=username, email=email, password=password)
 
