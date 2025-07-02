@@ -28,7 +28,7 @@ def create_user(
 def update_user(
     id: int,
     body_data: LoginBase = Depends(LoginBase.body),
-    type: UserType  = Body(...),
+    type: UserType = Body(...),
     db: Session = Depends(get_db)
 ):
 
