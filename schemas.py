@@ -1,4 +1,4 @@
-from fastapi import Form
+from fastapi import Form, Body
 from pydantic import BaseModel, EmailStr
 from enum import Enum
 
@@ -23,6 +23,16 @@ class LoginBase(BaseModel):
         username: str = Form(...),
         email: str = Form(...),
         password: str = Form(...)
+    ):
+        return cls(username=username, email=email, password=password)
+
+    @classmethod
+    def body(
+            cls,
+            username: str = Body(...),
+            email: str = Body(...),
+            password: str = Body(...),
+
     ):
         return cls(username=username, email=email, password=password)
 
