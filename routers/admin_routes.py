@@ -1,8 +1,10 @@
-from fastapi import APIRouter, Depends, Request ,Form, Body ,HTTPException
+from fastapi import APIRouter, Depends ,Form, Body ,HTTPException
 from fastapi.responses import JSONResponse, RedirectResponse
 from sqlalchemy.orm import Session
+from sqlalchemy import or_, cast, String
 from fastapi.templating import Jinja2Templates
 from db.database import get_db
+from db.models import LoginData
 from schemas import LoginBase, UserType, LoginDisplay
 from crud import admin
 from crud.notification import create_notification_for_all_students, create_notification_for_all_teachers
@@ -66,3 +68,30 @@ def create_notification(
 
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/search-users")
+def search_users(query: str, db: Session = Depends(get_db)):
+
+    if not query:
+        return JSONResponse({"message": "Arama terimi girin."}, status_code=400)
+
+    users = db.query(LoginData).filter(
+        or_(
+            LoginData.username.like(f"%{query}%"),
+            LoginData.email.like(f"%{query}%"),
+            cast(LoginData.id, String).like(f"%{query}%")
+        )).limit(10).all()
+
+    return JSONResponse(
+        content={
+            "users": [
+                {
+                    "id": user.id,
+                    "username": user.username,
+                    "email": user.email,
+                    "type": user.type.value  # --> JSON formatında type değerini str döndürür
+                } for user in users  # --> Her kullanıcı için döndürüyor
+            ]
+        },
+        status_code=200
+    )
