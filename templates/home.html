@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 
-{% block title %}Ana Sayfa - LMS System{% endblock %}
+{% block title %}Ana Sayfa - C-learn{% endblock %}
 
 {% block content %}
 <div class="welcome-section">
-    <h2>Hoş Geldiniz!</h2>
-    <p>{{ username }} olarak sisteme giriş yaptınız. Sol menüden istediğiniz bölüme erişebilirsiniz.</p>
+    <h2>Hoş Geldiniz {{ username }}</h2>
+    <p>Whatever it takes, we will RISE together!</p>
 
     {% if user_type == "Öğretmen" %}
         <div class="quick-actions">
