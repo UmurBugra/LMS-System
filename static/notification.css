@@ -18,6 +18,7 @@
     text-align: center;
     height: 18px;
     width: 18px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .notification-button a:hover {
@@ -50,6 +51,7 @@
     margin: 0;
     border-bottom: 1px solid #eee;
     font-size: 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .show {
@@ -89,6 +91,7 @@
     box-sizing: border-box !important;
     font-weight: 500 !important;
     line-height: 1.3 !important;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif !important;
 }
 
 .dropdown-content .notification-btn:hover {
@@ -147,11 +150,13 @@
     font-size: 14px;
     color: #333;
     line-height: 1.4;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .dropdown-content .notification-item small {
     color: #777;
     font-size: 12px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Bildirim boş durumu için stil */
@@ -174,6 +179,7 @@
     font-size: 14px;
     font-weight: 400;
     color: #555;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .dropdown-content .notification-item.empty-notification::before {
@@ -194,6 +200,7 @@
     padding: 0;
     font-size: 16px;
     color: #333;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 button.clear-notifications {
@@ -235,7 +242,7 @@ button.clear-notifications i {
     width: 15px;
     font-size: 9px;
     font-weight: 500;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -343,12 +350,14 @@ button.clear-notifications i {
     font-size: 14px;
     line-height: 1.4;
     color: #333333;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .notifications-list .notification-item small {
     color: #666666;
     font-size: 12px;
     font-weight: 400;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Bildirimler listesi container */
@@ -391,6 +400,7 @@ button.clear-notifications i {
     font-weight: 400;
     margin-bottom: 25px;
     text-align: left;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal .close {
@@ -418,6 +428,7 @@ button.clear-notifications i {
     margin-bottom: 8px;
     color: #333;
     font-size: 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal textarea {
@@ -429,6 +440,7 @@ button.clear-notifications i {
     resize: none;
     font-size: 16px;
     box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal select {
@@ -438,6 +450,7 @@ button.clear-notifications i {
     background-color: white;
     height: 50px;
     box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal .btn {
@@ -451,6 +464,7 @@ button.clear-notifications i {
     width: 100%;
     margin-top: 10px;
     border-radius: 4px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal .btn:hover {
@@ -471,12 +485,14 @@ button.clear-notifications i {
     color: #333;
     margin-bottom: 8px;
     letter-spacing: -0.02em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .container p {
     font-size: 14px;
     color: #666;
     margin-bottom: 32px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Form genel stilleri */
@@ -504,6 +520,7 @@ button.clear-notifications i {
     color: #333;
     margin-bottom: 8px;
     letter-spacing: 0.01em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .form-group h3 {
@@ -512,6 +529,7 @@ button.clear-notifications i {
     color: #333;
     margin: 0 0 16px 0;
     letter-spacing: -0.01em;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Select ve input stilleri */
@@ -562,7 +580,7 @@ button.clear-notifications i {
     font-weight: 400;
     color: #555;
     margin-bottom: 0;
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .time-slot input[type="text"] {

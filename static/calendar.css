@@ -9,12 +9,14 @@
     overflow: hidden;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
     border: 1px solid #e0e0e0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .calendar-table th, .calendar-table td {
     border: 1px solid #ddd;
     padding: 8px;
     text-align: left;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .calendar-table th {
@@ -27,6 +29,7 @@
     border-bottom: 1px solid #e0e0e0;
     letter-spacing: 0.02em;
     text-transform: none;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .calendar-table th:first-child {
@@ -46,6 +49,7 @@
     color: #333;
     vertical-align: middle;
     transition: background-color 0.15s ease;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .calendar-table td:first-child {
@@ -97,7 +101,7 @@
     transition: all 0.2s ease;
     border: none;
     cursor: pointer;
-    font-family: inherit;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .button:hover {
@@ -123,7 +127,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
     letter-spacing: 0.01em;
-    font-family: inherit;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .delete-button:hover {
@@ -148,7 +152,7 @@
     cursor: not-allowed;
     border: 1px solid #dee2e6;
     display: inline-block;
-    font-family: inherit;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     letter-spacing: 0.01em;
 }
 
@@ -164,6 +168,7 @@
     display: flex;
     align-items: center;
     font-weight: 400;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .success-message::before {
@@ -184,6 +189,7 @@
     display: flex;
     align-items: center;
     font-weight: 400;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .error-message::before {
@@ -204,6 +210,7 @@
     padding: 40px 20px;
     border-radius: 2px;
     border: 1px solid #e9e9e9;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 /* Home butonu - takvim sayfaları için */
@@ -271,6 +278,7 @@
     letter-spacing: 0.01em;
     transition: all 0.2s ease;
     white-space: nowrap;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .calendar-button a.button:hover,
@@ -399,6 +407,7 @@
     font-weight: 400;
     margin-bottom: 25px;
     text-align: left;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal .close {
@@ -426,6 +435,7 @@
     margin-bottom: 8px;
     color: #333;
     font-size: 16px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal textarea {
@@ -437,6 +447,7 @@
     resize: none;
     font-size: 16px;
     box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal select {
@@ -446,6 +457,7 @@
     background-color: white;
     height: 50px;
     box-sizing: border-box;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .modal .btn {
@@ -459,8 +471,5 @@
     width: 100%;
     margin-top: 10px;
     border-radius: 4px;
-}
-
-.modal .btn:hover {
-    background-color: #555;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
