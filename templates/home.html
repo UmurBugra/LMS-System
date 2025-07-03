@@ -3,62 +3,11 @@
 <head>
     <title>Ana Sayfa</title>
     <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/notification.css') }}">
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/calendar.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
-    <div class="top-buttons">
-      <div class="notification-button dropdown">
-        <a href="#" class="dropdown-toggle" title="Bildirimler">
-          <i class="fas fa-bell"></i>
-        <span class="notification-badge" id="notification-count">0</span>
-        </a>
-        <div class="dropdown-content">
-  <div class="notification-header">
-  <h3>Bildirimler</h3>
-  <button type="button" class="clear-notifications" title="Bildirimleri temizle">
-    <i class="fas fa-trash"></i>
-  </button>
-</div>
-  {% if notifications %}
-    {% for notification in notifications %}
-      <div class="notification-item {{ 'read' if notification.is_read else 'unread' }}"
-           data-notification-id="{{ notification.id }}"
-           data-is-read="{{ 'true' if notification.is_read else 'false' }}"
-           onclick="markAsRead('{{ notification.id }}', this)">
-        <p>{{ notification.content }}</p>
-        {% if notification.sender_username %}
-          <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-        {% else %}
-          <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-        {% endif %}
-        {% if not notification.is_read %}
-          <span class="unread-indicator">•</span>
-        {% endif %}
-      </div>
-    {% endfor %}
-  {% else %}
-    <div class="notification-item">
-      <p>Henüz bildirim bulunmamaktadır.</p>
-    </div>
-  {% endif %}
-
-  {% if user_type == "Öğretmen" %}
-    <div class="notification-buttons">
-      <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
-      <a href="/notification" class="notification-btn">Tümünü Gör</a>
-    </div>
-  {% else %}
-    <div class="notification-buttons">
-      <a href="/notification" class="notification-btn">Tümünü Gör</a>
-    </div>
-  {% endif %}
-</div>
-      </div>
-      <div class="logout-button">
-        <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
-      </div>
-    </div>
-
     <div class="home-container">
       <div class="header-content" style="display: flex; align-items: center;">
         <div>
@@ -83,6 +32,59 @@
             </div>
           </div>
         {% endif %}
+      </div>
+    </div>
+
+    <div class="top-buttons">
+      <div class="notification-button dropdown">
+        <a href="#" class="dropdown-toggle" title="Bildirimler">
+          <i class="fas fa-bell"></i>
+          <span class="notification-badge" id="notification-count">0</span>
+        </a>
+        <div class="dropdown-content">
+          <div class="notification-header">
+            <h3>Bildirimler</h3>
+            <button type="button" class="clear-notifications" title="Bildirimleri temizle">
+              <i class="fas fa-trash"></i>
+            </button>
+          </div>
+          {% if notifications %}
+            {% for notification in notifications %}
+              <div class="notification-item {{ 'read' if notification.is_read else 'unread' }}"
+                  data-notification-id="{{ notification.id }}"
+                  data-is-read="{{ 'true' if notification.is_read else 'false' }}"
+                  onclick="markAsRead('{{ notification.id }}', this)">
+                <p>{{ notification.content }}</p>
+                {% if notification.sender_username %}
+                  <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% else %}
+                  <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                {% endif %}
+                {% if not notification.is_read %}
+                  <span class="unread-indicator">•</span>
+                {% endif %}
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="notification-item empty-notification">
+              <p>Henüz bildirim bulunmamaktadır.</p>
+            </div>
+          {% endif %}
+
+          {% if user_type == "Öğretmen" %}
+            <div class="notification-buttons">
+              <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
+              <a href="/notification" class="notification-btn">Tümünü Gör</a>
+            </div>
+          {% else %}
+            <div class="notification-buttons">
+              <a href="/notification" class="notification-btn">Tümünü Gör</a>
+            </div>
+          {% endif %}
+        </div>
+      </div>
+      <div class="logout-button">
+        <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
       </div>
     </div>
 
