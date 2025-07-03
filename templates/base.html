@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LMS System{% endblock %}</title>
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/notification.css') }}">
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/calendar.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Header -->
+    <div class="app-header">
+        <div class="header-content">
+            <h1>LMS System</h1>
+            <div class="user-info">
+                <span class="username">{{ username }}</span>
+                <span class="user-type">[{{ user_type }}]</span>
+            </div>
+        </div>
+        <div class="header-actions">
+            <!-- Bildirimler -->
+            <div class="notification-button dropdown">
+                <a href="#" class="dropdown-toggle" title="Bildirimler">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" id="notification-count">0</span>
+                </a>
+                <div class="dropdown-content">
+                    <div class="notification-header">
+                        <h3>Bildirimler</h3>
+                        <button type="button" class="clear-notifications" title="Bildirimleri temizle">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </div>
+                    {% if notifications %}
+                        {% for notification in notifications %}
+                            <div class="notification-item {{ 'read' if notification.is_read else 'unread' }}"
+                                data-notification-id="{{ notification.id }}"
+                                data-is-read="{{ 'true' if notification.is_read else 'false' }}"
+                                onclick="markAsRead('{{ notification.id }}', this)">
+                                <p>{{ notification.content }}</p>
+                                {% if notification.sender_username %}
+                                    <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                                {% else %}
+                                    <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <div class="notification-item empty-notification">
+                            <p>Henüz bildirim bulunmamaktadır.</p>
+                        </div>
+                    {% endif %}
+
+                    {% if user_type == "Öğretmen" %}
+                        <div class="notification-buttons">
+                            <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
+                            <a href="/notification" class="notification-btn">Tümünü Gör</a>
+                        </div>
+                    {% else %}
+                        <div class="notification-buttons">
+                            <a href="/notification" class="notification-btn">Tümünü Gör</a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+            <!-- Çıkış -->
+            <div class="logout-button">
+                <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sidebar -->
+    <div class="app-sidebar">
+        <nav class="sidebar-nav">
+            <ul>
+                <li class="nav-item">
+                    <a href="/nav/home" class="nav-link">
+                        <i class="fas fa-home"></i>
+                        <span>Ana Sayfa</span>
+                    </a>
+                </li>
+
+                {% if user_type == "Öğretmen" %}
+                    <li class="nav-item">
+                        <a href="/calendar/create" class="nav-link">
+                            <i class="fas fa-plus"></i>
+                            <span>Takvim Ekle</span>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="/calendar/teacher" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Takvimlerim</span>
+                        </a>
+                    </li>
+                {% elif user_type == "Öğrenci" %}
+                    <li class="nav-item">
+                        <a href="/calendar/student" class="nav-link">
+                            <i class="fas fa-calendar"></i>
+                            <span>Takvimler</span>
+                        </a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+
+    <!-- Main Content -->
+    <div class="app-main">
+        <div class="main-content">
+            {% block content %}{% endblock %}
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Duyuru Modal -->
+    {% if user_type == "Öğretmen" %}
+    <div id="duyuruModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Yeni Duyuru Oluştur</h2>
+            <form id="duyuruForm">
+                <div class="form-group">
+                    <label for="duyuruIcerik">Duyuru İçeriği</label>
+                    <textarea id="duyuruIcerik" name="content" rows="4" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="alicilar">Alıcılar</label>
+                    <select id="alicilar" name="receiver" required>
+                        <option value="all_students">Tüm Öğrenciler</option>
+                        <option value="all_teachers">Tüm Öğretmenler</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">Duyuru Gönder</button>
+            </form>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- JavaScript -->
+    {% block scripts %}
+    <script>
+        // Bildirimi okundu olarak işaretle
+        function markAsRead(notificationId, element) {
+            const isRead = element.getAttribute('data-is-read') === 'true';
+            if (isRead || element.classList.contains('read')) {
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('notification_id', notificationId);
+
+            fetch('/notification/mark-read', {
+                method: 'PUT',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    element.classList.remove('unread');
+                    element.classList.add('read');
+                    element.setAttribute('data-is-read', 'true');
+
+                    const unreadIndicator = element.querySelector('.unread-indicator');
+                    if (unreadIndicator) {
+                        unreadIndicator.remove();
+                    }
+
+                    updateNotificationCount();
+                } else {
+                    showToast(data.message || 'Bildirim işaretlenirken bir hata oluştu');
+                }
+            })
+            .catch(error => {
+                console.error('Hata:', error);
+                showToast('Bildirim işaretlenirken bir hata oluştu');
+            });
+        }
+
+        // Bildirim sayısını güncelle
+        function updateNotificationCount() {
+            const unreadNotifications = document.querySelectorAll('.notification-item.unread');
+            const notificationCount = document.getElementById('notification-count');
+
+            const realUnreadNotifications = Array.from(unreadNotifications).filter(item => {
+                const hasDataId = item.hasAttribute('data-notification-id');
+                const text = item.textContent.trim();
+                const isRead = item.getAttribute('data-is-read') === 'true';
+                return hasDataId && text && !text.includes('Henüz bildirim bulunmamaktadır.') && !isRead;
+            });
+
+            if (realUnreadNotifications.length === 0) {
+                notificationCount.textContent = '0';
+                notificationCount.style.display = 'none';
+            } else {
+                notificationCount.textContent = realUnreadNotifications.length;
+                notificationCount.style.display = 'flex';
+            }
+        }
+
+        // Toast mesaj
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            updateNotificationCount();
+
+            // Dropdown toggle
+            const dropdownToggle = document.querySelector('.dropdown-toggle');
+            const dropdownContent = document.querySelector('.dropdown-content');
+
+            if (dropdownToggle && dropdownContent) {
+                dropdownToggle.addEventListener('click', e => {
+                    e.preventDefault();
+                    dropdownContent.classList.toggle('show');
+                });
+
+                window.addEventListener('click', e => {
+                    if (!e.target.closest('.dropdown')) {
+                        dropdownContent.classList.remove('show');
+                    }
+                });
+            }
+
+            // Modal işlemleri
+            const duyuruModal = document.getElementById('duyuruModal');
+            const openModalBtn = document.getElementById('openDuyuruModal');
+            const closeBtn = duyuruModal?.querySelector('.close');
+
+            if (openModalBtn && duyuruModal) {
+                openModalBtn.addEventListener('click', e => {
+                    e.preventDefault();
+                    duyuruModal.style.display = 'block';
+                });
+            }
+
+            if (closeBtn && duyuruModal) {
+                closeBtn.addEventListener('click', () => {
+                    duyuruModal.style.display = 'none';
+                });
+
+                window.addEventListener('click', e => {
+                    if (e.target === duyuruModal) {
+                        duyuruModal.style.display = 'none';
+                    }
+                });
+            }
+
+            // Bildirim silme
+            const clearNotificationsBtn = document.querySelector('.clear-notifications');
+            if (clearNotificationsBtn) {
+                clearNotificationsBtn.addEventListener('click', e => {
+                    e.preventDefault();
+                    fetch('/notification/clear-all', { method: 'PUT' })
+                        .then(response => {
+                            if (response.ok) {
+                                const notificationItems = document.querySelectorAll('.notification-item');
+                                notificationItems.forEach(item => item.remove());
+
+                                const notificationContainer = document.querySelector('.dropdown-content');
+                                const noNotificationMsg = document.createElement('div');
+                                noNotificationMsg.className = 'notification-item empty-notification';
+                                noNotificationMsg.innerHTML = '<p>Henüz bildirim bulunmamaktadır.</p>';
+
+                                const notificationButtons = document.querySelector('.notification-buttons');
+                                notificationContainer.insertBefore(noNotificationMsg, notificationButtons);
+
+                                updateNotificationCount();
+                                showToast('Tüm bildirimler silindi');
+                            } else {
+                                showToast('Bildirimler silinirken bir hata oluştu');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Hata:', error);
+                            showToast('Bildirimler silinirken bir hata oluştu');
+                        });
+                });
+            }
+
+            // Duyuru formu
+            const duyuruForm = document.getElementById('duyuruForm');
+            if (duyuruForm) {
+                duyuruForm.addEventListener('submit', e => {
+                    e.preventDefault();
+
+                    const formData = new FormData(duyuruForm);
+
+                    fetch('/notification/create', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        showToast(data.message);
+                        if (duyuruModal) {
+                            duyuruModal.style.display = 'none';
+                        }
+                        duyuruForm.reset();
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        showToast('Duyuru gönderilirken bir hata oluştu.');
+                    });
+                });
+            }
+
+            // Active nav link
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => {
+                if (link.getAttribute('href') === currentPath) {
+                    link.parentElement.classList.add('active');
+                }
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

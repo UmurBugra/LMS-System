@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bildirimler</title>
+    <title>{% block title %}Bildirimler - LMS System{% endblock %}</title>
     <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
     <link rel="stylesheet" href="{{ request.url_for('static', path='/notification.css') }}">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -13,27 +13,28 @@
         <a href="/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
     </div>
     <div class="container">
+        {% block content %}
         <h1>Bildirimler</h1>
 
         <div class="notifications-list">
-    {% if notifications %}
-        {% for notification in notifications %}
-            <div class="notification-item">
-                <p>{{ notification.content }}</p>
-                {% if notification.sender_username %}
-                <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-                {% else %}
-                <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
-                {% endif %}
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="notification-item">
-            <p>Henüz bildirim bulunmamaktadır.</p>
+            {% if notifications %}
+                {% for notification in notifications %}
+                    <div class="notification-item">
+                        <p>{{ notification.content }}</p>
+                        {% if notification.sender_username %}
+                        <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                        {% else %}
+                        <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                        {% endif %}
+                    </div>
+                {% endfor %}
+            {% else %}
+                <div class="notification-item">
+                    <p>Henüz bildirim bulunmamaktadır.</p>
+                </div>
+            {% endif %}
         </div>
-    {% endif %}
-</div>
+        {% endblock %}
     </div>
-    </div>
-    </body>
+</body>
 </html>

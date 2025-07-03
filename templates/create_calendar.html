@@ -1,103 +1,91 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Takvim Oluştur</title>
-    <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
-    <link rel="stylesheet" href="{{ request.url_for('static', path='/notification.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="home-button">
-        <a href="/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
+{% extends "base.html" %}
+
+{% block title %}Takvim Oluştur - LMS System{% endblock %}
+
+{% block content %}
+<h1>Takvim Oluştur</h1>
+<p>Kullanıcı: {{ username }}</p>
+
+{% if success_message %}
+<div class="success-message">{{ success_message }}</div>
+{% endif %}
+
+{% if error_message %}
+<div class="error-message">{{ error_message }}</div>
+{% endif %}
+
+<form id="calendarForm" action="/calendar/create" method="post">
+    <div class="form-group">
+        <label for="days">Günler:</label>
+        <select name="days" id="days" required>
+            <option value="Pazartesi">Pazartesi</option>
+            <option value="Salı">Salı</option>
+            <option value="Çarşamba">Çarşamba</option>
+            <option value="Perşembe">Perşembe</option>
+            <option value="Cuma">Cuma</option>
+        </select>
     </div>
 
-    <div class="container">
-        <h1>Takvim Oluştur</h1>
-        <p>Kullanıcı: {{ username }}</p>
-        {% if success_message %}
-        <div class="success-message">{{ success_message }}</div>
-        {% endif %}
-        {% if error_message %}
-        <div class="error-message">{{ error_message }}</div>
-        {% endif %}
-        <form id="calendarForm" action="/calendar/create" method="post">
-            <div class="form-group">
-                <label for="days">Günler:</label>
-                <select name="days" id="days" required>
-                    <option value="Pazartesi">Pazartesi</option>
-                    <option value="Salı">Salı</option>
-                    <option value="Çarşamba">Çarşamba</option>
-                    <option value="Perşembe">Perşembe</option>
-                    <option value="Cuma">Cuma</option>
-                </select>
-            </div>
-            <div class="form-group">
-                <h3>Ders Saatleri</h3>
+    <div class="form-group">
+        <h3>Ders Saatleri</h3>
 
-                <div class="time-slot">
-                    <label>08:00 - 09:00:</label>
-                    <input type="text" name="t_08_09" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>08:00 - 09:00:</label>
+            <input type="text" name="t_08_09" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>09:00 - 10:00:</label>
-                    <input type="text" name="t_09_10" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>09:00 - 10:00:</label>
+            <input type="text" name="t_09_10" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>10:00 - 11:00:</label>
-                    <input type="text" name="t_10_11" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>10:00 - 11:00:</label>
+            <input type="text" name="t_10_11" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>11:00 - 12:00:</label>
-                    <input type="text" name="t_11_12" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>11:00 - 12:00:</label>
+            <input type="text" name="t_11_12" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>13:00 - 14:00:</label>
-                    <input type="text" name="t_13_14" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>13:00 - 14:00:</label>
+            <input type="text" name="t_13_14" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>14:00 - 15:00:</label>
-                    <input type="text" name="t_14_15" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>14:00 - 15:00:</label>
+            <input type="text" name="t_14_15" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>15:00 - 16:00:</label>
-                    <input type="text" name="t_15_16" placeholder="Ders adı">
-                </div>
+        <div class="time-slot">
+            <label>15:00 - 16:00:</label>
+            <input type="text" name="t_15_16" placeholder="Ders adı">
+        </div>
 
-                <div class="time-slot">
-                    <label>16:00 - 17:00:</label>
-                    <input type="text" name="t_16_17" placeholder="Ders adı">
-                </div>
-            </div>
-
-            <div class="form-group">
-                <button type="submit">Takvim Oluştur</button>
-            </div>
-        </form>
+        <div class="time-slot">
+            <label>16:00 - 17:00:</label>
+            <input type="text" name="t_16_17" placeholder="Ders adı">
+        </div>
     </div>
+
+    <div class="form-group">
+        <button type="submit">Takvim Oluştur</button>
+    </div>
+</form>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function() {
     let successMessage = document.querySelector(".success-message");
     if (successMessage) {
-        successMessage.style.display = "none";
-
-        // 2 saniye sonra mesajı göster
         setTimeout(function(){
-            successMessage.style.display = "block";
-
-            // Mesajı 5 saniye sonra otomatik kapat
-            setTimeout(function(){
-                successMessage.style.display = "none";
-            }, 2000);
-        }, 500);
+            successMessage.style.display = "none";
+        }, 3000);
     }
 });
 </script>
-</body>
-</html>
+{% endblock %}

@@ -1,96 +1,87 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <title>Takvim Listesi</title>
-    <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
-    <link rel="stylesheet" href="{{ request.url_for('static', path='/calendar.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="home-button">
-        <a href="/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
-    </div>
+{% extends "base.html" %}
 
-    <div class="container">
-        <h1>Takvim Listesi</h1>
-        <p>Kullanıcı: {{ username }}</p>
+{% block title %}Takvim Listesi - LMS System{% endblock %}
 
-        {% if success_message %}
-        <div class="success-message">{{ success_message }}</div>
-        {% endif %}
+{% block content %}
+<h1>Takvim Listesi</h1>
+<p>Kullanıcı: {{ username }}</p>
 
-        {% if error_message %}
-        <div class="error-message">{{ error_message }}</div>
-        {% endif %}
+{% if success_message %}
+<div class="success-message">{{ success_message }}</div>
+{% endif %}
 
-        {% if calendars %}
-        <table class="calendar-table">
-            <thead>
-                <tr>
-                    <th>Gün</th>
-                    <th>08:00-09:00</th>
-                    <th>09:00-10:00</th>
-                    <th>10:00-11:00</th>
-                    <th>11:00-12:00</th>
-                    <th>13:00-14:00</th>
-                    <th>14:00-15:00</th>
-                    <th>15:00-16:00</th>
-                    <th>16:00-17:00</th>
-                    <th>Oluşturan</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for calendar in calendars %}
-                <tr>
-                    <td>{{ calendar.days }}</td>
-                    <td>{{ calendar.t_08_09 }}</td>
-                    <td>{{ calendar.t_09_10 }}</td>
-                    <td>{{ calendar.t_10_11 }}</td>
-                    <td>{{ calendar.t_11_12 }}</td>
-                    <td>{{ calendar.t_13_14 }}</td>
-                    <td>{{ calendar.t_14_15 }}</td>
-                    <td>{{ calendar.t_15_16 }}</td>
-                    <td>{{ calendar.t_16_17 }}</td>
-                    <td>{{ calendar.user_name }}</td>
-                    <td>
-                        {% if calendar.user_name == username %}
-                        <form action="/calendar/delete/{{ calendar.id }}" method="post">
-                            <button type="submit" class="delete-button">Sil</button>
-                        </form>
-                        {% else %}
-                        <span class="disabled-button">Sil</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-        {% else %}
-        <p>Henüz takvim bulunmamaktadır.</p>
-        {% endif %}
+{% if error_message %}
+<div class="error-message">{{ error_message }}</div>
+{% endif %}
 
-        <div class="actions">
-            <a href="/calendar/create" class="button">Yeni Takvim Oluştur</a>
-        </div>
-    </div>
+{% if calendars %}
+<table class="calendar-table">
+    <thead>
+        <tr>
+            <th>Gün</th>
+            <th>08:00-09:00</th>
+            <th>09:00-10:00</th>
+            <th>10:00-11:00</th>
+            <th>11:00-12:00</th>
+            <th>13:00-14:00</th>
+            <th>14:00-15:00</th>
+            <th>15:00-16:00</th>
+            <th>16:00-17:00</th>
+            <th>Oluşturan</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for calendar in calendars %}
+        <tr>
+            <td>{{ calendar.days }}</td>
+            <td>{{ calendar.t_08_09 }}</td>
+            <td>{{ calendar.t_09_10 }}</td>
+            <td>{{ calendar.t_10_11 }}</td>
+            <td>{{ calendar.t_11_12 }}</td>
+            <td>{{ calendar.t_13_14 }}</td>
+            <td>{{ calendar.t_14_15 }}</td>
+            <td>{{ calendar.t_15_16 }}</td>
+            <td>{{ calendar.t_16_17 }}</td>
+            <td>{{ calendar.user_name }}</td>
+            <td>
+                {% if calendar.user_name == username %}
+                <form action="/calendar/delete/{{ calendar.id }}" method="post">
+                    <button type="submit" class="delete-button">Sil</button>
+                </form>
+                {% else %}
+                <span class="disabled-button">Sil</span>
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>Henüz takvim bulunmamaktadır.</p>
+{% endif %}
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            let successMessage = document.querySelector(".success-message");
-            if (successMessage) {
-                setTimeout(function(){
-                    successMessage.style.display = "none";
-                }, 3000);
-            }
+<div class="actions">
+    <a href="/calendar/create" class="button">Yeni Takvim Oluştur</a>
+</div>
+{% endblock %}
 
-            let errorMessage = document.querySelector(".error-message");
-            if (errorMessage) {
-                setTimeout(function(){
-                    errorMessage.style.display = "none";
-                }, 5000);
-            }
-        });
-    </script>
-</body>
-</html>
+{% block scripts %}
+{{ super() }}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    let successMessage = document.querySelector(".success-message");
+    if (successMessage) {
+        setTimeout(function(){
+            successMessage.style.display = "none";
+        }, 3000);
+    }
+
+    let errorMessage = document.querySelector(".error-message");
+    if (errorMessage) {
+        setTimeout(function(){
+            errorMessage.style.display = "none";
+        }, 5000);
+    }
+});
+</script>
+{% endblock %}
