@@ -1,3 +1,10 @@
+{#Kullanıcı /nav/home 'e gider#}
+{#Backend home.html template'ini çağırır#}
+{#Jinja2 extends "base.html" görür#}
+{#Base template yüklenir (header, sidebar, CSS)#}
+{#Home content base'deki {% block content %} yerine yerleşir#}
+{#Final HTML oluşur ve kullanıcıya gönderilir#}
+
 <!DOCTYPE html>
 <html lang="tr">
 <head>
@@ -14,7 +21,7 @@
     <!-- Header -->
     <div class="app-header">
         <div class="header-content">
-            <h1>LMS System</h1>
+            <h1>C-learn</h1>
             <div class="user-info">
                 <span class="username">{{ username }}</span>
                 <span class="user-type">[{{ user_type }}]</span>
