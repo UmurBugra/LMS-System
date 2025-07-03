@@ -456,3 +456,246 @@ button.clear-notifications i {
 .modal .btn:hover {
     background-color: #555;
 }
+
+/* Takvim oluşturma sayfası stilleri - Dieter Rams minimalist tasarım */
+.container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.container h1 {
+    font-size: 24px;
+    font-weight: 400;
+    color: #333;
+    margin-bottom: 8px;
+    letter-spacing: -0.02em;
+}
+
+.container p {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 32px;
+}
+
+/* Form genel stilleri */
+#calendarForm {
+    background: #ffffff;
+    border: 1px solid #e0e0e0;
+    border-radius: 2px;
+    padding: 32px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.form-group {
+    margin-bottom: 24px;
+}
+
+.form-group:last-child {
+    margin-bottom: 0;
+    margin-top: 32px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 14px;
+    font-weight: 500;
+    color: #333;
+    margin-bottom: 8px;
+    letter-spacing: 0.01em;
+}
+
+.form-group h3 {
+    font-size: 16px;
+    font-weight: 500;
+    color: #333;
+    margin: 0 0 16px 0;
+    letter-spacing: -0.01em;
+}
+
+/* Select ve input stilleri */
+.form-group select,
+.form-group input[type="text"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    font-size: 14px;
+    font-family: inherit;
+    background-color: #ffffff;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.form-group select:focus,
+.form-group input[type="text"]:focus {
+    outline: none;
+    border-color: #333;
+    box-shadow: 0 0 0 1px rgba(51, 51, 51, 0.1);
+}
+
+.form-group select {
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%23666' d='M6 8L0 2h12z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+}
+
+/* Zaman slotları için özel stil */
+.time-slot {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+    gap: 16px;
+}
+
+.time-slot:last-child {
+    margin-bottom: 0;
+}
+
+.time-slot label {
+    min-width: 120px;
+    font-size: 13px;
+    font-weight: 400;
+    color: #555;
+    margin-bottom: 0;
+    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+}
+
+.time-slot input[type="text"] {
+    flex: 1;
+    margin: 0;
+}
+
+.time-slot input[type="text"]::placeholder {
+    color: #999;
+    font-style: italic;
+}
+
+/* Submit butonu */
+.form-group button[type="submit"] {
+    width: 100%;
+    padding: 14px 24px;
+    background-color: #333;
+    color: #ffffff;
+    border: none;
+    border-radius: 2px;
+    font-size: 14px;
+    font-weight: 500;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    letter-spacing: 0.02em;
+}
+
+.form-group button[type="submit"]:hover {
+    background-color: #222;
+}
+
+.form-group button[type="submit"]:active {
+    transform: translateY(1px);
+    background-color: #111;
+}
+
+/* Mesaj stilleri */
+.success-message {
+    background-color: #f8fff8;
+    color: #2d5a2d;
+    border: 1px solid #d4f4d4;
+    padding: 12px 16px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.success-message::before {
+    content: "✓";
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+.error-message {
+    background-color: #fff8f8;
+    color: #5a2d2d;
+    border: 1px solid #f4d4d4;
+    padding: 12px 16px;
+    border-radius: 2px;
+    margin-bottom: 24px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+}
+
+.error-message::before {
+    content: "!";
+    margin-right: 8px;
+    font-weight: bold;
+}
+
+/* Responsive tasarım */
+@media (max-width: 768px) {
+    .container {
+        padding: 20px 16px;
+        max-width: none;
+        margin: 0 16px;
+    }
+
+    #calendarForm {
+        padding: 24px 20px;
+    }
+
+    .time-slot {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
+
+    .time-slot label {
+        min-width: auto;
+        width: 100%;
+    }
+
+    .time-slot input[type="text"] {
+        width: 100%;
+    }
+}
+
+/* Home button için özel stil */
+.home-button {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1100;
+}
+
+.home-button a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+    border-radius: 2px;
+    text-decoration: none;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.home-button a:hover {
+    background-color: #e9e9e9;
+    border-color: #ccc;
+    transform: translateY(-1px);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.home-button a:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
