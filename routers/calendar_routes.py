@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
-from schemas import LoginBase, CalendarData
+from schemas import LoginBase, CalendarData, UserType
 from crud.calendar import create_calendar, get_calendar, delete_calendar as delete_calendar_func
 from db.database import get_db
 from authentication.oauth2 import calendar_authentication_token, student_authentication_token
@@ -18,9 +18,17 @@ def show_create_calendar_form(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(calendar_authentication_token)
 ):
+    # Kullanıcı tipini belirle
+    if current_user.type == UserType.student:
+        display_user_type = "Öğrenci"
+    elif current_user.type == UserType.teacher:
+        display_user_type = "Öğretmen"
+    else:
+        display_user_type = "Bilinmiyor"
+
     return templates.TemplateResponse(
         "create_calendar.html",
-        {"request": request, "username": current_user.username}
+        {"request": request, "username": current_user.username, "user_type": display_user_type}
     )
 
 
@@ -40,6 +48,14 @@ def handle_create_calendar(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(calendar_authentication_token)
 ):
+    # Kullanıcı tipini belirle
+    if current_user.type == UserType.student:
+        display_user_type = "Öğrenci"
+    elif current_user.type == UserType.teacher:
+        display_user_type = "Öğretmen"
+    else:
+        display_user_type = "Bilinmiyor"
+
     try:
         calendar_data = CalendarData(
             day=days,
@@ -59,6 +75,7 @@ def handle_create_calendar(
             "create_calendar.html",
             {"request": request,
              "username": current_user.username,
+             "user_type": display_user_type,
              "success_message": "Takvim başarıyla oluşturuldu.",
              "data": result
              }
@@ -68,6 +85,7 @@ def handle_create_calendar(
             "create_calendar.html",
             {"request": request,
              "username": current_user.username,
+             "user_type": display_user_type,
              "error_message": f"Takvim oluşturulurken bir hata oluştu: {str(e)}"
              }
         )
@@ -78,11 +96,20 @@ def show_teacher_calendar_list(request: Request,
                        db: Session = Depends(get_db),
                        current_user: LoginBase = Depends(calendar_authentication_token)
 ):
+    # Kullanıcı tipini belirle
+    if current_user.type == UserType.student:
+        display_user_type = "Öğrenci"
+    elif current_user.type == UserType.teacher:
+        display_user_type = "Öğretmen"
+    else:
+        display_user_type = "Bilinmiyor"
+
     calendars = get_calendar(db)
     return templates.TemplateResponse(
         "teacher_calendars.html",
-        {"request": request, "username": current_user.username, "calendars": calendars}
+        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars}
     )
+
 # Takvim silme işlemi
 @router.post("/delete/{calendar_id}", response_class=HTMLResponse)
 def delete_calendar(
@@ -91,6 +118,14 @@ def delete_calendar(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(calendar_authentication_token)
 ):
+    # Kullanıc�� tipini belirle
+    if current_user.type == UserType.student:
+        display_user_type = "Öğrenci"
+    elif current_user.type == UserType.teacher:
+        display_user_type = "Öğretmen"
+    else:
+        display_user_type = "Bilinmiyor"
+
     try:
         delete_calendar_func(db, calendar_id, current_user)
         calendars = get_calendar(db)                            # <-- Takvimleri yeniden al
@@ -98,6 +133,7 @@ def delete_calendar(
             "teacher_calendars.html",
             {"request": request,
              "username": current_user.username,
+             "user_type": display_user_type,
              "calendars": calendars,                            # <-- Güncellenmiş takvimleri kullanıcıya gönder
              "success_message": "Takvim başarıyla silindi"
              }
@@ -108,6 +144,7 @@ def delete_calendar(
             "teacher_calendars.html",
             {"request": request,
              "username": current_user.username,
+             "user_type": display_user_type,
              "calendars": calendars,
              "error_message": e.detail
              }
@@ -120,9 +157,16 @@ def show_student_calendar_list(
         db: Session = Depends(get_db),
         current_user : LoginBase = Depends(student_authentication_token)
 ):
+    # Kullanıcı tipini belirle
+    if current_user.type == UserType.student:
+        display_user_type = "Öğrenci"
+    elif current_user.type == UserType.teacher:
+        display_user_type = "Öğretmen"
+    else:
+        display_user_type = "Bilinmiyor"
 
     calendars = get_calendar(db)
     return templates.TemplateResponse(
         "student_calendars.html",
-        {"request": request, "username": current_user.username, "calendars": calendars}
+        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars}
     )
