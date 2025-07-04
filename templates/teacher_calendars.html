@@ -74,6 +74,12 @@
 {% block scripts %}
 {{ super() }}
 <script>
+/**
+ * Öğretmen Takvim Görünümü JavaScript İşlevleri
+ * Başarı ve hata mesajlarının otomatik kaybolmasını yönetir
+ * Başarı bildirimleri 3 saniye, hata bildirimleri 5 saniye sonra kaybolur
+ * Öğretmenin oluşturduğu takvimlerin yönetimi için kullanıcı deneyimini geliştirir
+ */
 document.addEventListener("DOMContentLoaded", function() {
     let successMessage = document.querySelector(".success-message");
     if (successMessage) {

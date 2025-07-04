@@ -126,7 +126,18 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        // PUT güncelleme
+        /**
+         * Admin Paneli JavaScript İşlevleri
+         * Bu script, kullanıcı yönetimi, duyuru sistemi ve arama işlevlerini yönetir
+         * REST API ile etkileşime geçerek CRUD işlemlerini gerçekleştirir
+         */
+
+        /**
+         * Kullanıcı bilgilerini günceller
+         * @param {Event} event - Form submit olayı
+         * @param {number} userId - Güncellenecek kullanıcının ID'si
+         * FormData'yı JSON'a dönüştürüp PUT isteği gönderir
+         */
         function submitUpdate(event, userId) {
             event.preventDefault();
             const form = event.target;
@@ -152,7 +163,11 @@
             });
         }
 
-        // DELETE kullanıcı
+        /**
+         * Kullanıcıyı veritabanından siler
+         * @param {number} userId - Silinecek kullanıcının ID'si
+         * Onay alındıktan sonra DELETE isteği gönderir
+         */
         function deleteUser(userId) {
             if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
 
@@ -171,7 +186,10 @@
             });
         }
 
-        // Modal işlemleri
+        /**
+         * Modal pencere işlemleri
+         * Duyuru oluşturma modalının açılıp kapanmasını kontrol eder
+         */
         const duyuruModal = document.getElementById('duyuruModal');
         const openModalBtn = document.getElementById('openDuyuruModal');
         const closeBtn = duyuruModal.querySelector('.close');
@@ -195,7 +213,10 @@
             }
         });
 
-        // Duyuru gönderme
+        /**
+         * Duyuru formunu gönderme işlevi
+         * Form verilerini API'ye göndererek duyuru oluşturur
+         */
         const duyuruForm = document.getElementById('duyuruForm');
         if (duyuruForm) {
             duyuruForm.addEventListener('submit', e => {
@@ -220,7 +241,11 @@
             });
         }
 
-        // Toast bildirimi
+        /**
+         * Toast bildirimi gösterme fonksiyonu
+         * @param {string} message - Gösterilecek mesaj
+         * Geçici süreliğine bir bildirim mesajı gösterir
+         */
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -230,87 +255,101 @@
             }, 3000);
         }
 
-        // Arama kutusu işlevselliği
-const userSearchInput = document.getElementById('userSearch');
-const usersTableBody = document.querySelector('.users-table tbody');
-let originalTableContent = '';
+        /**
+         * Kullanıcı arama işlevselliği
+         * Arama kutusuna yazılan metne göre kullanıcı listesini filtreleme
+         */
+        const userSearchInput = document.getElementById('userSearch');
+        const usersTableBody = document.querySelector('.users-table tbody');
+        let originalTableContent = '';
 
-// Sayfa yüklendiğinde orijinal tabloyu kaydedelim
-document.addEventListener('DOMContentLoaded', () => {
-    originalTableContent = usersTableBody.innerHTML;
-});
+        // Sayfa yüklendiğinde orijinal tabloyu kaydet
+        document.addEventListener('DOMContentLoaded', () => {
+            originalTableContent = usersTableBody.innerHTML;
+        });
 
-// Arama kutusu dinleyicisi
-if (userSearchInput) {
-    userSearchInput.addEventListener('input', debounce(function(e) {
-        const query = e.target.value.trim();
+        // Arama kutusu dinleyicisi ve arama gecikmesi
+        if (userSearchInput) {
+            userSearchInput.addEventListener('input', debounce(function(e) {
+                const query = e.target.value.trim();
 
-        if (query === '') {
-            // Arama kutusu boşsa orijinal listeyi göster
-            usersTableBody.innerHTML = originalTableContent;
-            return;
+                if (query === '') {
+                    // Arama kutusu boşsa orijinal listeyi göster
+                    usersTableBody.innerHTML = originalTableContent;
+                    return;
+                }
+
+                // API'ye arama isteği gönder
+                fetch(`/admin-page/search-users?query=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.users && data.users.length > 0) {
+                            updateUserTable(data.users);
+                        } else {
+                            usersTableBody.innerHTML = '<tr><td colspan="5">Kullanıcı bulunamadı</td></tr>';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Arama hatası:', error);
+                        showToast('Arama sırasında bir hata oluştu');
+                    });
+            }, 300));
         }
 
-        // API'ye arama isteği gönder
-        fetch(`/admin-page/search-users?query=${encodeURIComponent(query)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.users && data.users.length > 0) {
-                    updateUserTable(data.users);
-                } else {
-                    usersTableBody.innerHTML = '<tr><td colspan="5">Kullanıcı bulunamadı</td></tr>';
-                }
-            })
-            .catch(error => {
-                console.error('Arama hatası:', error);
-                showToast('Arama sırasında bir hata oluştu');
+        /**
+         * Kullanıcı tablosunu güncelleme fonksiyonu
+         * @param {Array} users - Arama sonuçlarına göre gösterilecek kullanıcı listesi
+         * Kullanıcı tablosunu verilen kullanıcı verilerine göre yeniden oluşturur
+         */
+        function updateUserTable(users) {
+            usersTableBody.innerHTML = '';
+
+            users.forEach(user => {
+                const row = document.createElement('tr');
+
+                row.innerHTML = `
+                    <td>${user.id}</td>
+                    <td>${user.username}</td>
+                    <td>${user.email}</td>
+                    <td>${user.type}</td>
+                    <td>
+                        <form id="update-form-${user.id}" onsubmit="submitUpdate(event, ${user.id})" class="update-form">
+                            <input type="text" name="username" value="${user.username}" required>
+                            <input type="email" name="email" value="${user.email}" required>
+                            <input type="password" name="password" placeholder="Yeni Şifre">
+                            <select name="type" required>
+                                <option value="student" ${user.type === "student" ? 'selected' : ''}>Öğrenci</option>
+                                <option value="teacher" ${user.type === "teacher" ? 'selected' : ''}>Öğretmen</option>
+                                <option value="admin" ${user.type === "admin" ? 'selected' : ''}>Admin</option>
+                            </select>
+                            <div class="action-buttons">
+                                <button type="submit" class="btn-update">Güncelle</button>
+                                <button type="button" onclick="deleteUser(${user.id})" class="btn-delete">Sil</button>
+                            </div>
+                        </form>
+                    </td>
+                `;
+
+                usersTableBody.appendChild(row);
             });
-    }, 300));
-}
+        }
 
-// Tabloyu güncelleme fonksiyonu
-function updateUserTable(users) {
-    usersTableBody.innerHTML = '';
-
-    users.forEach(user => {
-        const row = document.createElement('tr');
-
-        row.innerHTML = `
-            <td>${user.id}</td>
-            <td>${user.username}</td>
-            <td>${user.email}</td>
-            <td>${user.type}</td>
-            <td>
-                <form id="update-form-${user.id}" onsubmit="submitUpdate(event, ${user.id})" class="update-form">
-                    <input type="text" name="username" value="${user.username}" required>
-                    <input type="email" name="email" value="${user.email}" required>
-                    <input type="password" name="password" placeholder="Yeni Şifre">
-                    <select name="type" required>
-                        <option value="student" ${user.type === "student" ? 'selected' : ''}>Öğrenci</option>
-                        <option value="teacher" ${user.type === "teacher" ? 'selected' : ''}>Öğretmen</option>
-                        <option value="admin" ${user.type === "admin" ? 'selected' : ''}>Admin</option>
-                    </select>
-                    <div class="action-buttons">
-                        <button type="submit" class="btn-update">Güncelle</button>
-                        <button type="button" onclick="deleteUser(${user.id})" class="btn-delete">Sil</button>
-                    </div>
-                </form>
-            </td>
-        `;
-
-        usersTableBody.appendChild(row);
-    });
-}
-
-// Debounce fonksiyonu - sürekli istek göndermemek için
-function debounce(func, wait) {
-    let timeout;
-    return function(...args) {
-        const context = this;
-        clearTimeout(timeout);
-        timeout = setTimeout(() => func.apply(context, args), wait);
-    };
-}
+        /**
+         * Debounce fonksiyonu
+         * @param {Function} func - Çağrılacak fonksiyon
+         * @param {number} wait - Bekleme süresi (ms)
+         * @returns {Function} - Gecikmeli çalışan fonksiyon
+         * Arka arkaya çağrılan işlemlerde son çağrıyı gecikmeyle çalıştırır
+         * Özellikle arama alanı gibi çok sık tetiklenen olaylarda performansı artırır
+         */
+        function debounce(func, wait) {
+            let timeout;
+            return function(...args) {
+                const context = this;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
     </script>
 </body>
 </html>

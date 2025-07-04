@@ -61,6 +61,12 @@
 {% block scripts %}
 {{ super() }}
 <script>
+/**
+ * Öğrenci Takvim Görünümü JavaScript İşlevleri
+ * Başarı ve hata mesajlarının otomatik olarak kaybolmasını sağlar
+ * Başarı mesajları 3 saniye, hata mesajları 5 saniye sonra otomatik kaybolur
+ * Kullanıcı deneyimini iyileştirmek için geçici bildirimler yönetilir
+ */
 document.addEventListener("DOMContentLoaded", function() {
     let successMessage = document.querySelector(".success-message");
     if (successMessage) {

@@ -154,7 +154,17 @@
     <!-- JavaScript -->
     {% block scripts %}
     <script>
-        // Bildirimi okundu olarak işaretle
+        /**
+         * Bildirim Yönetimi ve Kullanıcı Arayüzü İşlemleri
+         * Bu script, bildirim sistemi, modal yönetimi ve kullanıcı arayüzü etkileşimleri için gerekli
+         * tüm işlevleri içerir. Sayfadaki dinamik içerik ve kullanıcı deneyimini yönetir.
+         */
+
+        /**
+         * Bildirimi okundu olarak işaretler
+         * @param {string} notificationId - İşaretlenecek bildirimin benzersiz kimliği
+         * @param {Element} element - Bildirime karşılık gelen DOM elementi
+         */
         function markAsRead(notificationId, element) {
             const isRead = element.getAttribute('data-is-read') === 'true';
             if (isRead || element.classList.contains('read')) {
@@ -191,7 +201,10 @@
             });
         }
 
-        // Bildirim sayısını güncelle
+        /**
+         * Okunmamış bildirimlerin sayısını hesaplar ve gösterge etiketini günceller
+         * Bildirim sayısı sıfır olduğunda göstergeyi gizler, aksi durumda gösterir
+         */
         function updateNotificationCount() {
             const unreadNotifications = document.querySelectorAll('.notification-item.unread');
             const notificationCount = document.getElementById('notification-count');
@@ -212,7 +225,10 @@
             }
         }
 
-        // Toast mesaj
+        /**
+         * Kullanıcıya geçici bildirim mesajı gösterir
+         * @param {string} message - Gösterilecek bildirim metni
+         */
         function showToast(message) {
             const toast = document.getElementById('toast');
             toast.textContent = message;
@@ -222,10 +238,16 @@
             }, 2000);
         }
 
+        // Sayfa yüklendiğinde çalışacak işlemler
         document.addEventListener('DOMContentLoaded', () => {
+            // Bildirim sayacını başlat
             updateNotificationCount();
 
-            // Dropdown toggle
+            /**
+             * Bildirim açılır menüsü kontrolü
+             * Bildirim butonuna tıklandığında açılır menüyü gösterir/gizler
+             * Dışarı tıklandığında menüyü otomatik kapatır
+             */
             const dropdownToggle = document.querySelector('.dropdown-toggle');
             const dropdownContent = document.querySelector('.dropdown-content');
 
@@ -242,7 +264,10 @@
                 });
             }
 
-            // Modal işlemleri
+            /**
+             * Duyuru modal penceresi kontrolü
+             * Modal açma/kapama butonlarını ve dışarı tıklama olaylarını yönetir
+             */
             const duyuruModal = document.getElementById('duyuruModal');
             const openModalBtn = document.getElementById('openDuyuruModal');
             const closeBtn = duyuruModal?.querySelector('.close');
@@ -266,7 +291,10 @@
                 });
             }
 
-            // Bildirim silme
+            /**
+             * Tüm bildirimleri silme işlevi
+             * API'ye istek göndererek tüm bildirimlerin silinmesini sağlar ve UI'ı günceller
+             */
             const clearNotificationsBtn = document.querySelector('.clear-notifications');
             if (clearNotificationsBtn) {
                 clearNotificationsBtn.addEventListener('click', e => {
@@ -298,7 +326,10 @@
                 });
             }
 
-            // Duyuru formu
+            /**
+             * Duyuru formu gönderim işlevi
+             * Form verilerini toplayarak API'ye POST isteği gönderir ve sonucu bildirir
+             */
             const duyuruForm = document.getElementById('duyuruForm');
             if (duyuruForm) {
                 duyuruForm.addEventListener('submit', e => {
@@ -325,7 +356,10 @@
                 });
             }
 
-            // Active nav link
+            /**
+             * Aktif navigasyon bağlantısını vurgulama
+             * Mevcut sayfa URL'sine göre ilgili navigasyon öğesini aktif olarak işaretler
+             */
             const currentPath = window.location.pathname;
             const navLinks = document.querySelectorAll('.nav-link');
             navLinks.forEach(link => {

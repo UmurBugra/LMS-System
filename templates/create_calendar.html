@@ -85,6 +85,11 @@
 {% block scripts %}
 {{ super() }}
 <script>
+/**
+ * Takvim Oluşturma Sayfası JavaScript İşlevleri
+ * Başarı mesajlarının otomatik olarak kaybolmasını sağlar
+ * Kullanıcı deneyimini iyileştirmek için geçici bildirimler gösterir
+ */
 document.addEventListener("DOMContentLoaded", function() {
     let successMessage = document.querySelector(".success-message");
     if (successMessage) {

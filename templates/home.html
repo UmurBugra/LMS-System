@@ -52,7 +52,11 @@
 {% block scripts %}
 {{ super() }}
 <script>
-// Ana sayfada duyuru modal açma
+/**
+ * Ana Sayfa Özel JavaScript Fonksiyonları
+ * Ana sayfada duyuru modalının açılmasını sağlayan kod bloğu
+ * Öğretmen kullanıcı tipine özel olarak kullanılabilir
+ */
 document.addEventListener('DOMContentLoaded', () => {
     const openModalHomeBtn = document.getElementById('openDuyuruModalHome');
     const duyuruModal = document.getElementById('duyuruModal');
