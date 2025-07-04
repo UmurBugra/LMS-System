@@ -1,4 +1,10 @@
-/* Takvim ile ilgili stiller */
+/*
+ * Takvim stil dosyası
+ * LMS sistemindeki takvim görünümünü ve ilgili bileşenleri şekillendirir
+ * Ders programları, etkinlikler ve zamanlama işlemleri için kullanılan UI bileşenlerini içerir
+ * Takvim tablosu ve takvim içeriği için düzenlemeleri barındırır
+ */
+
 .calendar-table {
     width: 100%;
     border-collapse: separate;

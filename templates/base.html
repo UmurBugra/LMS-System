@@ -1,9 +1,10 @@
-{#Kullanıcı /nav/home 'e gider#}
-{#Backend home.html template'ini çağırır#}
-{#Jinja2 extends "base.html" görür#}
-{#Base template yüklenir (header, sidebar, CSS)#}
-{#Home content base'deki {% block content %} yerine yerleşir#}
-{#Final HTML oluşur ve kullanıcıya gönderilir#}
+<!--
+ * Ana şablon dosyası (Base template)
+ * LMS sisteminin tüm sayfaları için ortak yapıyı ve bileşenleri sağlar
+ * Header, sidebar, footer ve ortak CSS/JS bağlantılarını içerir
+ * Diğer tüm şablonlar bu şablonu genişleterek (extends) kullanır
+ * Jinja2 template engine kullanılarak dinamik içerikler yerleştirilir
+ -->
 
 <!DOCTYPE html>
 <html lang="tr">

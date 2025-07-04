@@ -1,3 +1,10 @@
+/*
+ * Bildirim sistemi stil dosyası
+ * LMS sistemindeki bildirim işlevselliğinin görsel sunumunu şekillendirir
+ * Bildirim butonu, bildirim sayacı ve bildirim listesi gibi UI bileşenlerini içerir
+ * Okunmuş/okunmamış bildirim göstergeleri ve bildirim etkileşimlerini stillendirir
+ */
+
 /* Bildirim stilleri */
 .notification-button {
     position: relative;
