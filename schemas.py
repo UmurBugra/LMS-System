@@ -2,6 +2,7 @@ from fastapi import Form, Body
 from pydantic import BaseModel, EmailStr
 from enum import Enum
 
+# Kullanıcı türlerini tanımlayan Enum
 class UserType(Enum):
     student = "student"
     teacher = "teacher"
@@ -12,6 +13,7 @@ class LoginEmailPassword(BaseModel):
     email: EmailStr
     password: str
 
+    # Bu şekilde obje kullanmak yerine var olan objeyi istediğimiz değeri atayıp kullanıyoruz
     @classmethod
     def form(
         cls,
@@ -20,6 +22,7 @@ class LoginEmailPassword(BaseModel):
     ):
         return cls(email=email, password=password)
 
+# Kullanıcı giriş bilgilerini içeren model
 class LoginBase(BaseModel):
     username: str
     password: str
@@ -43,6 +46,8 @@ class LoginBase(BaseModel):
     ):
         return cls(username=username, email=email, password=password)
 
+
+# Kullanıcı giriş bilgilerini içeren model
 class LoginDisplay(BaseModel):
     username: str
     email: str
@@ -50,11 +55,7 @@ class LoginDisplay(BaseModel):
     class Config:
         from_attributes = True
 
-class AuthUserType(BaseModel):
-    username: str
-    email: str
-
-# Calander
+# Takvim günleri için Enum
 class CalendarBase(Enum):
     Pazartesi = "Pazartesi"
     Salı = "Salı"
@@ -62,18 +63,9 @@ class CalendarBase(Enum):
     Perşembe = "Perşembe"
     Cuma = "Cuma"
 
+# Takvim verilerini içeren model
 class CalendarData(BaseModel):
     day: CalendarBase
-    t_08_09: str
-    t_09_10: str
-    t_10_11: str
-    t_11_12: str
-    t_13_14: str
-    t_14_15: str
-    t_15_16: str
-    t_16_17: str
-
-class Courses(BaseModel):
     t_08_09: str
     t_09_10: str
     t_10_11: str
