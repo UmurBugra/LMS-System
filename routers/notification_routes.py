@@ -11,11 +11,13 @@ from authentication.oauth2 import get_current_user_from_cookie
 router = APIRouter(prefix="/notification", tags=["Notification"])
 templates = Jinja2Templates(directory="templates")
 
+# Bildirimleri listeleme
 @router.get("/")
 def get_notifications_route(request: Request, db: Session = Depends(get_db), current_user: LoginBase = Depends(get_current_user_from_cookie)):
     notifications = get_notifications(db, current_user.username, current_user.id)
     return templates.TemplateResponse("notifications.html", {"request": request, "notifications": notifications})
 
+# Bildirim oluşturma
 @router.post("/create")
 def create_notification_route(
     content: str = Form(...),
@@ -37,7 +39,7 @@ def create_notification_route(
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+# Tüm bildirimleri silme (soft delete)
 @router.put("/clear-all")
 def soft_delete_all_notifications(
         db: Session = Depends(get_db),
@@ -45,6 +47,7 @@ def soft_delete_all_notifications(
 ):
     soft_delete_notifications(db, current_user)
 
+# Bildirimleri okundu olarak işaretleme
 @router.put("/mark-read")
 def mark_notification_read(
         notification_id: int = Form(...),

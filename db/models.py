@@ -24,9 +24,9 @@ class LoginData(Base):
     password = Column(String)
     email = Column(String, unique=True, nullable=False)
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
-    items = relationship("CalendarData", back_populates="user")
+    items = relationship("CalendarData", back_populates="user")  # One-to-Many ilişkisi
     notifications = relationship("NotificationData",
-    secondary=notification_receivers,
+    secondary=notification_receivers,                                                       # aradaki ilişkiyi yöneten tablo
     primaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
     secondaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id)
 
@@ -54,11 +54,10 @@ class NotificationData(Base):
     sender_username = Column(String, ForeignKey("login_data.username"))
     # Birden fazla ilişki olabilir, bu yüzden foreign_keys ile belirtiliyor
     sender = relationship("LoginData", foreign_keys=[sender_username])
-    # many-to-many relationship LoginData
-    receiver = relationship(
+    receiver = relationship(                # LoginData ile NotificationData arasındaki many-to-many ilişki
         "LoginData",
         secondary=notification_receivers,
-        back_populates="notifications",
+        back_populates="notifications",     # LoginData.notifications ile bağlantı kurulur
         primaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id,
         secondaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
     )

@@ -10,28 +10,30 @@ from crud.login import get_user_by_email_and_id, get_user_student
 from crud.calendar import create_calendar_by_auth
 from schemas import UserType
 
-SECRET_KEY = 'd68209ffa66480a47408acdc06f3d35016a7e3dfbbec769592ccd9e56d97ba7e'
-ALGORITHM = 'HS256'
-ACCESS_TOKEN_EXPIRE_MINUTES = 30
+SECRET_KEY = 'd68209ffa66480a47408acdc06f3d35016a7e3dfbbec769592ccd9e56d97ba7e' # --> openssl rand -hex 32
+ALGORITHM = 'HS256' # --> HMAC-SHA256 algoritması
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 # --> Token'ın geçerlilik süresi (dakika cinsinden)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") # --> OAuth2PasswordBearer bir endpointten token almayı sağlar
+                                                       # --> /token endpointi, token almak için kullanılacak
 
-credentials_exception = HTTPException(
+credentials_exception = HTTPException(                 # --> Doğrulama başarısız olduğunda döndürülür (401)
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Not authenticated",
-    headers={"WWW-Authenticate": "Bearer"},
+    headers={"WWW-Authenticate": "Bearer"},            # --> HTTP başlıkları ile Bearer token gerektiğini belirtir
 )
 
 
-# Giriş için Token oluşturucu
+# Giriş için Token oluşturucu(JWT)
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
-    to_encode = data.copy()
-    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=15))
-    to_encode.update({"exp": expire})
-    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    to_encode = data.copy()     # --> Token içine data kopyalanır, çünkü data üzerinde değişiklik yapılabilir
+    expire = datetime.utcnow() + (expires_delta if expires_delta else timedelta(minutes=15)) # --> istisna yoksa 15 dakika sonra token geçersiz olur
+    to_encode.update({"exp": expire})  # --> Token'ın son kullanma tarihi payload'a ekler
+    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)   # --> Token'ı oluşturur ve döndürür
 
 
 # Cookie'den token okuyarak kullanıcıyı döner
+# try bloğunda dönen isteğe göre kullanıcının tokenini doğrular
 def get_current_user_from_cookie(
     access_token: Optional[str] = Cookie(None),
     db: Session = Depends(get_db)
@@ -55,6 +57,7 @@ def get_current_user_from_cookie(
 
 
 # Calendar yetkilendirme (cookie üzerinden)
+# Token üzerinden "teacher" tipinde kullanıcıyı doğrular
 def calendar_authentication_token(
     access_token: Optional[str] = Cookie(None),
     db: Session = Depends(get_db)
@@ -77,6 +80,8 @@ def calendar_authentication_token(
         raise credentials_exception
     return user
 
+# Öğrenci yetkilendirme (cookie üzerinden)
+# Token üzerinden "student" tipinde kullanıcıyı doğrular
 def student_authentication_token(
     access_token: Optional[str] = Cookie(None),
     db: Session = Depends(get_db)
@@ -99,6 +104,8 @@ def student_authentication_token(
         raise credentials_exception
     return user
 
+# Admin yetkilendirme (cookie üzerinden)
+# Token üzerinden "admin" tipinde kullanıcıyı doğrular
 def admin_authentication_token(
     access_token: Optional[str] = Cookie(None),
     db: Session = Depends(get_db)

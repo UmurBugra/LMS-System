@@ -6,6 +6,8 @@ from db.models import LoginData
 from schemas import UserType
 from authentication import oauth2
 
+# OAuth2 ile kullanıcı girişi için gerekli endpoint
+
 router = APIRouter(
     tags=["authentication"]
 )

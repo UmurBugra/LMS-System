@@ -8,6 +8,7 @@ from schemas import LoginBase,UserType
 router = APIRouter(prefix="/setup", tags=["setup"])
 templates = Jinja2Templates(directory="templates")
 
+# Initial setup route
 @router.post("/")
 def create_setup(
         username: str = Form(...),

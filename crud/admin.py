@@ -71,7 +71,7 @@ def search_users(db: Session, query: str):
         return []
 
     users = db.query(LoginData).filter(
-        or_(
+        or_(                                                # --> 3 alan üzerinden arama yapılıyor.
             LoginData.username.like(f"%{query}%"),
             LoginData.email.like(f"%{query}%"),
             cast(LoginData.id, String).like(f"%{query}%")   # --> ID str olarak çevirilip aranıyor.

@@ -18,6 +18,7 @@ def logout(request: Request, db: Session = Depends(get_db)):
     response.delete_cookie("access_token")                # çerez silme
     return response
 
+# Ana sayfaya yönlendirme
 @router.get("/home")
 def go_to_home(request: Request, db: Session = Depends(get_db), current_user = Depends(get_current_user_from_cookie)):
 

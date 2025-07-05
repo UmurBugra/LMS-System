@@ -20,10 +20,12 @@ app.include_router(notification_routes.router)
 app.include_router(setup_routes.router)
 app.include_router(admin_routes.router)
 
+# Veritabanında admin kullanıcının olup olmadığını kontrol eden fonksiyon
 def is_admin_user(db):
     admin = db.query(LoginData).filter(LoginData.type == "admin").first()
     return admin
 
+# Ana sayfa rotası
 @app.get("/")
 def root(request: Request, db: Session = Depends(get_db)):
     if not is_admin_user(db):

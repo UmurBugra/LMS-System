@@ -1,11 +1,12 @@
 from sqlalchemy.orm import Session
 from crud.notification import create_notification_for_all_students
 from db.models import CalendarData, LoginData
-from schemas import CalendarBase, Courses, UserType, LoginBase
+from schemas import CalendarBase, UserType, LoginBase
 from fastapi import HTTPException
 
 # CRUD operations for Calendar
 
+# Takvim oluşturma işlemi
 def create_calendar(db: Session, request: CalendarData, current_user: LoginBase):
     username = current_user.username
     calendar_entry = CalendarData(
@@ -50,6 +51,7 @@ def delete_calendar(db: Session, calendar_id: int, current_user: LoginBase):
     db.commit()
     return {"detail": "Takvim başarıyla silindi."}
 
+# Takvim listeleme işlemi, güncellenmiş gün isimleriyle vs. kullanıcıya döndürülür.
 def get_calendar(db: Session):
     calendars = db.query(CalendarData).all()
     for i in calendars:
