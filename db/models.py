@@ -24,9 +24,9 @@ class LoginData(Base):
     password = Column(String)
     email = Column(String, unique=True, nullable=False)
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
-    items = relationship("CalendarData", back_populates="user")  # One-to-Many ilişkisi
+    items = relationship("CalendarData", back_populates="user")
     notifications = relationship("NotificationData",
-    secondary=notification_receivers,                                                       # aradaki ilişkiyi yöneten tablo
+    secondary=notification_receivers,
     primaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
     secondaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id)
 
@@ -43,7 +43,7 @@ class CalendarData(Base):
     t_14_15 = Column(String)
     t_15_16 = Column(String)
     t_16_17 = Column(String)
-    user_name = Column(String, ForeignKey("login_data.username"))
+    user_id = Column(Integer, ForeignKey("login_data.id"))
     user = relationship("LoginData", back_populates="items")
 
 class NotificationData(Base):
@@ -51,13 +51,14 @@ class NotificationData(Base):
     id = Column(Integer, primary_key=True, index=True)
     content = Column(String)
     created_time = Column(DateTime(timezone=True), default=func.now())
-    sender_username = Column(String, ForeignKey("login_data.username"))
+    sender_id = Column(Integer, ForeignKey("login_data.id"))
     # Birden fazla ilişki olabilir, bu yüzden foreign_keys ile belirtiliyor
-    sender = relationship("LoginData", foreign_keys=[sender_username])
-    receiver = relationship(                # LoginData ile NotificationData arasındaki many-to-many ilişki
+    sender = relationship("LoginData", foreign_keys=[sender_id])
+    # many-to-many relationship LoginData
+    receiver = relationship(
         "LoginData",
         secondary=notification_receivers,
-        back_populates="notifications",     # LoginData.notifications ile bağlantı kurulur
+        back_populates="notifications",
         primaryjoin=lambda: NotificationData.id == notification_receivers.c.notification_id,
         secondaryjoin=lambda: LoginData.id == notification_receivers.c.user_id,
     )
