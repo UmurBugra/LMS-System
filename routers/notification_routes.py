@@ -6,6 +6,7 @@ from schemas import LoginBase
 from crud.notification import create_notification, get_notifications,create_notification_for_all_students, \
 create_notification_for_all_teachers, soft_delete_notifications, is_read_notification
 from db.database import get_db
+from db.models import LoginData
 from authentication.oauth2 import get_current_user_from_cookie
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
@@ -30,11 +31,11 @@ def create_notification_route(
 
     try:
         if receiver == "all_students":
-            create_notification_for_all_students(db, content, sender_username=current_user.username)
+            create_notification_for_all_students(db, content, sender_id=current_user.id)
         elif receiver == "all_teachers":
             create_notification_for_all_teachers(db, content, sender_id=current_user.id)
         else:
-            create_notification(db, content, current_user.username)
+            create_notification(db, content, sender_id=current_user.id, receiver=None)
         return JSONResponse({"message": "Duyuru başarıyla gönderildi."})
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
