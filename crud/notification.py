@@ -94,7 +94,7 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
     notification = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_id=sender_id  # sender.id yerine sender_id kullan
+        sender_id=sender_id
     )
 
     db.add(notification)
