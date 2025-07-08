@@ -55,7 +55,7 @@ def create_notification(
     try:
 
         if receiver == "all_students":
-            create_notification_for_all_students(db, content, sender_username=current_user.username)
+            create_notification_for_all_students(db, content, sender_id=current_user.id)
         elif receiver == "all_teachers":
            create_notification_for_all_teachers(db, content, sender_id=current_user.id)
         elif receiver == "everyone":
