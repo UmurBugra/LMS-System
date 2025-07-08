@@ -10,7 +10,7 @@ from fastapi import HTTPException
 def create_calendar(db: Session, request: CalendarData, current_user: LoginBase):
     username = current_user
     calendar_entry = CalendarData(
-        days=request.days,
+        days=request.day,
         t_08_09=request.t_08_09,
         t_09_10=request.t_09_10,
         t_10_11=request.t_10_11,
@@ -26,7 +26,7 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
     db.refresh(calendar_entry)
 
     #Öğrencilere bildirim gönderme
-    message = f"{username.username} kullanıcısı {request.days.value} günü için yeni bir takvim oluşturdu."
+    message = f"{username.username} kullanıcısı {request.day.value} günü için yeni bir takvim oluşturdu."
     create_notification_for_all_students(db, content=message, sender_id=username.id)
 
     return calendar_entry
