@@ -8,7 +8,7 @@ from fastapi import HTTPException
 
 # Takvim oluşturma işlemi
 def create_calendar(db: Session, request: CalendarData, current_user: LoginBase):
-    username = current_user.username
+    username = current_user
     calendar_entry = CalendarData(
         days=request.day,
         t_08_09=request.t_08_09,
@@ -19,15 +19,15 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
         t_14_15=request.t_14_15,
         t_15_16=request.t_15_16,
         t_16_17=request.t_16_17,
-        user_name=current_user.username
+        user_id=current_user.id
     )
     db.add(calendar_entry)
     db.commit()
     db.refresh(calendar_entry)
 
     #Öğrencilere bildirim gönderme
-    message = f"{username} kullanıcısı {request.day.value} günü için yeni bir takvim oluşturdu."
-    create_notification_for_all_students(db, content=message, sender_username=username)
+    message = f"{username.username} kullanıcısı {request.day.value} günü için yeni bir takvim oluşturdu."
+    create_notification_for_all_students(db, content=message, sender_id=username.id)
 
     return calendar_entry
 
