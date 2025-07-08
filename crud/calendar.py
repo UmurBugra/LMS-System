@@ -10,7 +10,7 @@ from fastapi import HTTPException
 def create_calendar(db: Session, request: CalendarData, current_user: LoginBase):
     username = current_user
     calendar_entry = CalendarData(
-        days=request.day,
+        days=request.days,
         t_08_09=request.t_08_09,
         t_09_10=request.t_09_10,
         t_10_11=request.t_10_11,
@@ -26,7 +26,7 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
     db.refresh(calendar_entry)
 
     #Öğrencilere bildirim gönderme
-    message = f"{username.username} kullanıcısı {request.day.value} günü için yeni bir takvim oluşturdu."
+    message = f"{username.username} kullanıcısı {request.days.value} günü için yeni bir takvim oluşturdu."
     create_notification_for_all_students(db, content=message, sender_id=username.id)
 
     return calendar_entry
@@ -40,11 +40,11 @@ def create_calendar_by_auth(db: Session, email: str, user_id: int, user_type: Us
 
 # Takvim silme işlemi
 def delete_calendar(db: Session, calendar_id: int, current_user: LoginBase):
-    calendar_entry = db.query(CalendarData).filter(CalendarData.id == calendar_id, CalendarData.user_name == current_user.username).first()
+    calendar_entry = db.query(CalendarData).filter(CalendarData.id == calendar_id, CalendarData.user_id == current_user.id).first()
     if not calendar_entry:
         raise HTTPException(status_code=404, detail="Takvim bulunamadı.")
 
-    if calendar_entry.user_name != current_user.username:
+    if calendar_entry.user_id != current_user.id:
         raise HTTPException(status_code=403, detail="Bu takvimi silme yetkiniz yok.")
 
     db.delete(calendar_entry)
@@ -53,8 +53,11 @@ def delete_calendar(db: Session, calendar_id: int, current_user: LoginBase):
 
 # Takvim listeleme işlemi, güncellenmiş gün isimleriyle vs. kullanıcıya döndürülür.
 def get_calendar(db: Session):
-    calendars = db.query(CalendarData).all()
+    calendars = db.query(CalendarData).join(LoginData, CalendarData.user_id == LoginData.id).all()
     for i in calendars:
+
+        i.user_name = i.user.username  # --> Dinamik olarak kullanıcı adını eklemek.
+
         if i.days == CalendarBase.Pazartesi:
             i.days = "Pazartesi"
         elif i.days == CalendarBase.Salı:
