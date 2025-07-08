@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from schemas import UserType, LoginBase
 from db.models import LoginData, NotificationData
 from datetime import datetime, timezone, timedelta
+from db.models import notification_receivers
 
 #CRUD operations for admin
 # Create user
@@ -51,17 +52,30 @@ def create_notification_for_everyone(db: Session, content: str, sender_id: int):
     if not admin:
         raise ValueError("Geçersiz kullanıcı ID'si")
 
-    ignore_admin = db.query(LoginData).filter(LoginData.id != sender_id).all()
+    # Admin hariç tüm kullanıcılar
+    all_users = db.query(LoginData).filter(LoginData.id != sender_id).all()
 
     notification = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_username=admin.username
+        sender_id=sender_id
     )
-    notification.receiver = ignore_admin
+
     db.add(notification)
     db.commit()
     db.refresh(notification)
+
+    for user in all_users:
+        db.execute(
+            notification_receivers.insert().values(
+                user_id=user.id,
+                notification_id=notification.id,
+                is_read=False,
+                is_removed=False
+            )
+        )
+
+    db.commit()
     return notification
 
 # Search users

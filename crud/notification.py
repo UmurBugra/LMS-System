@@ -8,26 +8,46 @@ from schemas import UserType
 
 # Bildirim oluşturma işlemleri
 # Bu fonksiyon, belirtilen içeriğe sahip bir bildirim oluşturur.
-def create_notification(db: Session, content: str, sender_username=None, receiver=None):
+def create_notification(db: Session, content: str, sender_id: int, receiver=None):
     utc_now = datetime.now(timezone.utc)                                # --> UTC zamanını al
     turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))     # --> Türkiye saat dilimine dönüştür
 
     notification_entry = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_username=sender_username
+        sender_id=sender_id
     )
-
-    if receiver:
-        notification_entry.receiver = receiver
 
     db.add(notification_entry)
     db.commit()
     db.refresh(notification_entry)
+
+    if receiver:
+        if isinstance(receiver, list):
+            for user in receiver:
+                db.execute(
+                    notification_receivers.insert().values(
+                        user_id=user.id,
+                        notification_id=notification_entry.id,
+                        is_read=False,
+                        is_removed=False
+                    )
+                )
+        else:
+            db.execute(
+                notification_receivers.insert().values(
+                    user_id=receiver.id,
+                    notification_id=notification_entry.id,
+                    is_read=False,
+                    is_removed=False
+                )
+            )
+        db.commit()
+
     return notification_entry
 
 # Bu fonksiyon, tüm öğrencilere bir bildirim gönderir.
-def create_notification_for_all_students(db: Session, content: str, sender_username: str):
+def create_notification_for_all_students(db: Session, content: str, sender_id: int):
     utc_now = datetime.now(timezone.utc)
     turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
 
@@ -36,15 +56,26 @@ def create_notification_for_all_students(db: Session, content: str, sender_usern
     notification = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_username=sender_username
+        sender_id=sender_id
     )
-
-    notification.receiver = students    # --> alıcıların listesi olarak öğrencileri ekle
 
     db.add(notification)
     db.commit()
     db.refresh(notification)
-    return notification 
+
+    # Her öğrenci için notification_receivers tablosuna kayıt ekle
+    for student in students:
+        db.execute(
+            notification_receivers.insert().values(
+                user_id=student.id,
+                notification_id=notification.id,
+                is_read=False,
+                is_removed=False
+            )
+        )
+
+    db.commit()
+    return notification
 
 # Bu fonksiyon, tüm öğretmenlere bir bildirim gönderir.
 def create_notification_for_all_teachers(db: Session, content: str, sender_id: int):
@@ -55,19 +86,33 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
     if not sender:
         raise ValueError("Geçersiz kullanıcı ID'si")
 
-    teachers = db.query(LoginData).filter(LoginData.type == UserType.teacher,
-                                          LoginData.id != sender_id).all()
+    teachers = db.query(LoginData).filter(
+        LoginData.type == UserType.teacher,
+        LoginData.id != sender_id
+    ).all()
 
     notification = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_username=sender.username
+        sender_id=sender_id  # sender.id yerine sender_id kullan
     )
-    notification.receiver = teachers     # --> alıcıların listesi olarak öğrencileri ekle
 
     db.add(notification)
     db.commit()
     db.refresh(notification)
+
+    # Her öğretmen için notification_receivers tablosuna kayıt ekle
+    for teacher in teachers:
+        db.execute(
+            notification_receivers.insert().values(
+                user_id=teacher.id,
+                notification_id=notification.id,
+                is_read=False,
+                is_removed=False
+            )
+        )
+
+    db.commit()
     return notification
 
 
