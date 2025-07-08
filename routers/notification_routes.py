@@ -16,7 +16,23 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/")
 def get_notifications_route(request: Request, db: Session = Depends(get_db), current_user: LoginBase = Depends(get_current_user_from_cookie)):
     notifications = get_notifications(db, current_user.username, current_user.id)
-    return templates.TemplateResponse("notifications.html", {"request": request, "notifications": notifications})
+
+    # Kullanıcı tipini belirle
+    if current_user.type.name == "student":
+        display_user_type = "Öğrenci"
+    elif current_user.type.name == "teacher":
+        display_user_type = "Öğretmen"
+    elif current_user.type.name == "admin":
+        display_user_type = "Admin"
+    else:
+        display_user_type = "Bilinmiyor"
+
+    return templates.TemplateResponse("notifications.html", {
+        "request": request,
+        "notifications": notifications,
+        "username": current_user.username,
+        "user_type": display_user_type
+    })
 
 # Bildirim oluşturma
 @router.post("/create")
