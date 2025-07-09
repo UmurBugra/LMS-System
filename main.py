@@ -10,7 +10,7 @@ from sqlalchemy.orm import Session
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
-templates = Jinja2Templates(directory="templates") # Jinja2 şablonları için dizin
+templates = Jinja2Templates(directory="/home/ubuntu/LMS-System/templates") # Jinja2 şablonları için dizin
 
 app.include_router(login_auth_routes.router)
 app.include_router(calendar_routes.router)
