@@ -189,3 +189,40 @@ def is_read_notification(db: Session, notification_id: int, current_user: LoginD
     except Exception as e:
         db.rollback() # --> Hata durumunda işlemi geri al
         raise HTTPException(status_code=500, detail=f"Bildirim işaretlenirken bir hata oluştu: {str(e)}")
+
+def notification_detail(db: Session, notification_id: int, current_user: LoginData):
+    try:
+        notification_entry = db.query(NotificationData, notification_receivers.c.is_read).join(
+            notification_receivers,
+            NotificationData.id == notification_receivers.c.notification_id).filter(and_(
+            notification_receivers.c.user_id == current_user.id,
+            notification_receivers.c.notification_id == notification_id,
+            notification_receivers.c.is_removed == False)
+        ).first()
+
+        if not notification_entry:
+            raise HTTPException(status_code=404, detail="Bildirim bulunamadı.")
+
+        notification, is_read = notification_entry
+
+        if not is_read:
+            is_read_notification(db, notification_id, current_user)
+
+        sender = db.query(LoginData).filter(LoginData.id == notification.sender_id).first()
+
+        if sender is None:
+            sender_username = "Gönderen bilgisi bulunamadı."
+        else:
+            sender_username = sender.username
+
+        return {
+            "id": notification.id,
+            "content": notification.content,
+            "created_time": notification.created_time,
+            "sender_username": sender_username,
+            "is_read": True
+        }
+
+    except Exception as e:
+        db.rollback()
+        raise HTTPException(status_code=500, detail=f"Bildirim detayı alınırken bir hata oluştu: {str(e)}")
