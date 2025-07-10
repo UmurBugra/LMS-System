@@ -4,9 +4,9 @@ from fastapi.responses import JSONResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
 from crud.notification import create_notification, get_notifications,create_notification_for_all_students, \
-create_notification_for_all_teachers, soft_delete_notifications, is_read_notification
+create_notification_for_all_teachers, soft_delete_notifications, is_read_notification, notification_detail
 from db.database import get_db
-from db.models import LoginData
+from db.models import LoginData, NotificationData
 from authentication.oauth2 import get_current_user_from_cookie
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
@@ -56,3 +56,19 @@ def mark_notification_read(
         current_user: LoginBase = Depends(get_current_user_from_cookie)
 ):
     return is_read_notification(db, notification_id, current_user)
+
+# Tek bildirimi görüntüleme
+
+@router.get("/{notification_id}")
+def get_notification_detail(
+        notification_id: int,
+        request: Request,
+        db: Session = Depends(get_db),
+        current_user: LoginBase = Depends(get_current_user_from_cookie)
+):
+
+    notification = notification_detail(db, notification_id, current_user)
+    if not notification:
+        raise HTTPException(status_code=404, detail="Bildirimi bulunamadı.")
+
+    return templates.TemplateResponse("", {"request": request, "notification": notification})
