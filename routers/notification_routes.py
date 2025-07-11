@@ -6,7 +6,6 @@ from schemas import LoginBase
 from crud.notification import create_notification, get_notifications,create_notification_for_all_students, \
 create_notification_for_all_teachers, soft_delete_notifications, is_read_notification, notification_detail
 from db.database import get_db
-from db.models import LoginData, NotificationData
 from authentication.oauth2 import get_current_user_from_cookie
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
