@@ -59,15 +59,16 @@ def mark_notification_read(
 
 # Tek bildirimi görüntüleme
 
-@router.get("/{notification_id}")
+@router.get("{notification_id}")
 def get_notification_detail(
-        notification_id: int,
-        request: Request,
-        db: Session = Depends(get_db),
-        current_user: LoginBase = Depends(get_current_user_from_cookie)
+    notification_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: LoginBase = Depends(get_current_user_from_cookie)
 ):
 
-    notification = notification_detail(db, notification_id, current_user)
+    notification = notification_detail(db, notification_id, current_user.id)
+
     if not notification:
         raise HTTPException(status_code=404, detail="Bildirimi bulunamadı.")
 
