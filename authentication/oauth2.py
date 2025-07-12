@@ -130,13 +130,3 @@ def admin_authentication_token(
     if user is None or user.type != UserType.admin:
         raise TokenExpiredException()
     return user
-
-class Insan():
-    def __init__(self, ad, soyad):
-        self.ad = ad
-        self.soyad = soyad
-
-class Ogrenci(Insan):
-    def __init__(self, ad, soyad, numara):
-        super().__init__(ad, soyad)
-        self.numara = numara
