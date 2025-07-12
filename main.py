@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Request, Depends
+from fastapi.responses import RedirectResponse
 from routers import login_auth_routes, calendar_routes, oauth2_routes, navigation_routes, \
 notification_routes, setup_routes, admin_routes
 from db.database import engine, get_db
@@ -7,6 +8,8 @@ from db.models import LoginData
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
+from authentication.oauth2 import TokenExpiredException
+
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
@@ -34,3 +37,14 @@ def root(request: Request, db: Session = Depends(get_db)):
         return templates.TemplateResponse("index.html", {"request": request}) # şablonu render eder
 
 models.Base.metadata.create_all(bind=engine)
+
+# Token süresi dolduğunda exception handler
+@app.exception_handler(TokenExpiredException) # Eğer TokenExpiredException oluşursa bu handler devreye girer
+def token_expired_exception_handler(request: Request, exc: TokenExpiredException):
+    response = templates.TemplateResponse(
+        "index.html",
+        {"request": request, "error": exc.message}
+    )
+    # Cookie temizleme
+    response.delete_cookie("access_token")
+    return response
