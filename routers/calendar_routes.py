@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
 from schemas import LoginBase, CalendarData, UserType
 from crud.calendar import create_calendar, get_calendar, delete_calendar as delete_calendar_func
+from crud.notification import get_notifications
 from db.database import get_db
 from authentication.oauth2 import calendar_authentication_token, student_authentication_token
 from fastapi.responses import HTMLResponse
@@ -26,9 +27,12 @@ def show_create_calendar_form(
     else:
         display_user_type = "Bilinmiyor"
 
+    # Bildirimleri yükle
+    notifications = get_notifications(db, current_user.username, current_user.id)
+
     return templates.TemplateResponse(
         "create_calendar.html",
-        {"request": request, "username": current_user.username, "user_type": display_user_type}
+        {"request": request, "username": current_user.username, "user_type": display_user_type, "notifications": notifications}
     )
 
 
@@ -56,6 +60,9 @@ def handle_create_calendar(
     else:
         display_user_type = "Bilinmiyor"
 
+    # Bildirimleri yükle
+    notifications = get_notifications(db, current_user.username, current_user.id)
+
     try:
         calendar_data = CalendarData(
             day=days,
@@ -76,6 +83,7 @@ def handle_create_calendar(
             {"request": request,
              "username": current_user.username,
              "user_type": display_user_type,
+             "notifications": notifications,
              "success_message": "Takvim başarıyla oluşturuldu.",
              "data": result
              }
@@ -86,6 +94,7 @@ def handle_create_calendar(
             {"request": request,
              "username": current_user.username,
              "user_type": display_user_type,
+             "notifications": notifications,
              "error_message": f"Takvim oluşturulurken bir hata oluştu: {str(e)}"
              }
         )
@@ -104,10 +113,13 @@ def show_teacher_calendar_list(request: Request,
     else:
         display_user_type = "Bilinmiyor"
 
+    # Bildirimleri yükle
+    notifications = get_notifications(db, current_user.username, current_user.id)
     calendars = get_calendar(db)
+
     return templates.TemplateResponse(
         "teacher_calendars.html",
-        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars}
+        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars, "notifications": notifications}
     )
 
 # Takvim silme işlemi
@@ -118,13 +130,16 @@ def delete_calendar(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(calendar_authentication_token)
 ):
-    # Kullanıc�� tipini belirle
+    # Kullanıcı tipini belirle
     if current_user.type == UserType.student:
         display_user_type = "Öğrenci"
     elif current_user.type == UserType.teacher:
         display_user_type = "Öğretmen"
     else:
         display_user_type = "Bilinmiyor"
+
+    # Bildirimleri yükle
+    notifications = get_notifications(db, current_user.username, current_user.id)
 
     try:
         delete_calendar_func(db, calendar_id, current_user)
@@ -135,6 +150,7 @@ def delete_calendar(
              "username": current_user.username,
              "user_type": display_user_type,
              "calendars": calendars,                            # <-- Güncellenmiş takvimleri kullanıcıya gönder
+             "notifications": notifications,
              "success_message": "Takvim başarıyla silindi"
              }
         )
@@ -146,6 +162,7 @@ def delete_calendar(
              "username": current_user.username,
              "user_type": display_user_type,
              "calendars": calendars,
+             "notifications": notifications,
              "error_message": e.detail
              }
         )
@@ -165,8 +182,11 @@ def show_student_calendar_list(
     else:
         display_user_type = "Bilinmiyor"
 
+    # Bildirimleri yükle
+    notifications = get_notifications(db, current_user.username, current_user.id)
     calendars = get_calendar(db)
+
     return templates.TemplateResponse(
         "student_calendars.html",
-        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars}
+        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars, "notifications": notifications}
     )

@@ -45,9 +45,13 @@ def go_to_admin_home(request: Request, db: Session = Depends(get_db), current_us
     if current_user.type != UserType.admin:
         return RedirectResponse(url="/nav/home", status_code=302)
     else:
+        # Bildirimleri yükle
+        notifications = get_notifications(db, current_user.username, current_user.id)
         users = get_read_users_by_admin(db)
         return templates.TemplateResponse("admin_home.html",
                                        {"request": request,
                                         "username": current_user.username,
-                                        "users": users
+                                        "user_type": "Admin",
+                                        "users": users,
+                                        "notifications": notifications
                                         })
