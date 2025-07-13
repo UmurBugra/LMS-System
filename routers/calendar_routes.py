@@ -3,7 +3,8 @@ from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
 from schemas import LoginBase, CalendarData, UserType
 from crud.calendar import create_calendar, get_calendar, delete_calendar as delete_calendar_func
-from crud.notification import get_notifications
+from crud.notification import get_notifications, notification_detail
+from crud.calendar import get_calendar_detail
 from db.database import get_db
 from authentication.oauth2 import calendar_authentication_token, student_authentication_token
 from fastapi.responses import HTMLResponse
@@ -122,6 +123,29 @@ def show_teacher_calendar_list(request: Request,
         {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars, "notifications": notifications}
     )
 
+@router.get("/student", response_class=HTMLResponse)
+def show_student_calendar_list(
+        request: Request,
+        db: Session = Depends(get_db),
+        current_user : LoginBase = Depends(student_authentication_token)
+):
+    # Kullanıcı tipini belirle
+    if current_user.type == UserType.student:
+        display_user_type = "Öğrenci"
+    elif current_user.type == UserType.teacher:
+        display_user_type = "Öğretmen"
+    else:
+        display_user_type = "Bilinmiyor"
+
+    # Bildirimleri yükle
+    notifications = get_notifications(db, current_user.username, current_user.id)
+    calendars = get_calendar(db)
+
+    return templates.TemplateResponse(
+        "student_calendars.html",
+        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars, "notifications": notifications}
+    )
+
 # Takvim silme işlemi
 @router.post("/delete/{calendar_id}", response_class=HTMLResponse)
 def delete_calendar(
@@ -167,26 +191,45 @@ def delete_calendar(
              }
         )
 
-# Öğrenci takvimi görüntüleme
-@router.get("/student", response_class=HTMLResponse)
-def show_student_calendar_list(
-        request: Request,
-        db: Session = Depends(get_db),
-        current_user : LoginBase = Depends(student_authentication_token)
+# Tek takvim detayını görüntüleme
+@router.get("/{calendar_id}")
+def get_calendar_detail(
+    calendar_id: int,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: LoginBase = Depends(student_authentication_token)
 ):
-    # Kullanıcı tipini belirle
-    if current_user.type == UserType.student:
-        display_user_type = "Öğrenci"
-    elif current_user.type == UserType.teacher:
-        display_user_type = "Öğretmen"
-    else:
-        display_user_type = "Bilinmiyor"
+    from crud.calendar import get_calendar_detail
 
-    # Bildirimleri yükle
-    notifications = get_notifications(db, current_user.username, current_user.id)
-    calendars = get_calendar(db)
+    try:
+        # Takvim detaylarını getir - current_user parametresini artık göndermiyoruz
+        calendar_entry = get_calendar_detail(db, calendar_id)
 
-    return templates.TemplateResponse(
-        "student_calendars.html",
-        {"request": request, "username": current_user.username, "user_type": display_user_type, "calendars": calendars, "notifications": notifications}
-    )
+        if not calendar_entry:
+            raise HTTPException(status_code=404, detail="Takvim bulunamadı.")
+
+        # Kullanıcı tipini belirle
+        if current_user.type == UserType.student:
+            display_user_type = "Öğrenci"
+        elif current_user.type == UserType.teacher:
+            display_user_type = "Öğretmen"
+        else:
+            display_user_type = "Bilinmiyor"
+
+        # Bildirimleri yükle
+        notifications = get_notifications(db, current_user.username, current_user.id)
+
+        return templates.TemplateResponse(
+            "calendar_detail.html",
+            {"request": request,
+             "username": current_user.username,
+             "user_type": display_user_type,
+             "calendar": calendar_entry,
+             "current_user": current_user,
+             "notifications": notifications}
+        )
+
+    except HTTPException as e:
+        raise e
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Takvim detayları alınırken bir hata oluştu: {str(e)}")
