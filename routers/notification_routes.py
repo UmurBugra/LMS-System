@@ -81,7 +81,6 @@ def get_notification_detail(
     else:
         display_user_type = "Bilinmiyor"
 
-    # NotificationData modelindeki redirect_url'ye bakalım
     notification_entry = db.query(NotificationData).filter(NotificationData.id == notification_id).first()
 
     # Eğer redirect_url varsa ve "/calendar/" içeriyorsa takvim detay sayfasına yönlendir
