@@ -67,8 +67,19 @@ def get_notification_detail(
 
     notification = notification_detail(db, notification_id, current_user)
 
+    all_notifications = get_notifications(db, current_user.username, current_user.id)
+
     if not notification:
         raise HTTPException(status_code=404, detail="Bildirimi bulunamadı.")
+
+    if current_user.type.name == "student":
+        display_user_type = "Öğrenci"
+    elif current_user.type.name == "teacher":
+        display_user_type = "Öğretmen"
+    elif current_user.type.name == "admin":
+        display_user_type = "Admin"
+    else:
+        display_user_type = "Bilinmiyor"
 
     # NotificationData modelindeki redirect_url'ye bakalım
     notification_entry = db.query(NotificationData).filter(NotificationData.id == notification_id).first()
@@ -78,8 +89,13 @@ def get_notification_detail(
         calendar_id = notification_entry.redirect_url.split("/")[-1]
         return RedirectResponse(url=f"/calendar/{calendar_id}")
 
-    # Aksi takdirde normal bildirim detay sayfasına yönlendir
-    return templates.TemplateResponse("notification_detail.html", {"request": request, "notification": notification})
+    return templates.TemplateResponse("notification_detail.html", {
+        "request": request,
+        "notification": notification,
+        "username": current_user.username,
+        "user_type": display_user_type,
+        "notifications": all_notifications
+    })
 
 # Tüm bildirimleri silme (soft delete)
 @router.put("/clear-all")
