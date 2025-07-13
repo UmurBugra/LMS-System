@@ -226,7 +226,6 @@ def is_read_notification(db: Session, notification_id: int, current_user: LoginD
         raise HTTPException(status_code=500, detail=f"Bildirim işaretlenirken bir hata oluştu: {str(e)}")
 
 # Belirli bir bildirimin detaylarını getirme
-
 def notification_detail(db: Session, notification_id: int, current_user: LoginData):
     try:
         notification_entry = db.query(NotificationData, notification_receivers.c.is_read).join(
