@@ -1,121 +1,83 @@
-<!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Takvim Detayı - LMS System</title>
-    <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
-    <link rel="stylesheet" href="{{ request.url_for('static', path='/calendar.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>
-<body>
-    <div class="home-button">
-        <a href="/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
+{% extends "base.html" %}
+
+{% block title %}Takvim Detayı - LMS System{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="page-header">
+        <h2>Takvim Detayı</h2>
+        <div class="breadcrumb">
+            <a href="/">Ana Sayfa</a> >
+            <a href="/calendar">Takvim</a> >
+            <span>Detay</span>
+        </div>
     </div>
 
-    <div class="container">
-        <div class="calendar-header">
-            <a href="/calendar/{{ 'teacher' if current_user.type.name == 'teacher' else 'student' }}" class="back-button">
-                <i class="fas fa-arrow-left"></i>
-            </a>
-            <h1>{{ calendar.title }}</h1>
-        </div>
+    <div class="calendar-detail-container">
+        {% if calendar %}
+        <div class="calendar-detail-card">
+            <div class="card-header">
+                <h3>{{ calendar.title }}</h3>
+                <div class="calendar-meta">
+                    <span class="calendar-day">{{ calendar.day_name }}</span>
+                    <span class="calendar-time">{{ calendar.start_time }} - {{ calendar.end_time }}</span>
+                </div>
+            </div>
 
-        <div class="calendar-detail">
-            <div class="calendar-card">
-                <div class="calendar-title">
-                    <h2>{{ calendar.title }}</h2>
-                    <span class="calendar-type">{{ calendar.type }}</span>
+            <div class="card-body">
+                <div class="detail-section">
+                    <h4><i class="fas fa-info-circle"></i> Açıklama</h4>
+                    <p>{{ calendar.description or 'Açıklama bulunmamaktadır.' }}</p>
                 </div>
 
-                <div class="calendar-content">
-                    <div class="calendar-description">
-                        <h3><i class="fas fa-info-circle"></i> Açıklama</h3>
-                        <p>{{ calendar.description }}</p>
-                    </div>
-
-                    <div class="calendar-details">
-                        <div class="detail-item">
-                            <i class="fas fa-calendar-day"></i>
-                            <span class="detail-label">Gün:</span>
-                            <span class="detail-value">{{ calendar.date }}</span>
+                <div class="detail-section">
+                    <h4><i class="fas fa-calendar-alt"></i> Tarih ve Saat Bilgileri</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Gün:</strong> {{ calendar.day_name }}
                         </div>
-
-                        <div class="detail-item">
-                            <i class="fas fa-user"></i>
-                            <span class="detail-label">Oluşturan:</span>
-                            <span class="detail-value">{{ calendar.creator.username }}</span>
+                        <div class="info-item">
+                            <strong>Başlangıç:</strong> {{ calendar.start_time }}
                         </div>
-
-                        {% if calendar.created_at %}
-                        <div class="detail-item">
-                            <i class="fas fa-calendar-plus"></i>
-                            <span class="detail-label">Oluşturma Tarihi:</span>
-                            <span class="detail-value">{{ calendar.created_at.strftime('%d.%m.%Y %H:%M') }}</span>
-                        </div>
-                        {% endif %}
-                    </div>
-
-                    <div class="schedule-section">
-                        <h3><i class="fas fa-clock"></i> Ders Programı</h3>
-                        <div class="schedule-grid">
-                            {% for time_slot, lesson in calendar.schedule.items() %}
-                            <div class="schedule-item">
-                                <div class="time-slot">{{ time_slot }}</div>
-                                <div class="lesson-content">
-                                    {% if lesson %}
-                                        {{ lesson }}
-                                    {% else %}
-                                        <span class="empty-slot">Boş</span>
-                                    {% endif %}
-                                </div>
-                            </div>
-                            {% endfor %}
+                        <div class="info-item">
+                            <strong>Bitiş:</strong> {{ calendar.end_time }}
                         </div>
                     </div>
                 </div>
 
-                <div class="calendar-actions">
-                    {% if current_user.type.name == "teacher" %}
-                    {% if calendar.creator_id == current_user.id %}
-                    <button class="btn btn-delete" onclick="deleteCalendar({{ calendar.id }})">
-                        <i class="fas fa-trash"></i> Sil
-                    </button>
-                    {% endif %}
-                    {% endif %}
+                {% if calendar.creator %}
+                <div class="detail-section">
+                    <h4><i class="fas fa-user"></i> Oluşturan</h4>
+                    <p>{{ calendar.creator.username }} ({{ calendar.creator.type }})</p>
+                </div>
+                {% endif %}
 
-                    <a href="/calendar/{{ 'teacher' if current_user.type.name == 'teacher' else 'student' }}" class="btn btn-back">
+                <div class="detail-section">
+                    <h4><i class="fas fa-clock"></i> Oluşturulma Tarihi</h4>
+                    <p>{{ calendar.created_at.strftime('%d.%m.%Y %H:%M') if calendar.created_at else 'Belirtilmemiş' }}</p>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="action-buttons">
+                    <a href="/calendar" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Geri Dön
                     </a>
+                    {% if user_type == "Öğretmen" %}
+                    <a href="/calendar/edit/{{ calendar.id }}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    {% endif %}
                 </div>
             </div>
         </div>
+        {% else %}
+        <div class="error-message">
+            <h3>Takvim Bulunamadı</h3>
+            <p>Aradığınız takvim girişi bulunamadı veya erişim izniniz bulunmamaktadır.</p>
+            <a href="/calendar" class="btn btn-primary">Takvime Dön</a>
+        </div>
+        {% endif %}
     </div>
-
-    <script>
-        function deleteCalendar(calendarId) {
-            if (confirm('Bu takvim etkinliğini silmek istediğinizden emin misiniz?')) {
-                fetch(`/calendar/delete/${calendarId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.detail === 'Takvim başarıyla silindi.') {
-                        alert('Takvim etkinliği başarıyla silindi.');
-                        window.location.href = '/calendar/{{ "teacher" if current_user.type.name == "teacher" else "student" }}';
-                    } else {
-                        alert('Silme işlemi başarısız: ' + data.detail);
-                    }
-                })
-                .catch(error => {
-                    console.error('Hata:', error);
-                    alert('Bir hata oluştu.');
-                });
-            }
-        }
-    </script>
-</body>
-</html>
+</div>
+{% endblock %}
