@@ -25,12 +25,19 @@
         <div class="notifications-list">
             {% if notifications %}
                 {% for notification in notifications %}
-                    <div class="notification-item">
+                    <div class="notification-item {% if not notification.is_read %}unread{% endif %}"
+                         onclick="window.location.href='/notification/{{ notification.id }}'"
+                         style="cursor: pointer;">
                         <p>{{ notification.content }}</p>
                         {% if notification.sender_username %}
                         <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
                         {% else %}
                         <small>{{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
+                        {% endif %}
+                        {% if not notification.is_read %}
+                        <div class="unread-indicator">
+                            <i class="fas fa-circle"></i>
+                        </div>
                         {% endif %}
                     </div>
                 {% endfor %}
