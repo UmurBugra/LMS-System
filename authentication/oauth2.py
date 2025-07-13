@@ -18,7 +18,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") # --> OAuth2PasswordBeare
                                                        # --> /token endpointi, token almak için kullanılacak
 
 # Token süresi dolduğunda özel exception sınıfı
-class TokenExpiredException(Exception): # Exception sınıfını miras alır
+class TokenExpiredException(Exception): # --> Exception sınıfını miras alır
     def __init__(self, message: str = "Oturum süresi doldu, lütfen tekrar giriş yapın."):
         self.message = message
         super().__init__(self.message) # --> Miras alınan sınıfın init metodunu çağırır ve ona hata mesajını iletir
