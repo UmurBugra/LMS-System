@@ -47,7 +47,7 @@ def create_notification(db: Session, content: str, sender_id: int, receiver=None
     return notification_entry
 
 # Bu fonksiyon, tüm öğrencilere bir bildirim gönderir.
-def create_notification_for_all_students(db: Session, content: str, sender_id: int):
+def create_notification_for_all_students(db: Session, calendar_entry, content: str, sender_id: int):
     utc_now = datetime.now(timezone.utc)
     turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
 
@@ -56,7 +56,8 @@ def create_notification_for_all_students(db: Session, content: str, sender_id: i
     notification = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_id=sender_id
+        sender_id=sender_id,
+        redirect_url=f"/calendar/{calendar_entry.id}"
     )
 
     db.add(notification)
@@ -168,30 +169,6 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-# Bildirimi okundu olarak işaretleme
-# def is_read_notification(db: Session, notification_id: int, current_user: LoginData):
-#     try:
-#         result = db.execute(
-#             notification_receivers.update().where(
-#                 and_(notification_receivers.c.notification_id == notification_id, # --> Üç koşul da sağlanıyorsa is_read güncellenecek
-#                 notification_receivers.c.user_id == current_user.id,
-#                 notification_receivers.c.is_removed == False)
-#             ).values(is_read=True)
-#         )
-#
-#         if result.rowcount == 0:
-#             return {"success": False, "message": "Bildirim bulunamadı veya zaten güncellenmiş."}
-#
-#         db.commit()
-#         return {"success": True, "message": "Bildirim okundu olarak işaretlendi.", "notification_id": notification_id,
-#                 "is_read": True}
-#
-#     except Exception as e:
-#         db.rollback() # --> Hata durumunda işlemi geri al
-#         raise HTTPException(status_code=500, detail=f"Bildirim işaretlenirken bir hata oluştu: {str(e)}")
-
-# Belirli bir bildirimin detaylarını getirme
-
 def notification_detail(db: Session, notification_id: int, current_user):
     try:
         notification_entry = db.query(NotificationData, notification_receivers.c.is_read).join(
@@ -228,7 +205,8 @@ def notification_detail(db: Session, notification_id: int, current_user):
                 "id": sender.id,
                 "username": sender.username
             },
-            "is_read": True
+            "is_read": True,
+            "redirect_url": notification.redirect_url
         }
 
     except Exception as e:
