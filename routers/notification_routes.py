@@ -1,12 +1,13 @@
 from fastapi import APIRouter, Depends, Request, Form, HTTPException
 from sqlalchemy.orm import Session
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, RedirectResponse
 from fastapi.templating import Jinja2Templates
 from schemas import LoginBase
 from crud.notification import create_notification, get_notifications,create_notification_for_all_students, \
 create_notification_for_all_teachers, soft_delete_notifications, notification_detail
 from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
+from db.models import NotificationData
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
 templates = Jinja2Templates(directory="templates")
@@ -69,6 +70,15 @@ def get_notification_detail(
     if not notification:
         raise HTTPException(status_code=404, detail="Bildirimi bulunamadı.")
 
+    # NotificationData modelindeki redirect_url'ye bakalım
+    notification_entry = db.query(NotificationData).filter(NotificationData.id == notification_id).first()
+
+    # Eğer redirect_url varsa ve "/calendar/" içeriyorsa takvim detay sayfasına yönlendir
+    if notification_entry and notification_entry.redirect_url and "/calendar/" in notification_entry.redirect_url:
+        calendar_id = notification_entry.redirect_url.split("/")[-1]
+        return RedirectResponse(url=f"/calendar/{calendar_id}")
+
+    # Aksi takdirde normal bildirim detay sayfasına yönlendir
     return templates.TemplateResponse("notification_detail.html", {"request": request, "notification": notification})
 
 # Tüm bildirimleri silme (soft delete)
