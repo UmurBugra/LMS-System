@@ -1,0 +1,73 @@
+/*
+ * Bildirim detay sayfası için özel stiller
+ */
+
+.notification-header {
+    margin-bottom: 20px;
+    background-color: transparent; /* Gri arka planı kaldırdım */
+}
+
+/* notification.css'ten alınan buton stili */
+.notification-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    margin: 0;
+    text-align: center;
+    text-decoration: none;
+    color: #333;
+    font-size: 14px;
+    background-color: transparent; /* Arka plan rengini şeffaf yaptım */
+    border-radius: 4px;
+    border: 1px solid #ddd;
+    transition: all 0.2s ease;
+    cursor: pointer;
+    box-sizing: border-box;
+    font-weight: 500;
+    line-height: 1.3;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    width: auto; /* Orijinalde width: 85% !important vardı, bunu değiştirdim */
+}
+
+.notification-btn:hover {
+    background-color: #f0f0f0;
+    border-color: #999;
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+}
+
+.notification-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+}
+
+.notification-detail-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.notification-detail {
+    margin-top: 15px;
+}
+
+.notification-content {
+    font-size: 16px;
+    line-height: 1.5;
+    margin-bottom: 20px;
+}
+
+.notification-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    font-size: 14px;
+    color: #6c757d;
+    padding-top: 15px;
+    margin-top: 15px;
+    margin-bottom: 15px; /* Alt kısımda düzgün boşluk olması için */
+}
