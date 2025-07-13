@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bildirim Detayı - LMS System</title>
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/styles.css') }}">
+    <link rel="stylesheet" href="{{ request.url_for('static', path='/notification.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+    <div class="home-button">
+        <a href="/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
+    </div>
+
+    <div class="container">
+        <div class="notification-header">
+            <a href="/notification/" class="back-button">
+                <i class="fas fa-arrow-left"></i>
+            </a>
+
+        </div>
+
+        <div class="notification-detail">
+            <div class="notification-content">
+                <p>{{ notification.content }}</p>
+            </div>
+
+            <div class="notification-info">
+                <div class="sender-info">
+                    <strong>Gönderen:</strong> {{ notification.sender.username }}
+                </div>
+                <div class="date-info">
+                    <strong>Tarih:</strong> {{ notification.created_time.split('T')[0] }} {{ notification.created_time.split('T')[1].split('.')[0] }}
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
