@@ -69,3 +69,41 @@ def get_calendar(db: Session):
         elif i.days == CalendarBase.Cuma:
             i.days = "Cuma"
     return calendars
+
+def get_calendar_detail(db: Session, calendar_id: int):
+    """Takvim detaylarını ID'ye göre getirir"""
+    calendar_entry = db.query(CalendarData).filter(CalendarData.id == calendar_id).first()
+    if not calendar_entry:
+        raise HTTPException(status_code=404, detail="Takvim bulunamadı.")
+
+    creator = db.query(LoginData).filter(LoginData.id == calendar_entry.user_id).first()
+
+    # Gün adını insan dostu formata çevir
+    day_name = calendar_entry.days
+    if calendar_entry.days == CalendarBase.Pazartesi:
+        day_name = "Pazartesi"
+    elif calendar_entry.days == CalendarBase.Salı:
+        day_name = "Salı"
+    elif calendar_entry.days == CalendarBase.Çarşamba:
+        day_name = "Çarşamba"
+    elif calendar_entry.days == CalendarBase.Perşembe:
+        day_name = "Perşembe"
+    elif calendar_entry.days == CalendarBase.Cuma:
+        day_name = "Cuma"
+
+    return {
+        "id": calendar_entry.id,
+        "days": day_name,
+        "t_08_09": calendar_entry.t_08_09,
+        "t_09_10": calendar_entry.t_09_10,
+        "t_10_11": calendar_entry.t_10_11,
+        "t_11_12": calendar_entry.t_11_12,
+        "t_13_14": calendar_entry.t_13_14,
+        "t_14_15": calendar_entry.t_14_15,
+        "t_15_16": calendar_entry.t_15_16,
+        "t_16_17": calendar_entry.t_16_17,
+        "creator": {
+            "id": creator.id,
+            "username": creator.username
+        } if creator else None
+    }
