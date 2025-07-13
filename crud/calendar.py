@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from crud.notification import create_notification_for_all_students
+from crud.notification import calendar_notification_for_student
 from db.models import CalendarData, LoginData
 from schemas import CalendarBase, UserType, LoginBase
 from fastapi import HTTPException
@@ -27,7 +27,7 @@ def create_calendar(db: Session, request: CalendarData, current_user: LoginBase)
 
     #Öğrencilere bildirim gönderme
     message = f"{username.username} kullanıcısı {request.day.value} günü için yeni bir takvim oluşturdu."
-    create_notification_for_all_students(db, calendar_entry, content=message, sender_id=username.id)
+    calendar_notification_for_student(db, calendar_entry, content=message, sender_id=username.id)
 
     return calendar_entry
 
