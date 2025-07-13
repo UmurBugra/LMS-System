@@ -169,30 +169,30 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
         raise HTTPException(status_code=500, detail=str(e))
 
 # Bildirimi okundu olarak işaretleme
-def is_read_notification(db: Session, notification_id: int, current_user: LoginData):
-    try:
-        result = db.execute(
-            notification_receivers.update().where(
-                and_(notification_receivers.c.notification_id == notification_id, # --> Üç koşul da sağlanıyorsa is_read güncellenecek
-                notification_receivers.c.user_id == current_user.id,
-                notification_receivers.c.is_removed == False)
-            ).values(is_read=True)
-        )
-
-        if result.rowcount == 0:
-            return {"success": False, "message": "Bildirim bulunamadı veya zaten güncellenmiş."}
-
-        db.commit()
-        return {"success": True, "message": "Bildirim okundu olarak işaretlendi.", "notification_id": notification_id,
-                "is_read": True}
-
-    except Exception as e:
-        db.rollback() # --> Hata durumunda işlemi geri al
-        raise HTTPException(status_code=500, detail=f"Bildirim işaretlenirken bir hata oluştu: {str(e)}")
+# def is_read_notification(db: Session, notification_id: int, current_user: LoginData):
+#     try:
+#         result = db.execute(
+#             notification_receivers.update().where(
+#                 and_(notification_receivers.c.notification_id == notification_id, # --> Üç koşul da sağlanıyorsa is_read güncellenecek
+#                 notification_receivers.c.user_id == current_user.id,
+#                 notification_receivers.c.is_removed == False)
+#             ).values(is_read=True)
+#         )
+#
+#         if result.rowcount == 0:
+#             return {"success": False, "message": "Bildirim bulunamadı veya zaten güncellenmiş."}
+#
+#         db.commit()
+#         return {"success": True, "message": "Bildirim okundu olarak işaretlendi.", "notification_id": notification_id,
+#                 "is_read": True}
+#
+#     except Exception as e:
+#         db.rollback() # --> Hata durumunda işlemi geri al
+#         raise HTTPException(status_code=500, detail=f"Bildirim işaretlenirken bir hata oluştu: {str(e)}")
 
 # Belirli bir bildirimin detaylarını getirme
 
-def notification_detail(db: Session, notification_id: int, current_user: LoginData):
+def notification_detail(db: Session, notification_id: int, current_user):
     try:
         notification_entry = db.query(NotificationData, notification_receivers.c.is_read).join(
             notification_receivers,
@@ -209,7 +209,14 @@ def notification_detail(db: Session, notification_id: int, current_user: LoginDa
         notification, is_read = notification_entry
 
         if not is_read:
-            is_read_notification(db, notification_id, current_user)
+            db.execute(
+                notification_receivers.update().where(
+                    and_(notification_receivers.c.notification_id == notification_id, # --> Üç koşul da sağlanıyorsa is_read güncellenecek
+                         notification_receivers.c.user_id == current_user.id,
+                         notification_receivers.c.is_removed == False)
+                ).values(is_read=True)
+            )
+        db.commit()
 
         sender = db.query(LoginData).filter(LoginData.id == notification.sender_id).first()
 
@@ -221,7 +228,7 @@ def notification_detail(db: Session, notification_id: int, current_user: LoginDa
                 "id": sender.id,
                 "username": sender.username
             },
-            "is_read": is_read
+            "is_read": True
         }
 
     except Exception as e:
