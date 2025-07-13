@@ -78,7 +78,6 @@ def get_calendar_detail(db: Session, calendar_id: int):
 
     creator = db.query(LoginData).filter(LoginData.id == calendar_entry.user_id).first()
 
-    # Gün adını insan dostu formata çevir
     day_name = calendar_entry.days
     if calendar_entry.days == CalendarBase.Pazartesi:
         day_name = "Pazartesi"

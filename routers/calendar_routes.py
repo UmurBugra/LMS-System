@@ -216,7 +216,6 @@ def get_calendar_detail(
         else:
             display_user_type = "Bilinmiyor"
 
-        # Bildirimleri yükle
         notifications = get_notifications(db, current_user.username, current_user.id)
 
         return templates.TemplateResponse(
