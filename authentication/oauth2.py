@@ -12,7 +12,7 @@ from schemas import UserType
 
 SECRET_KEY = 'd68209ffa66480a47408acdc06f3d35016a7e3dfbbec769592ccd9e56d97ba7e' # --> openssl rand -hex 32
 ALGORITHM = 'HS256' # --> HMAC-SHA256 algoritması
-ACCESS_TOKEN_EXPIRE_MINUTES = 10 # --> Token'ın geçerlilik süresi (dakika cinsinden)
+ACCESS_TOKEN_EXPIRE_MINUTES = 30 # --> Token'ın geçerlilik süresi (dakika cinsinden)
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token") # --> OAuth2PasswordBearer bir endpointten token almayı sağlar
                                                        # --> /token endpointi, token almak için kullanılacak
