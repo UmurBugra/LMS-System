@@ -56,12 +56,15 @@ def create_notification_for_all_students(db: Session, content: str, sender_id: i
     notification = NotificationData(
         content=content,
         created_time=turkey_time,
-        sender_id=sender_id
+        sender_id=sender_id,
     )
 
     db.add(notification)
     db.commit()
     db.refresh(notification)
+
+    notification.redirect_url = f"/notification/{notification.id}"
+    db.commit()
 
     # Her öğrenci için notification_receivers tablosuna kayıt ekle
     for student in students:
@@ -101,6 +104,8 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
     db.commit()
     db.refresh(notification)
 
+    notification.redirect_url = f"/notification/{notification.id}"
+
     # Her öğretmen için notification_receivers tablosuna kayıt ekle
     for teacher in teachers:
         db.execute(
@@ -115,6 +120,36 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
     db.commit()
     return notification
 
+def calendar_notification_for_student(db: Session, calendar_entry, content: str ,sender_id: int):
+    utc_now = datetime.now(timezone.utc)
+    turkey_time = utc_now.astimezone(timezone(timedelta(hours=3)))
+
+    students = db.query(LoginData).filter(LoginData.type == UserType.student).all()
+
+    notification = NotificationData(
+        content=content,
+        created_time=turkey_time,
+        sender_id=sender_id,
+        redirect_url=f"/calendar/{calendar_entry.id}"
+    )
+
+    db.add(notification)
+    db.commit()
+    db.refresh(notification)
+
+    # Her öğrenci için notification_receivers tablosuna kayıt ekle
+    for student in students:
+        db.execute(
+            notification_receivers.insert().values(
+                user_id=student.id,
+                notification_id=notification.id,
+                is_read=False,
+                is_removed=False
+            )
+        )
+
+    db.commit()
+    return notification
 
 # Kullanıcıya ait bildirimleri getir
 # Bu fonksiyon, belirtilen kullanıcı adı ve kullanıcı ID'sine sahip kullanıcının bildirimlerini getirir.
@@ -191,7 +226,6 @@ def is_read_notification(db: Session, notification_id: int, current_user: LoginD
         raise HTTPException(status_code=500, detail=f"Bildirim işaretlenirken bir hata oluştu: {str(e)}")
 
 # Belirli bir bildirimin detaylarını getirme
-
 def notification_detail(db: Session, notification_id: int, current_user: LoginData):
     try:
         notification_entry = db.query(NotificationData, notification_receivers.c.is_read).join(

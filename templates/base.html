@@ -47,7 +47,7 @@
                             <div class="notification-item {{ 'read' if notification.is_read else 'unread' }}"
                                 data-notification-id="{{ notification.id }}"
                                 data-is-read="{{ 'true' if notification.is_read else 'false' }}"
-                                onclick="markAsRead('{{ notification.id }}', this)">
+                                onclick="goToNotificationDetail('{{ notification.id }}')">
                                 <p>{{ notification.content }}</p>
                                 {% if notification.sender_username %}
                                     <small>Gönderen: {{ notification.sender_username }} - {{ notification.created_time.strftime('%d-%m-%Y %H:%M') }}</small>
@@ -161,44 +161,11 @@
          */
 
         /**
-         * Bildirimi okundu olarak işaretler
-         * @param {string} notificationId - İşaretlenecek bildirimin benzersiz kimliği
-         * @param {Element} element - Bildirime karşılık gelen DOM elementi
+         * Bildirimi detay sayfasına yönlendirir
+         * @param {string} notificationId - Görüntülenecek bildirimin benzersiz kimliği
          */
-        function markAsRead(notificationId, element) {
-            const isRead = element.getAttribute('data-is-read') === 'true';
-            if (isRead || element.classList.contains('read')) {
-                return;
-            }
-
-            const formData = new FormData();
-            formData.append('notification_id', notificationId);
-
-            fetch('/notification/mark-read', {
-                method: 'PUT',
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    element.classList.remove('unread');
-                    element.classList.add('read');
-                    element.setAttribute('data-is-read', 'true');
-
-                    const unreadIndicator = element.querySelector('.unread-indicator');
-                    if (unreadIndicator) {
-                        unreadIndicator.remove();
-                    }
-
-                    updateNotificationCount();
-                } else {
-                    showToast(data.message || 'Bildirim işaretlenirken bir hata oluştu');
-                }
-            })
-            .catch(error => {
-                console.error('Hata:', error);
-                showToast('Bildirim işaretlenirken bir hata oluştu');
-            });
+        function goToNotificationDetail(notificationId) {
+            window.location.href = `/notification/${notificationId}`;
         }
 
         /**

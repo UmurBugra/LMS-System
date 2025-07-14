@@ -54,6 +54,7 @@ class NotificationData(Base):
     sender_id = Column(Integer, ForeignKey("login_data.id"))
     # Birden fazla ilişki olabilir, bu yüzden foreign_keys ile belirtiliyor
     sender = relationship("LoginData", foreign_keys=[sender_id])
+    redirect_url = Column(String, nullable=True)
     # many-to-many relationship LoginData
     receiver = relationship(
         "LoginData",

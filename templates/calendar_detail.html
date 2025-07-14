@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Takvim Detayı - LMS System{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="page-header">
+        <h2>Takvim Detayı</h2>
+        <div class="breadcrumb">
+            <a href="/">Ana Sayfa</a> >
+            <a href="/calendar">Takvim</a> >
+            <span>Detay</span>
+        </div>
+    </div>
+
+    <div class="calendar-detail-container">
+        {% if calendar %}
+        <div class="calendar-detail-card">
+            <div class="card-header">
+                <h3>{{ calendar.title }}</h3>
+                <div class="calendar-meta">
+                    <span class="calendar-day">{{ calendar.day_name }}</span>
+                    <span class="calendar-time">{{ calendar.start_time }} - {{ calendar.end_time }}</span>
+                </div>
+            </div>
+
+            <div class="card-body">
+                <div class="detail-section">
+                    <h4><i class="fas fa-info-circle"></i> Açıklama</h4>
+                    <p>{{ calendar.description or 'Açıklama bulunmamaktadır.' }}</p>
+                </div>
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-calendar-alt"></i> Tarih ve Saat Bilgileri</h4>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <strong>Gün:</strong> {{ calendar.day_name }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Başlangıç:</strong> {{ calendar.start_time }}
+                        </div>
+                        <div class="info-item">
+                            <strong>Bitiş:</strong> {{ calendar.end_time }}
+                        </div>
+                    </div>
+                </div>
+
+                {% if calendar.creator %}
+                <div class="detail-section">
+                    <h4><i class="fas fa-user"></i> Oluşturan</h4>
+                    <p>{{ calendar.creator.username }} ({{ calendar.creator.type }})</p>
+                </div>
+                {% endif %}
+
+                <div class="detail-section">
+                    <h4><i class="fas fa-clock"></i> Oluşturulma Tarihi</h4>
+                    <p>{{ calendar.created_at.strftime('%d.%m.%Y %H:%M') if calendar.created_at else 'Belirtilmemiş' }}</p>
+                </div>
+            </div>
+
+            <div class="card-footer">
+                <div class="action-buttons">
+                    <a href="/calendar" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Geri Dön
+                    </a>
+                    {% if user_type == "Öğretmen" %}
+                    <a href="/calendar/edit/{{ calendar.id }}" class="btn btn-primary">
+                        <i class="fas fa-edit"></i> Düzenle
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="error-message">
+            <h3>Takvim Bulunamadı</h3>
+            <p>Aradığınız takvim girişi bulunamadı veya erişim izniniz bulunmamaktadır.</p>
+            <a href="/calendar" class="btn btn-primary">Takvime Dön</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
