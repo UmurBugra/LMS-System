@@ -199,11 +199,11 @@ def get_calendar_detail(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(student_authentication_token)
 ):
-    from crud.calendar import get_calendar_detail
+    from crud.calendar import get_calendar_detail as get_calendar_detail_func
 
     try:
-        # Takvim detaylarını getir - current_user parametresini artık göndermiyoruz
-        calendar_entry = get_calendar_detail(db, calendar_id)
+        # Takvim detaylarını getir
+        calendar_entry = get_calendar_detail_func(db, calendar_id)
 
         if not calendar_entry:
             raise HTTPException(status_code=404, detail="Takvim bulunamadı.")
