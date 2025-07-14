@@ -50,7 +50,7 @@ def create_notification(db: Session, content: str, sender_id: int, receiver=None
 # Bu fonksiyon, tüm öğrencilere bir bildirim gönderir.
 def create_notification_for_all_students(db: Session, content: str, sender_id: int):
 
-    turkey_time = datetime.now(ZoneInfo("Europe/Istanbul"))
+    turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)
 
     students = db.query(LoginData).filter(LoginData.type == UserType.student).all()
 
