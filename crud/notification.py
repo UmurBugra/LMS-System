@@ -5,6 +5,7 @@ from fastapi.responses import JSONResponse
 from db.models import NotificationData, LoginData, notification_receivers
 from datetime import datetime, timedelta, timezone
 from schemas import UserType
+from zoneinfo import ZoneInfo
 
 # Bildirim oluşturma işlemleri
 # Bu fonksiyon, belirtilen içeriğe sahip bir bildirim oluşturur.
@@ -48,8 +49,8 @@ def create_notification(db: Session, content: str, sender_id: int, receiver=None
 
 # Bu fonksiyon, tüm öğrencilere bir bildirim gönderir.
 def create_notification_for_all_students(db: Session, content: str, sender_id: int):
-    utc_now = datetime.now(timezone.utc)
-    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
+    turkey_time = datetime.now(ZoneInfo("Europe/Istanbul"))
 
     students = db.query(LoginData).filter(LoginData.type == UserType.student).all()
 
