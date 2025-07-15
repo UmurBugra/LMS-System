@@ -1,6 +1,4 @@
 from fastapi import FastAPI, Request, Depends
-from routers import login_auth_routes, calendar_routes, oauth2_routes, navigation_routes, \
-notification_routes, setup_routes, admin_routes
 from db.database import engine, get_db
 from models import LoginData
 from fastapi.templating import Jinja2Templates
@@ -8,19 +6,14 @@ from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from authentication.oauth2 import TokenExpiredException
 import models
+from api.v1 import api_router as router
 
 app = FastAPI()
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates") # Jinja2 şablonları için dizin
 
-app.include_router(login_auth_routes.router)
-app.include_router(calendar_routes.router)
-app.include_router(oauth2_routes.router)
-app.include_router(navigation_routes.router)
-app.include_router(notification_routes.router)
-app.include_router(setup_routes.router)
-app.include_router(admin_routes.router)
+app.include_router(router, prefix="/api/v1")
 
 # Veritabanında admin kullanıcının olup olmadığını kontrol eden fonksiyon
 def is_admin_user(db):
