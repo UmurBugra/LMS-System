@@ -74,3 +74,16 @@ class CalendarData(BaseModel):
     t_14_15: str
     t_15_16: str
     t_16_17: str
+
+class EventType(Enum):
+    lecture = "lecture"
+    lab = "lab"
+    quiz = "quiz"
+    exam = "exam"
+    meeting = "meeting"
+
+class EventStatus(Enum):
+    planned = "planned"
+    in_progress = "in_progress"
+    completed = "completed"
+    cancelled = "cancelled"
