@@ -16,7 +16,7 @@
 </head>
 <body>
     <div class="home-button">
-        <a href="/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
+        <a href="/api/v1/nav/home" title="Ana Sayfa"><i class="fas fa-home"></i></a>
     </div>
     <div class="container">
         {% block content %}
@@ -26,7 +26,7 @@
             {% if notifications %}
                 {% for notification in notifications %}
                     <div class="notification-item {% if not notification.is_read %}unread{% endif %}"
-                         onclick="window.location.href='/notification/{{ notification.id }}'"
+                         onclick="window.location.href='/api/v1/notification/{{ notification.id }}'"
                          style="cursor: pointer;">
                         <p>{{ notification.content }}</p>
                         {% if notification.sender_username %}

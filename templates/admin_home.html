@@ -19,14 +19,14 @@
                 <a href="#" id="openDuyuruModal" title="Duyuru Oluştur"><i class="fas fa-bell"></i></a>
             </div>
             <div class="logout-button">
-                <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+                <a href="/api/v1/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
             </div>
         </div>
     </div>
 
     <div class="section">
         <h2>Kullanıcı Ekle</h2>
-        <form method="post" action="/admin-page/create" class="user-form">
+        <form method="post" action="/api/v1/admin-page/create" class="user-form">
             <div class="form-group">
                 <label>Kullanıcı Adı:</label>
                 <input type="text" name="username" required>
@@ -144,7 +144,7 @@
             const formData = new FormData(form);
             const data = Object.fromEntries(formData.entries());
 
-            fetch(`/admin-page/update-user-${userId}`, {
+            fetch(`/api/v1/admin-page/update-user-${userId}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json"
@@ -171,7 +171,7 @@
         function deleteUser(userId) {
             if (!confirm("Bu kullanıcıyı silmek istediğinizden emin misiniz?")) return;
 
-            fetch(`/admin-page/delete-user-${userId}`, {
+            fetch(`/api/v1/admin-page/delete-user-${userId}`, {
                 method: "DELETE"
             }).then(response => {
                 if (response.ok) {
@@ -224,7 +224,7 @@
 
                 const formData = new FormData(duyuruForm);
 
-                fetch('/admin-page/create-notification', {
+                fetch('/api/v1/admin-page/create-notification', {
                     method: 'POST',
                     body: formData
                 })
@@ -280,7 +280,7 @@
                 }
 
                 // API'ye arama isteği gönder
-                fetch(`/admin-page/search-users?query=${encodeURIComponent(query)}`)
+                fetch(`/api/v1/admin-page/search-users?query=${encodeURIComponent(query)}`)
                     .then(response => response.json())
                     .then(data => {
                         if (data.users && data.users.length > 0) {

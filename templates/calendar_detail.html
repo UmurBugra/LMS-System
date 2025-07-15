@@ -7,8 +7,8 @@
     <div class="page-header">
         <h2>Takvim Detayı</h2>
         <div class="breadcrumb">
-            <a href="/">Ana Sayfa</a> >
-            <a href="/calendar">Takvim</a> >
+            <a href="/api/v1/nav/home">Ana Sayfa</a> >
+            <a href="/api/v1/calendar">Takvim</a> >
             <span>Detay</span>
         </div>
     </div>
@@ -60,11 +60,11 @@
 
             <div class="card-footer">
                 <div class="action-buttons">
-                    <a href="/calendar" class="btn btn-secondary">
+                    <a href="/api/v1/calendar" class="btn btn-secondary">
                         <i class="fas fa-arrow-left"></i> Geri Dön
                     </a>
                     {% if user_type == "Öğretmen" %}
-                    <a href="/calendar/edit/{{ calendar.id }}" class="btn btn-primary">
+                    <a href="/api/v1/calendar/edit/{{ calendar.id }}" class="btn btn-primary">
                         <i class="fas fa-edit"></i> Düzenle
                     </a>
                     {% endif %}
@@ -75,7 +75,7 @@
         <div class="error-message">
             <h3>Takvim Bulunamadı</h3>
             <p>Aradığınız takvim girişi bulunamadı veya erişim izniniz bulunmamaktadır.</p>
-            <a href="/calendar" class="btn btn-primary">Takvime Dön</a>
+            <a href="/api/v1/calendar" class="btn btn-primary">Takvime Dön</a>
         </div>
         {% endif %}
     </div>

@@ -51,7 +51,7 @@
             <td>{{ calendar.user_name }}</td>
             <td>
                 {% if calendar.user_name == username %}
-                <form action="/calendar/delete/{{ calendar.id }}" method="post">
+                <form action="/api/v1/calendar/delete/{{ calendar.id }}" method="post">
                     <button type="submit" class="delete-button">Sil</button>
                 </form>
                 {% else %}
@@ -67,7 +67,7 @@
 {% endif %}
 
 <div class="actions">
-    <a href="/calendar/create" class="button">Yeni Takvim Oluştur</a>
+    <a href="/api/v1/calendar/create" class="button">Yeni Takvim Oluştur</a>
 </div>
 {% endblock %}
 

@@ -19,7 +19,7 @@
                 {{ error }}
             </div>
             {% endif %}
-            <form class="login-form" method="post" action="/auth/login/form">
+            <form class="login-form" method="post" action="/api/v1/auth/login/form">
                 <div class="form-group">
                     <input type="email" name="email" placeholder="E-posta Adresi" required
                            value="{{ email if email else '' }}">

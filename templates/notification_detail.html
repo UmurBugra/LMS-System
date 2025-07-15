@@ -10,7 +10,7 @@
 {% block content %}
 <div class="notification-detail-container">
     <div class="notification-header">
-        <a href="/notification/" class="notification-btn">Tüm Bildirimler</a>
+        <a href="/api/v1/notification/" class="notification-btn">Tüm Bildirimler</a>
     </div>
 
     <div class="notification-detail">
@@ -28,7 +28,7 @@
             <!-- Redirect URL'e göre yönlendirme butonu - çizgi olmadan -->
             {% if notification.redirect_url and notification.redirect_url.startswith('/calendar/') %}
                 <div class="redirect-button no-border">
-                    <a href="{{ notification.redirect_url }}" class="btn btn-primary">
+                    <a href="/api/v1{{ notification.redirect_url }}" class="btn btn-primary">
                         <i class="fas fa-calendar-alt"></i> Takvimi Görüntüle
                     </a>
                 </div>
@@ -43,7 +43,7 @@
 <script>
     // Eğer takvim bildirimi ise otomatik olarak takvim detayına yönlendir
     {% if notification.redirect_url and notification.redirect_url.startswith('/calendar/') %}
-        window.location.href = "{{ notification.redirect_url }}";
+        window.location.href = "/api/v1{{ notification.redirect_url }}";
     {% endif %}
 </script>
 {% endblock %}

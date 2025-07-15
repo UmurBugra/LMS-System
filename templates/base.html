@@ -65,18 +65,18 @@
                     {% if user_type == "Öğretmen" %}
                         <div class="notification-buttons">
                             <a href="#" id="openDuyuruModal" class="notification-btn">Duyuru Yap</a>
-                            <a href="/notification" class="notification-btn">Tümünü Gör</a>
+                            <a href="/api/v1/notification" class="notification-btn">Tümünü Gör</a>
                         </div>
                     {% else %}
                         <div class="notification-buttons">
-                            <a href="/notification" class="notification-btn">Tümünü Gör</a>
+                            <a href="/api/v1/notification" class="notification-btn">Tümünü Gör</a>
                         </div>
                     {% endif %}
                 </div>
             </div>
             <!-- Çıkış -->
             <div class="logout-button">
-                <a href="/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
+                <a href="/api/v1/nav/logout" title="Çıkış Yap"><i class="fas fa-sign-out-alt"></i></a>
             </div>
         </div>
     </div>
@@ -86,7 +86,7 @@
         <nav class="sidebar-nav">
             <ul>
                 <li class="nav-item">
-                    <a href="/nav/home" class="nav-link">
+                    <a href="/api/v1/nav/home" class="nav-link">
                         <i class="fas fa-home"></i>
                         <span>Ana Sayfa</span>
                     </a>
@@ -94,20 +94,20 @@
 
                 {% if user_type == "Öğretmen" %}
                     <li class="nav-item">
-                        <a href="/calendar/create" class="nav-link">
+                        <a href="/api/v1/calendar/create" class="nav-link">
                             <i class="fas fa-plus"></i>
                             <span>Takvim Ekle</span>
                         </a>
                     </li>
                     <li class="nav-item">
-                        <a href="/calendar/teacher" class="nav-link">
+                        <a href="/api/v1/calendar/teacher" class="nav-link">
                             <i class="fas fa-calendar"></i>
                             <span>Takvimlerim</span>
                         </a>
                     </li>
                 {% elif user_type == "Öğrenci" %}
                     <li class="nav-item">
-                        <a href="/calendar/student" class="nav-link">
+                        <a href="/api/v1/calendar/student" class="nav-link">
                             <i class="fas fa-calendar"></i>
                             <span>Takvimler</span>
                         </a>
@@ -165,7 +165,7 @@
          * @param {string} notificationId - Görüntülenecek bildirimin benzersiz kimliği
          */
         function goToNotificationDetail(notificationId) {
-            window.location.href = `/notification/${notificationId}`;
+            window.location.href = `/api/v1/notification/${notificationId}`;
         }
 
         /**
@@ -266,7 +266,7 @@
             if (clearNotificationsBtn) {
                 clearNotificationsBtn.addEventListener('click', e => {
                     e.preventDefault();
-                    fetch('/notification/clear-all', { method: 'PUT' })
+                    fetch('/api/v1/notification/clear-all', { method: 'PUT' })
                         .then(response => {
                             if (response.ok) {
                                 const notificationItems = document.querySelectorAll('.notification-item');
@@ -304,7 +304,7 @@
 
                     const formData = new FormData(duyuruForm);
 
-                    fetch('/notification/create', {
+                    fetch('/api/v1/notification/create', {
                         method: 'POST',
                         body: formData
                     })
