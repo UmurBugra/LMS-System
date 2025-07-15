@@ -3,8 +3,7 @@ from sqlalchemy.orm import Session
 from starlette.templating import Jinja2Templates
 from schemas import LoginBase, CalendarData, UserType
 from crud.calendar import create_calendar, get_calendar, delete_calendar as delete_calendar_func
-from crud.notification import get_notifications, notification_detail
-from crud.calendar import get_calendar_detail
+from crud.notification import get_notifications
 from db.database import get_db
 from authentication.oauth2 import calendar_authentication_token, student_authentication_token
 from fastapi.responses import HTMLResponse

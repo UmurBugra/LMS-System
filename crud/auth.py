@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from schemas import LoginEmailPassword
-from db.models import LoginData
+from models import LoginData
 
 # CRUD operations for user authentication
 # User Login Control

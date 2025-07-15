@@ -7,7 +7,7 @@ from crud.notification import create_notification, get_notifications,create_noti
 create_notification_for_all_teachers, soft_delete_notifications, notification_detail
 from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
-from db.models import NotificationData
+from models import NotificationData
 
 router = APIRouter(prefix="/notification", tags=["Notification"])
 templates = Jinja2Templates(directory="templates")

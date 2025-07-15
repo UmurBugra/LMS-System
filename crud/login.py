@@ -1,6 +1,6 @@
 from fastapi import HTTPException
 from sqlalchemy.orm import Session
-from db.models import LoginData
+from models import LoginData
 from schemas import UserType
 
 

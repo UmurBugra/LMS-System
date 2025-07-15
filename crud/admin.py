@@ -1,9 +1,8 @@
 from sqlalchemy import or_, cast, String
 from sqlalchemy.orm import Session
 from schemas import UserType, LoginBase
-from db.models import LoginData, NotificationData
+from models import LoginData, NotificationData, notification_receivers
 from datetime import datetime, timezone, timedelta
-from db.models import notification_receivers
 
 #CRUD operations for admin
 # Create user

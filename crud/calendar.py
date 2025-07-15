@@ -1,6 +1,6 @@
 from sqlalchemy.orm import Session
 from crud.notification import calendar_notification_for_student
-from db.models import CalendarData, LoginData
+from models import CalendarData, LoginData
 from schemas import CalendarBase, UserType, LoginBase
 from fastapi import HTTPException
 

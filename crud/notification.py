@@ -2,7 +2,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import and_
 from fastapi.responses import JSONResponse
-from db.models import NotificationData, LoginData, notification_receivers
+from models import NotificationData, LoginData, notification_receivers
 from datetime import datetime, timedelta, timezone
 from schemas import UserType
 from zoneinfo import ZoneInfo
