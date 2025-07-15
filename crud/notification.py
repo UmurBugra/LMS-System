@@ -10,8 +10,8 @@ from zoneinfo import ZoneInfo
 # Bildirim oluşturma işlemleri
 # Bu fonksiyon, belirtilen içeriğe sahip bir bildirim oluşturur.
 def create_notification(db: Session, content: str, sender_id: int, receiver=None):
-    utc_now = datetime.now(timezone.utc)                                # --> UTC zamanını al
-    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))     # --> Türkiye saat dilimine dönüştür
+
+    turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)   # --> Türkiye saat dilimine dönüştür
 
     notification_entry = NotificationData(
         content=content,
@@ -83,8 +83,8 @@ def create_notification_for_all_students(db: Session, content: str, sender_id: i
 
 # Bu fonksiyon, tüm öğretmenlere bir bildirim gönderir.
 def create_notification_for_all_teachers(db: Session, content: str, sender_id: int):
-    utc_now = datetime.now(timezone.utc)
-    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
+    turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)
 
     sender = db.query(LoginData).filter(LoginData.id == sender_id).first()
     if not sender:
@@ -122,8 +122,8 @@ def create_notification_for_all_teachers(db: Session, content: str, sender_id: i
     return notification
 
 def calendar_notification_for_student(db: Session, calendar_entry, content: str ,sender_id: int):
-    utc_now = datetime.now(timezone.utc)
-    turkey_time = utc_now.astimezone(timezone(timedelta(hours=3)))
+
+    turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)
 
     students = db.query(LoginData).filter(LoginData.type == UserType.student).all()
 
@@ -188,8 +188,7 @@ def soft_delete_notifications(db: Session, current_user: LoginData):
         if not user:
                 raise ValueError("Kullanıcı bulunamadı.")
 
-        utc_now = datetime.now(timezone.utc)
-        turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+        turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)
 
 
         db.execute(
