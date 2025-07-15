@@ -45,8 +45,8 @@ def delete_user_by_admin(db: Session, id: int):
 
 # Create notification for everyone
 def create_notification_for_everyone(db: Session, content: str, sender_id: int):
-    utc_now = datetime.now(timezone.utc)
-    turkey_time = utc_now.astimezone(timezone(timedelta(hours=+3)))
+
+    turkey_time = datetime.now(timezone.utc) + timedelta(hours=3)
 
     admin = db.query(LoginData).filter(LoginData.id == sender_id).first()
     if not admin:
