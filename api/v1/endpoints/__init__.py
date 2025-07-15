@@ -1,0 +1,1 @@
+# Bu __init__.py dosyası bu klasörü paket olarak tanımlar.

@@ -8,7 +8,7 @@ from db.database import get_db
 from authentication.oauth2 import calendar_authentication_token, student_authentication_token
 from fastapi.responses import HTMLResponse
 
-router = APIRouter(prefix="/calendar", tags=["Calendar"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 

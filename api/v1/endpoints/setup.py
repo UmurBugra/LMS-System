@@ -5,7 +5,7 @@ from db.database import get_db
 from crud import setup
 from schemas import LoginBase,UserType
 
-router = APIRouter(prefix="/setup", tags=["setup"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # Initial setup route

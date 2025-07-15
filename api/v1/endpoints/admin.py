@@ -8,8 +8,7 @@ from crud import admin
 from crud.notification import create_notification_for_all_students, create_notification_for_all_teachers
 from authentication.oauth2 import admin_authentication_token
 
-
-router = APIRouter(prefix="/admin-page", tags=["setup"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # Create user
@@ -21,7 +20,7 @@ def create_user(
     create_user_by_auth: LoginBase = Depends(admin_authentication_token)
 ):
     user = admin.create_user_by_admin(db, form_data, type)
-    return RedirectResponse("/nav/admin-home", status_code=302)
+    return RedirectResponse("/api/v1/nav/admin-home", status_code=302)
 
 # Update user
 @router.put("/update-user-{id}", response_model=LoginDisplay)

@@ -7,7 +7,7 @@ from fastapi.templating import Jinja2Templates
 from fastapi.responses import RedirectResponse
 from authentication import oauth2
 
-router = APIRouter(prefix="/auth", tags=["auth"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # Form verilerini işlemek için yeni endpoint
@@ -36,9 +36,9 @@ def user_login_form(
         )
         print("TOKEN:", access_token)          # Token'ı konsola yazdırdım, bazen gerek oluyor.
         if result["user_type"] == "admin":     # Eğer kullanıcı admin ise admin sayfasına yönlendir.
-            redirect_url = "/nav/admin-home"
+            redirect_url = "/api/v1/nav/admin-home"
         else:
-            redirect_url = "/nav/home"         # Eğer kullanıcı normal bir kullanıcı ise home sayfasına yönlendir.
+            redirect_url = "/api/v1/nav/home"         # Eğer kullanıcı normal bir kullanıcı ise home sayfasına yönlendir.
         response = RedirectResponse(url=redirect_url, status_code=303)
         response.set_cookie(key="access_token", value=f"Bearer {access_token}", httponly=True) # Token'ı cookie olarak ayarladım.
         return response

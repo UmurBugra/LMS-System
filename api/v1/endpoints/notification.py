@@ -9,7 +9,7 @@ from db.database import get_db
 from authentication.oauth2 import get_current_user_from_cookie
 from models import NotificationData
 
-router = APIRouter(prefix="/notification", tags=["Notification"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # Bildirimleri listeleme
@@ -86,7 +86,7 @@ def get_notification_detail(
     # Eğer redirect_url varsa ve "/calendar/" içeriyorsa takvim detay sayfasına yönlendir
     if notification_entry and notification_entry.redirect_url and "/calendar/" in notification_entry.redirect_url:
         calendar_id = notification_entry.redirect_url.split("/")[-1] # --> "/" ile ayrıştır ve son elemanı al "calendar" "123(calendar_id)" gibi
-        return RedirectResponse(url=f"/calendar/{calendar_id}")
+        return RedirectResponse(url=f"/api/v1/calendar/{calendar_id}")
 
     return templates.TemplateResponse("notification_detail.html", {
         "request": request,

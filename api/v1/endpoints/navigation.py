@@ -8,7 +8,7 @@ from schemas import UserType
 from crud.notification import get_notifications
 from crud.admin import get_read_users_by_admin
 
-router = APIRouter(prefix="/nav", tags=["navigation"])
+router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # Çıkış yapma işlemi
@@ -43,7 +43,7 @@ def go_to_home(request: Request, db: Session = Depends(get_db), current_user = D
 @router.get("/admin-home")
 def go_to_admin_home(request: Request, db: Session = Depends(get_db), current_user = Depends(get_current_user_from_cookie)):
     if current_user.type != UserType.admin:
-        return RedirectResponse(url="/nav/home", status_code=302)
+        return RedirectResponse(url="/api/v1/nav/home", status_code=302)
     else:
         # Bildirimleri yükle
         notifications = get_notifications(db, current_user.username, current_user.id)
