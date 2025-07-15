@@ -5,7 +5,6 @@ from fastapi.responses import JSONResponse
 from models import NotificationData, LoginData, notification_receivers
 from datetime import datetime, timedelta, timezone
 from schemas import UserType
-from zoneinfo import ZoneInfo
 
 # Bildirim oluşturma işlemleri
 # Bu fonksiyon, belirtilen içeriğe sahip bir bildirim oluşturur.
