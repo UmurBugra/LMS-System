@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Form, Request, Response
+from fastapi import APIRouter, Depends, Request
 from schemas import LoginEmailPassword
 from crud import auth
 from sqlalchemy.orm import Session
