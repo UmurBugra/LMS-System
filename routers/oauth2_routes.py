@@ -2,8 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 from db.database import get_db
-from db.models import LoginData
-from schemas import UserType
+from models import LoginData
 from authentication import oauth2
 
 # OAuth2 ile kullanıcı girişi için gerekli endpoint
