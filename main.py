@@ -1,14 +1,13 @@
 from fastapi import FastAPI, Request, Depends
-from fastapi.responses import RedirectResponse
 from routers import login_auth_routes, calendar_routes, oauth2_routes, navigation_routes, \
 notification_routes, setup_routes, admin_routes
 from db.database import engine, get_db
-from db import models
-from db.models import LoginData
+from models import LoginData
 from fastapi.templating import Jinja2Templates
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from authentication.oauth2 import TokenExpiredException
+import models
 
 app = FastAPI()
 
