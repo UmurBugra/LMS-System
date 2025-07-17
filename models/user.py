@@ -13,6 +13,8 @@ class LoginData(Base):
     email = Column(String, unique=True, nullable=False)
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
     items = relationship("CalendarData", back_populates="user")
+    created_courses = relationship("Course", back_populates="teacher")
+    enrollments = relationship("Enrollment", back_populates="student")
     notifications = relationship("NotificationData",
         secondary=notification_receivers,
         back_populates="receiver"
