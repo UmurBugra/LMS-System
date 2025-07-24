@@ -12,9 +12,11 @@ class Event(Base):
     description = Column(Text, nullable=True)
     start_time = Column(String, nullable=False)
     end_time = Column(String, nullable=False)
-    location = Column(String, nullable=True)    # --> amfi veya online
+    location = Column(String, nullable=True)    # --> amfi, sınıf veya online
     event_type = Column(SQLAlchemyEnum(EventType))
     event_status = Column(SQLAlchemyEnum(EventStatus))
     # kurs kime ait
     course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
+
+    # Relationships
     course = relationship("Course", back_populates="event")

@@ -11,7 +11,8 @@ class Course(Base):
     description = Column(Text, nullable=True)
     # Oluşturulan öğretmen
     teacher_id = Column(Integer, ForeignKey("login_data.id"), nullable=False)
-    teacher = relationship("LoginData", back_populates="created_courses")
 
+    # Relationships
+    teacher = relationship("LoginData", back_populates="created_courses")
     event = relationship("Event", back_populates="course")
     enrollments = relationship("Enrollment", back_populates="course")
