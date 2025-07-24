@@ -7,7 +7,6 @@ from sqlalchemy.orm import Session
 from db.database import get_db
 from models import LoginData
 from crud.login import get_user_by_email_and_id, get_user_student
-from crud.calendar import create_calendar_by_auth
 from schemas import UserType
 
 SECRET_KEY = 'd68209ffa66480a47408acdc06f3d35016a7e3dfbbec769592ccd9e56d97ba7e' # --> openssl rand -hex 32
@@ -55,31 +54,6 @@ def get_current_user_from_cookie(
 
     user = get_user_by_email_and_id(db, email, user_id)
     if user is None:
-        raise TokenExpiredException()
-    return user
-
-
-# Calendar yetkilendirme (cookie üzerinden)
-# Token üzerinden "teacher" tipinde kullanıcıyı doğrular
-def calendar_authentication_token(
-    access_token: Optional[str] = Cookie(None),
-    db: Session = Depends(get_db)
-):
-    if access_token is None:
-        raise TokenExpiredException()
-    try:
-        token = access_token.replace("Bearer ", "")
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        email: str = payload.get("sub")
-        user_id: int = payload.get("user_id")
-        user_type: str = payload.get("user_type")
-        if email is None or user_id is None:
-            raise TokenExpiredException()
-    except JWTError:
-        raise TokenExpiredException()
-
-    user = create_calendar_by_auth(db, email, user_id, user_type=UserType.teacher)
-    if user is None or user.type != UserType.teacher:
         raise TokenExpiredException()
     return user
 

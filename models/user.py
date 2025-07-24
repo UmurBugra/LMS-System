@@ -14,7 +14,6 @@ class LoginData(Base):
     type =  Column(SQLAlchemyEnum(UserType)) # "student", "teacher"
 
     # Relationships
-    items = relationship("CalendarData", back_populates="user")
     created_courses = relationship("Course", back_populates="teacher")
     enrollments = relationship("Enrollment", back_populates="student")
     notifications = relationship("NotificationData",
