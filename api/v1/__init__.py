@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from .endpoints import admin, login_auth, navigation, notification, oauth2, setup
+from .endpoints import admin, login_auth, navigation, notification, oauth2, setup, course
 
 api_router = APIRouter()
 
@@ -9,3 +9,4 @@ api_router.include_router(navigation.router, prefix="/nav", tags=["navigation"])
 api_router.include_router(notification.router, prefix="/notification", tags=["Notification"])
 api_router.include_router(oauth2.router, tags=["authentication"])
 api_router.include_router(setup.router, prefix="/setup", tags=["setup"])
+api_router.include_router(course.router, prefix="/course", tags=["course"])
