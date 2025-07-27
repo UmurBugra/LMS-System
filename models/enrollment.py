@@ -9,7 +9,6 @@ class Enrollment(Base):
     student_id = Column(Integer, ForeignKey("login_data.id"), nullable=False)
     course_id = Column(Integer, ForeignKey("courses.id"), nullable=False)
 
-    # Many-to-many relationship
+    # Relationships
     student = relationship("LoginData", back_populates="enrollments")
     course = relationship("Course", back_populates="enrollments")
-
