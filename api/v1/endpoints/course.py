@@ -4,12 +4,13 @@ from fastapi.templating import Jinja2Templates
 from db.database import get_db
 from schemas import LoginBase
 from authentication.oauth2 import get_current_user_from_cookie
-from crud.course import create_course
+from crud.course import create_course, get_courses
 from crud.enrollment import create_enrollment, delete_enrollment
 
 router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
+# Kurs oluşturma
 @router.post("create")
 def create_course_endpoint(
     name: str = Form(...),
@@ -20,6 +21,7 @@ def create_course_endpoint(
 ):
     return create_course(db, name, code, description, current_user)
 
+# Kurs kaydı yapma
 @router.post("{course_id}/enroll")
 def enroll_in_course(
     course_id: int,
@@ -31,6 +33,7 @@ def enroll_in_course(
 
     return enrollment
 
+# Kurs kaydı silme
 @router.delete("{course_id}/unenroll")
 def unenroll_from_course(
     course_id: int,
@@ -40,3 +43,14 @@ def unenroll_from_course(
     enrollment = delete_enrollment(db, course_id, current_user.id)
 
     return enrollment
+
+# Kurs listeleme
+@router.get("/")
+def get_course(
+        db: Session = Depends(get_db),
+        current_user: LoginBase = Depends(get_current_user_from_cookie)
+):
+
+    courses = get_courses(db, current_user.id)
+
+    return courses
