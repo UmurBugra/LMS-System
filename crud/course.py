@@ -4,6 +4,18 @@ from models import Course, Enrollment,LoginData
 # Kurs oluşturma CRUD
 def create_course(db: Session, name: str, code: str, description: str, current_user):
 
+    try:
+        existing_course = db.query(Course).filter(
+            Course.name == name,
+            Course.code == code
+        ).first()
+
+        if existing_course:
+            return None
+
+    except Exception as e:
+        print(e)
+
     new_course = Course(
         name=name,
         code=code,
