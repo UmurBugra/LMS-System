@@ -51,6 +51,6 @@ def get_course(
         current_user: LoginBase = Depends(get_current_user_from_cookie),
 ):
 
-    courses = get_courses(db, current_user.id)
+    courses = get_courses(db, current_user.username, current_user.id)
 
     return courses
