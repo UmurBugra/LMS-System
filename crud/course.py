@@ -30,20 +30,26 @@ def create_course(db: Session, name: str, code: str, description: str, current_u
 
 # Kurs listeleme CRUD
 
-def get_courses(db, student_id):
+def get_courses(db, username ,student_id):
 
-    get_c = db.query(Course, Enrollment).join(
-        LoginData,
-        LoginData.id == Enrollment.student_id
-    ).filter(
-        Course.id == Enrollment.course_id,
-        Enrollment.student_id == student_id
-    )
+    user = db.query(LoginData).filter(
+        LoginData.username == username,
+        LoginData.id == student_id
+    ).first()
 
     courses = []
 
-    for i in get_c:
+    if user:
+        get_c = db.query(Course, Enrollment).join(
+            LoginData,
+            LoginData.id == Enrollment.student_id
+        ).filter(
+            Course.id == Enrollment.course_id,
+            Enrollment.student_id == student_id
+        )
 
+    for i, j in get_c:
+        i.Enrollment = j
         courses.append(i)
 
     return courses
