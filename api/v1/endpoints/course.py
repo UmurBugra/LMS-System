@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from fastapi.templating import Jinja2Templates
 from db.database import get_db
 from schemas import LoginBase
-from authentication.oauth2 import get_current_user_from_cookie
+from authentication.oauth2 import get_current_user_from_cookie, teacher_authentication_token
 from crud.course import create_course, get_courses
 from crud.enrollment import create_enrollment, delete_enrollment
 
@@ -11,13 +11,13 @@ router = APIRouter()
 templates = Jinja2Templates(directory="templates")
 
 # Kurs oluşturma
-@router.post("create")
+@router.post("/create")
 def create_course_endpoint(
     name: str = Form(...),
     code: str = Form(...),
     description: str = Form(None),
     db: Session = Depends(get_db),
-    current_user: LoginBase = Depends(get_current_user_from_cookie)
+    current_user: LoginBase = Depends(teacher_authentication_token)
 ):
     return create_course(db, name, code, description, current_user)
 
@@ -26,7 +26,7 @@ def create_course_endpoint(
 def enroll_in_course(
     course_id: int,
     db: Session = Depends(get_db),
-    current_user: LoginBase = Depends(get_current_user_from_cookie)
+    current_user: LoginBase = Depends(teacher_authentication_token)
 ):
 
     enrollment = create_enrollment(db, course_id, current_user.id)
@@ -38,7 +38,7 @@ def enroll_in_course(
 def unenroll_from_course(
     course_id: int,
     db: Session = Depends(get_db),
-    current_user: LoginBase = Depends(get_current_user_from_cookie)
+    current_user: LoginBase = Depends(teacher_authentication_token)
 ):
     enrollment = delete_enrollment(db, course_id, current_user.id)
 
@@ -48,7 +48,7 @@ def unenroll_from_course(
 @router.get("/")
 def get_course(
         db: Session = Depends(get_db),
-        current_user: LoginBase = Depends(get_current_user_from_cookie)
+        current_user: LoginBase = Depends(get_current_user_from_cookie),
 ):
 
     courses = get_courses(db, current_user.id)
