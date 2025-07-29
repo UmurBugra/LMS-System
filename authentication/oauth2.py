@@ -81,6 +81,30 @@ def student_authentication_token(
         raise TokenExpiredException()
     return user
 
+# Öğretmen yetkilendirme (cookie üzerinden)
+# Token üzerinden "öğretmen" tipinde kullanıcıyı doğrular
+def teacher_authentication_token(
+    access_token: Optional[str] = Cookie(None),
+    db: Session = Depends(get_db)
+):
+    if access_token is None:
+        raise TokenExpiredException()
+    try:
+        token = access_token.replace("Bearer ", "")
+        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        email: str = payload.get("sub")
+        user_id: int = payload.get("user_id")
+        user_type: str = payload.get("user_type")
+        if email is None or user_id is None:
+            raise TokenExpiredException()
+    except JWTError:
+        raise TokenExpiredException()
+
+    user = db.query(LoginData).filter_by(email=email, id=user_id, type=UserType.teacher).first()
+    if user is None or user.type != UserType.teacher:
+        raise TokenExpiredException()
+    return user
+
 # Admin yetkilendirme (cookie üzerinden)
 # Token üzerinden "admin" tipinde kullanıcıyı doğrular
 def admin_authentication_token(
