@@ -1,7 +1,19 @@
 from sqlalchemy.orm import Session
-from models import Enrollment, Course, LoginData
+from models import Enrollment
 
 def create_enrollment(db: Session, course_id: int, student_id: int):
+
+    try:
+        existing_enrollment = db.query(Enrollment).filter(
+            Enrollment.course_id == course_id,
+            Enrollment.student_id == student_id
+        ).first()
+
+        if existing_enrollment:
+            return None
+
+    except Exception as e:
+        print(e)
 
     new_enrollment = Enrollment(
         course_id=course_id,
