@@ -34,7 +34,7 @@ def user_login_form(
                 "username": result["username"]  # Eğer varsa
             }
         )
-        print("TOKEN:", access_token)          # Token'ı konsola yazdırdım, bazen gerek oluyor.
+        print(access_token)          # Token'ı konsola yazdırdım, bazen gerek oluyor.
         if result["user_type"] == "admin":     # Eğer kullanıcı admin ise admin sayfasına yönlendir.
             redirect_url = "/api/v1/nav/admin-home"
         else:
