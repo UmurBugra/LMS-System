@@ -2,7 +2,9 @@ fastapi
 uvicorn
 sqlalchemy
 pydantic
+pydantic[email]
 python-multipart
 aiofiles
 python-jose[cryptography]
 jinja2>=3.0
+psycopg2
