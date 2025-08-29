@@ -1,4 +1,5 @@
-from fastapi import FastAPI, Request, Depends
+from fastapi import FastAPI, Request, Depends, HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials, OAuth2PasswordBearer
 from db.database import engine, get_db
 from models import LoginData
 from fastapi.templating import Jinja2Templates
@@ -8,7 +9,17 @@ from authentication.oauth2 import TokenExpiredException
 import models
 from api.v1 import api_router as router
 
-app = FastAPI()
+app = FastAPI(
+    title="LMS System API",
+    description="Learning Management System",
+    version="1.0.0"
+)
+
+# Security scheme for Swagger UI
+security = HTTPBearer()
+
+# OAuth2 password bearer for automatic token endpoint recognition
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/token")
 
 app.mount("/static", StaticFiles(directory="static"), name="static")
 templates = Jinja2Templates(directory="templates") # Jinja2 şablonları için dizin
@@ -31,12 +42,16 @@ def root(request: Request, db: Session = Depends(get_db)):
 models.Base.metadata.create_all(bind=engine)
 
 # Token süresi dolduğunda exception handler
-@app.exception_handler(TokenExpiredException) # Eğer TokenExpiredException oluşursa bu handler devreye girer
+@app.exception_handler(TokenExpiredException)
 def token_expired_exception_handler(request: Request, exc: TokenExpiredException):
+    # API endpoint'leri için JSON response döndür
+    if request.url.path.startswith("/api/"):
+        raise HTTPException(status_code=401, detail=exc.message)
+
+    # Template endpoint'leri için HTML response döndür
     response = templates.TemplateResponse(
         "index.html",
         {"request": request, "error": exc.message}
     )
-    # Cookie temizleme
     response.delete_cookie("access_token")
     return response
