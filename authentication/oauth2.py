@@ -117,7 +117,7 @@ def admin_authentication_token(
         token = access_token.replace("Bearer ", "")
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         username = payload.get("username")
-        email: str = payload.get("email")
+        email: str = payload.get("sub")
         user_type: str = payload.get("user_type")
         if username is None or email is None:
             raise TokenExpiredException()
