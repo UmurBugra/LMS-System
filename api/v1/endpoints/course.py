@@ -20,6 +20,9 @@ def create_course_endpoint(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(teacher_authentication_token)
 ):
+    if current_user.type != UserType.teacher:
+        raise HTTPException(status_code=403, detail="Only teachers can create courses")
+
     return create_course(db, name, code, description, current_user)
 
 # Kurs kaydı yapma
@@ -30,33 +33,25 @@ def enroll_in_course(
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(teacher_authentication_token)
 ):
-
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
     if current_user.type != UserType.teacher:
         raise HTTPException(status_code=403, detail="Only teachers can enroll students")
 
     enrollment = create_enrollment(db, course_id, student_id)
-
     return enrollment
 
 # Kurs kaydı silme
 @router.delete("/{course_id}/unenroll")
 def unenroll_from_course(
     course_id: int,
+    student_id: int = Form(...),
     db: Session = Depends(get_db),
     current_user: LoginBase = Depends(teacher_authentication_token)
 ):
 
-    if not current_user:
-        raise HTTPException(status_code=401, detail="Unauthorized")
-
     if current_user.type != UserType.teacher:
         raise HTTPException(status_code=403, detail="Only teachers can remove students from courses")
 
-    enrollment = delete_enrollment(db, course_id, current_user.id)
-
+    enrollment = delete_enrollment(db, course_id, student_id)
     return enrollment
 
 # Kurs listeleme
@@ -67,5 +62,4 @@ def get_course(
 ):
 
     courses = get_courses(db, current_user.username, current_user.id)
-
     return courses
